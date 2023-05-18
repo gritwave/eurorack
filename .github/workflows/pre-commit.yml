@@ -1,0 +1,25 @@
+name: Pre Commit Hooks
+
+on:
+  push:
+    branches-ignore:
+      - main
+
+jobs:
+  check:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          lfs: true
+
+      - name: Install dependencies
+        run: |
+          sudo snap install shellcheck shfmt
+          python -m pip install --upgrade pip
+          pip install -r pre-commit
+
+      - name: Check Pre-Commit Hooks
+        run: pre-commit run --all-files
