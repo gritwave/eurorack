@@ -5,12 +5,13 @@
 
 #include "daisy_patch_sm.h"
 
-static constexpr auto BLOCK_SIZE  = 4U;
+static constexpr auto BLOCK_SIZE  = 16U;
 static constexpr auto SAMPLE_RATE = 96'000.0F;
 
-auto adsr       = mc::ADSR{};
-auto oscillator = mc::Oscillator<float>{};
-auto patch      = daisy::patch_sm::DaisyPatchSM{};
+auto adsr  = mc::ADSR{};
+auto oscA  = mc::Oscillator<float>{};
+auto oscB  = mc::Oscillator<float>{};
+auto patch = daisy::patch_sm::DaisyPatchSM{};
 
 auto audioCallback(daisy::AudioHandle::InputBuffer /*in*/, daisy::AudioHandle::OutputBuffer out, size_t size) -> void
 {
@@ -25,25 +26,26 @@ auto audioCallback(daisy::AudioHandle::InputBuffer /*in*/, daisy::AudioHandle::O
     auto const noteNumber = mc::clamp(coarse + voct, 0.0F, 127.0F);
     auto const freq       = mc::noteToFrequency(noteNumber);
 
-    oscillator.setFrequency(freq);
+    oscA.setFrequency(freq);
+    oscB.setFrequency(220.0F);
+
     adsr.setAttack(0.025F * SAMPLE_RATE);
     adsr.setRelease(1.5F * SAMPLE_RATE);
 
     for (size_t i = 0; i < size; ++i)
     {
-        auto* const leftOut  = out[0];
-        auto* const rightOut = out[1];
-
-        auto const sample = oscillator();
-        leftOut[i]        = sample;
-        rightOut[i]       = sample;
+        OUT_L[i] = oscA();
+        OUT_R[i] = oscB();
     }
 }
 
 auto main() -> int
 {
-    oscillator.setShape(mc::OscillatorShape::Sine);
-    oscillator.setSampleRate(SAMPLE_RATE);
+    oscA.setShape(mc::OscillatorShape::Sine);
+    oscA.setSampleRate(SAMPLE_RATE);
+
+    oscB.setShape(mc::OscillatorShape::Square);
+    oscB.setSampleRate(SAMPLE_RATE);
 
     patch.Init();
     patch.SetAudioSampleRate(SAMPLE_RATE);
