@@ -1,5 +1,5 @@
 # Project Name
-TARGET = Template
+TARGET = kyma
 
 # Sources
 CPP_SOURCES = main.cpp

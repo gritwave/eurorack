@@ -7,9 +7,9 @@ daisy:
 
 .PHONY: firmware
 firmware:
-	${MAKE} -C src/Template -j ${shell nproc}
+	${MAKE} -C src/kyma -j ${shell nproc}
 
 .PHONY: clean
 clean:
 	rm -rf 3rd_party/libDaisy/build
-	rm -rf src/Template/build
+	rm -rf src/kyma/build
