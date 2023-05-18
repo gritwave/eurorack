@@ -8,10 +8,14 @@
 static constexpr auto BLOCK_SIZE  = 16U;
 static constexpr auto SAMPLE_RATE = 96'000.0F;
 
-auto adsr  = mc::ADSR{};
-auto oscA  = mc::Oscillator<float>{};
-auto oscB  = mc::Oscillator<float>{};
-auto patch = daisy::patch_sm::DaisyPatchSM{};
+auto subOctaveToggle  = daisy::Switch{};
+auto patch            = daisy::patch_sm::DaisyPatchSM{};
+auto& envelopeGate    = patch.gate_in_1;
+auto lastEnvelopeGate = false;
+
+auto adsr          = mc::ADSR{};
+auto oscillator    = mc::Oscillator<float>{};
+auto subOscillator = mc::Oscillator<float>{};
 
 auto audioCallback(daisy::AudioHandle::InputBuffer /*in*/, daisy::AudioHandle::OutputBuffer out, size_t size) -> void
 {
@@ -23,34 +27,62 @@ auto audioCallback(daisy::AudioHandle::InputBuffer /*in*/, daisy::AudioHandle::O
     auto const voctCV = patch.GetAdcValue(daisy::patch_sm::CV_5);
     auto const voct   = mc::mapToLinearRange(voctCV, 0.0F, 60.0F);
 
-    auto const noteNumber = mc::clamp(coarse + voct, 0.0F, 127.0F);
-    auto const freq       = mc::noteToFrequency(noteNumber);
+    auto const noteNumber = coarse + voct;
+    oscillator.setFrequency(mc::noteToFrequency(mc::clamp(noteNumber, 0.0F, 127.0F)));
 
-    oscA.setFrequency(freq);
-    oscB.setFrequency(220.0F);
+    auto const subOffset = subOctaveToggle.Pressed() ? 24.0F : 12.0F;
+    subOscillator.setFrequency(mc::noteToFrequency(mc::clamp(noteNumber - subOffset, 0.0F, 127.0F)));
 
-    adsr.setAttack(0.025F * SAMPLE_RATE);
-    adsr.setRelease(1.5F * SAMPLE_RATE);
+    auto const attackCV = patch.GetAdcValue(daisy::patch_sm::CV_2);
+    auto const attack   = mc::mapToLinearRange(attackCV, 0.0F, 500.0F);
+    adsr.setAttack(attack * SAMPLE_RATE);
+
+    auto const releaseCV = patch.GetAdcValue(daisy::patch_sm::CV_4);
+    auto const release   = mc::mapToLinearRange(releaseCV, 0.0F, 500.0F);
+    adsr.setRelease(release * SAMPLE_RATE);
+
+    auto const gate = envelopeGate.State();
+    if (lastEnvelopeGate != gate)
+    {
+        adsr.gate();
+        lastEnvelopeGate = gate;
+    }
+
+    auto const subGainCV = patch.GetAdcValue(daisy::patch_sm::CV_7);
+    auto const subGain   = mc::mapToLinearRange(subGainCV, 0.0F, 1.0F);
 
     for (size_t i = 0; i < size; ++i)
     {
-        OUT_L[i] = oscA();
-        OUT_R[i] = oscB();
+        auto const env = adsr.processSample();
+        patch.WriteCvOut(daisy::patch_sm::CV_OUT_1, env * 5.0F);
+
+        auto const osc = oscillator() * env;
+        auto const sub = subOscillator() * env * subGain;
+
+        OUT_L[i] = osc;
+        OUT_R[i] = osc + sub;
     }
 }
 
 auto main() -> int
 {
-    oscA.setShape(mc::OscillatorShape::Sine);
-    oscA.setSampleRate(SAMPLE_RATE);
-
-    oscB.setShape(mc::OscillatorShape::Square);
-    oscB.setSampleRate(SAMPLE_RATE);
-
     patch.Init();
     patch.SetAudioSampleRate(SAMPLE_RATE);
     patch.SetAudioBlockSize(BLOCK_SIZE);
     patch.StartAudio(audioCallback);
 
-    while (true) {}
+    subOctaveToggle.Init(patch.B8);
+
+    oscillator.setShape(mc::OscillatorShape::Square);
+    oscillator.setSampleRate(SAMPLE_RATE);
+
+    subOscillator.setShape(mc::OscillatorShape::Sine);
+    subOscillator.setSampleRate(SAMPLE_RATE);
+
+    while (true)
+    {
+        subOctaveToggle.Debounce();
+        auto const state = subOctaveToggle.Pressed();
+        patch.SetLed(state);
+    }
 }
