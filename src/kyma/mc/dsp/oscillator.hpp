@@ -29,12 +29,12 @@ private:
     [[nodiscard]] auto sine() noexcept -> SampleType;
     [[nodiscard]] auto triangle() noexcept -> SampleType;
     [[nodiscard]] auto saw() noexcept -> SampleType;
-    [[nodiscard]] auto pulse(SampleType puslseWidth) noexcept -> SampleType;
+    [[nodiscard]] auto pulse(SampleType width) noexcept -> SampleType;
 
     OscillatorShape _shape{};
     SampleType _phase{0};
     SampleType _frequency{0};
-    SampleType _puslseWidth{0.5};
+    SampleType _pulseWidth{0.5};
     SampleType _sampleRate{0};
 };
 
@@ -68,7 +68,7 @@ auto Oscillator<SampleType>::operator()() noexcept -> SampleType
     if (_shape == OscillatorShape::Sine) { return sine(); }
     if (_shape == OscillatorShape::Triangle) { return triangle(); }
     if (_shape == OscillatorShape::Saw) { return saw(); }
-    if (_shape == OscillatorShape::Square) { return pulse(_puslseWidth); }
+    if (_shape == OscillatorShape::Square) { return pulse(_pulseWidth); }
     return 0.0F;
 }
 
@@ -84,15 +84,15 @@ auto Oscillator<SampleType>::sine() noexcept -> SampleType
 }
 
 template<typename SampleType>
-auto Oscillator<SampleType>::pulse(SampleType puslseWidth) noexcept -> SampleType
+auto Oscillator<SampleType>::pulse(SampleType width) noexcept -> SampleType
 {
-    if (puslseWidth < 0.0F) { puslseWidth = 0.0F; }
-    if (puslseWidth > 1.0F) { puslseWidth = 1; }
+    if (width < 0.0F) { width = 0.0F; }
+    if (width > 1.0F) { width = 1; }
 
     if (_phase >= 1.0F) { _phase -= 1.0F; }
     _phase += (1.0F / (_sampleRate / (_frequency)));
 
-    if (_phase < puslseWidth) { return SampleType{-1}; }
+    if (_phase < width) { return SampleType{-1}; }
     return 1.0F;
 }
 

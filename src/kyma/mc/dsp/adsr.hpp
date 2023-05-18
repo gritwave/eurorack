@@ -20,7 +20,7 @@ struct ADSR
     auto setTargetRatioDR(float ratio) noexcept -> void;
 
     auto reset() noexcept -> void;
-    auto gate() noexcept -> void;
+    auto gate(bool isOn) noexcept -> void;
     [[nodiscard]] auto processSample() noexcept -> float;
 
 private:
@@ -33,8 +33,12 @@ private:
         Release
     };
 
+    static float calcCoef(float rate, float targetRatio)
+    {
+        return std::exp(-std::log((1.0F + targetRatio) / targetRatio) / rate);
+    }
+
     State _state{State::Idle};
-    int _gate{};
     float _output{};
 
     float _attackRate{};
@@ -54,11 +58,6 @@ private:
     float _targetRatioA{};
     float _targetRatioDR{};
 };
-
-inline float calcCoef(float rate, float targetRatio)
-{
-    return std::exp(-std::log((1.0F + targetRatio) / targetRatio) / rate);
-}
 
 inline ADSR::ADSR() noexcept
 {
@@ -114,23 +113,14 @@ inline auto ADSR::setTargetRatioDR(float ratio) noexcept -> void
     _releaseBase   = -_targetRatioDR * (1.0 - _releaseCoef);
 }
 
-inline auto ADSR::gate() noexcept -> void
+inline auto ADSR::gate(bool isOn) noexcept -> void
 {
-    if (_gate == 0)
-    {
-        _state = State::Attack;
-        _gate  = 1;
-    }
-    else if (_state != State::Idle)
-    {
-        _state = State::Release;
-        _gate  = 0;
-    }
+    if (isOn) { _state = State::Attack; }
+    else if (_state != State::Idle) { _state = State::Release; }
 }
 
 inline auto ADSR::reset() noexcept -> void
 {
-    _gate   = 0;
     _state  = State::Idle;
     _output = 0.0;
 }

@@ -30,26 +30,19 @@ auto audioCallback(daisy::AudioHandle::InputBuffer /*in*/, daisy::AudioHandle::O
     auto const noteNumber = coarse + voct;
     oscillator.setFrequency(mc::noteToFrequency(mc::clamp(noteNumber, 0.0F, 127.0F)));
 
+    auto const subGainCV = patch.GetAdcValue(daisy::patch_sm::CV_7);
+    auto const subGain   = mc::mapToLinearRange(subGainCV, 0.0F, 1.0F);
     auto const subOffset = subOctaveToggle.Pressed() ? 24.0F : 12.0F;
     subOscillator.setFrequency(mc::noteToFrequency(mc::clamp(noteNumber - subOffset, 0.0F, 127.0F)));
 
-    auto const attackCV = patch.GetAdcValue(daisy::patch_sm::CV_2);
-    auto const attack   = mc::mapToLinearRange(attackCV, 0.0F, 500.0F);
-    adsr.setAttack(attack * SAMPLE_RATE);
-
+    auto const attackCV  = patch.GetAdcValue(daisy::patch_sm::CV_2);
+    auto const attack    = mc::mapToLinearRange(attackCV, 0.0F, 500.0F);
     auto const releaseCV = patch.GetAdcValue(daisy::patch_sm::CV_4);
     auto const release   = mc::mapToLinearRange(releaseCV, 0.0F, 500.0F);
+
+    adsr.setAttack(attack * SAMPLE_RATE);
     adsr.setRelease(release * SAMPLE_RATE);
-
-    auto const gate = envelopeGate.State();
-    if (lastEnvelopeGate != gate)
-    {
-        adsr.gate();
-        lastEnvelopeGate = gate;
-    }
-
-    auto const subGainCV = patch.GetAdcValue(daisy::patch_sm::CV_7);
-    auto const subGain   = mc::mapToLinearRange(subGainCV, 0.0F, 1.0F);
+    adsr.gate(envelopeGate.State());
 
     for (size_t i = 0; i < size; ++i)
     {
