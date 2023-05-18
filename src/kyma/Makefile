@@ -1,3 +1,5 @@
+OPT = -Os
+
 # Project Name
 TARGET = kyma
 
