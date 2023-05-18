@@ -1,4 +1,6 @@
+#include "mc/dsp/note.hpp"
 #include "mc/dsp/oscillator.hpp"
+#include "mc/dsp/range.hpp"
 
 #include "daisy_patch_sm.h"
 
@@ -7,8 +9,19 @@ auto patch      = daisy::patch_sm::DaisyPatchSM{};
 
 static auto process(daisy::AudioHandle::InputBuffer /*in*/, daisy::AudioHandle::OutputBuffer out, size_t size) -> void
 {
-    auto* leftOut  = out[0];
-    auto* rightOut = out[0];
+    auto* const leftOut  = out[0];
+    auto* const rightOut = out[1];
+
+    auto const coarseKnob = patch.GetAdcValue(daisy::patch_sm::CV_1);
+    auto const coarse     = mc::mapToLinearRange(coarseKnob, 36.0F, 96.0F);
+
+    auto const voctCV = patch.GetAdcValue(daisy::patch_sm::CV_5);
+    auto const voct   = mc::mapToLinearRange(voctCV, 0.0F, 60.0F);
+
+    auto const noteNumber = mc::clamp(coarse + voct, 0.0F, 127.0F);
+    auto const freq       = mc::noteToFrequency(noteNumber);
+
+    oscillator.setFrequency(freq);
 
     for (size_t i = 0; i < size; ++i)
     {
@@ -18,10 +31,9 @@ static auto process(daisy::AudioHandle::InputBuffer /*in*/, daisy::AudioHandle::
     }
 }
 
-int main(void)
+auto main() -> int
 {
     oscillator.setShape(mc::OscillatorShape::Sine);
-    oscillator.setFrequency(440.0F);
     oscillator.setSampleRate(patch.AudioSampleRate());
 
     patch.Init();
