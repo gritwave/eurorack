@@ -9,6 +9,8 @@ auto patch      = daisy::patch_sm::DaisyPatchSM{};
 
 static auto process(daisy::AudioHandle::InputBuffer /*in*/, daisy::AudioHandle::OutputBuffer out, size_t size) -> void
 {
+    patch.ProcessAllControls();
+
     auto* const leftOut  = out[0];
     auto* const rightOut = out[1];
 
