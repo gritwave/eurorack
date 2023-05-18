@@ -1,13 +1,13 @@
-name: Build
+name: Package
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [main]
 
 jobs:
-  build:
+  package:
     runs-on: ubuntu-22.04
-    container:
-      image: alpine:edge
-    name: Build
+    name: Package
     steps:
       - name: Check out code
         uses: actions/checkout@v3
@@ -17,9 +17,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          apk add git --no-cache
-          apk add make gcc-arm-none-eabi g++-arm-none-eabi newlib-arm-none-eabi grep --no-cache
-          grep --version
+          sudo apt install build-essential gcc-arm-none-eabi
           arm-none-eabi-g++ --version
 
       - name: Build firmware
