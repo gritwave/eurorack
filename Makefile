@@ -1,13 +1,15 @@
-# Project Name
-TARGET = PassthruExample
+.PHONY: all
+all: daisy firmware
 
-# Sources
-CPP_SOURCES = PassthruExample.cpp
+.PHONY: daisy
+daisy:
+	${MAKE} -C 3rd_party/libDaisy -j ${shell nproc}
 
-# Library Locations
-LIBDAISY_DIR = 3rd_party/libDaisy/
-# DAISYSP_DIR = 3rd_party/DaisySP/
+.PHONY: firmware
+firmware:
+	${MAKE} -C src/Template -j ${shell nproc}
 
-# Core location, and generic Makefile.
-SYSTEM_FILES_DIR = $(LIBDAISY_DIR)/core
-include $(SYSTEM_FILES_DIR)/Makefile
+.PHONY: clean
+clean:
+	rm -rf 3rd_party/libDaisy/build
+	rm -rf src/Template/build

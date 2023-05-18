@@ -1,0 +1,26 @@
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    container:
+      image: alpine:edge
+    name: Build
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          lfs: true
+
+      - name: Install dependencies
+        run: |
+          apk add git --no-cache
+          apk add make gcc-arm-none-eabi g++-arm-none-eabi newlib-arm-none-eabi grep --no-cache
+          grep --version
+          arm-none-eabi-g++ --version
+
+      - name: Build firmware
+        run: make all
