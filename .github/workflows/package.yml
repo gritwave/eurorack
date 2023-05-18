@@ -6,8 +6,8 @@ on:
 
 jobs:
   package:
-    runs-on: ubuntu-22.04
     name: Package
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out code
         uses: actions/checkout@v3
@@ -23,31 +23,34 @@ jobs:
       - name: Build firmware
         run: make all
 
-      - name: Zip firmware
+      - name: Make firmware archive
         run: |
           mkdir firmware
           cp src/Template/build/Template.bin firmware
-          7z a -tzip firmware.zip firmware
 
-      - name: Upload Zip
+      - name: Upload coverage artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: firmware.zip
-          path: firmware.zip
+          name: firmware
+          path: firmware
+          if-no-files-found: error
 
   release:
-    if: contains(github.ref, 'tags/v')
-    runs-on: ubuntu-latest
+    name: Release
     needs: package
+    if: contains(github.ref, 'tags/v')
+    runs-on: ubuntu-22.04
     steps:
       - name: Get Artifacts
         uses: actions/download-artifact@v3
+
+      - name: Show artifacts
+        run: ls -la
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           prerelease: true
-          # download-artifact puts these files in their own dirs...
-          # Using globs sidesteps having to pass the version around
           files: |
-            */firmware.zip
+            LICENSE.txt
+            firmware
