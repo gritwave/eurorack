@@ -38,7 +38,7 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
     auto const note           = etl::clamp(pitch + voltsPerOctave, 0.0F, 127.0F);
     auto const morph          = etl::clamp(morphKnob + morphCV, 0.0F, 1.0F);
 
-    auto const subOffset     = subOctaveToggle.Pressed() ? 24.0F : 12.0F;
+    auto const subOffset     = subOctaveToggle.Pressed() ? 12.0F : 24.0F;
     auto const subNoteNumber = etl::clamp(note - subOffset, 0.0F, 127.0F);
     auto const subMorph      = etl::clamp(subMorphCV, 0.0F, 1.0F);
     auto const subGain       = etl::audio::mapToRange(subGainCV, 0.0F, 1.0F);
@@ -94,6 +94,6 @@ auto main() -> int
     {
         subOctaveToggle.Debounce();
         envTriggerButton.Debounce();
-        patch.SetLed(subOctaveToggle.Pressed());
+        patch.SetLed(not subOctaveToggle.Pressed());
     }
 }
