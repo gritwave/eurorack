@@ -5,10 +5,7 @@
       "name": "arm-gnu",
       "generator": "Ninja Multi-Config",
       "binaryDir": "${sourceDir}/build",
-      "toolchainFile": "${sourceDir}/cmake/toolchain/stm32h750xx.cmake",
-      "cacheVariables": {
-        "TOOLCHAIN_PREFIX": "C:/Program Files (x86)/Arm GNU Toolchain arm-none-eabi/12.2 mpacbti-rel1"
-      }
+      "toolchainFile": "${sourceDir}/cmake/toolchain/stm32h750xx.cmake"
     }
   ],
   "buildPresets": [
