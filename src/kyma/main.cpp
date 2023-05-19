@@ -64,11 +64,11 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
         auto const env = adsr.processSample();
         patch.WriteCvOut(daisy::patch_sm::CV_OUT_1, env * 5.0F);
 
-        auto const osc = oscillator() * env;
-        auto const sub = subOscillator() * env * subGain;
+        auto const osc = oscillator() * 0.5F;
+        auto const sub = subOscillator() * subGain * 0.5F;
 
         OUT_L[i] = osc;
-        OUT_R[i] = osc + sub;
+        OUT_R[i] = (osc + sub) * env;
     }
 }
 
