@@ -43,8 +43,8 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
     auto const subMorph      = etl::clamp(subMorphCV, 0.0F, 1.0F);
     auto const subGain       = etl::audio::mapToRange(subGainCV, 0.0F, 1.0F);
 
-    auto const attack  = etl::audio::mapToRange(attackKnob, 0.0F, 500.0F);
-    auto const release = etl::audio::mapToRange(releaseKnob, 0.0F, 500.0F);
+    auto const attack  = etl::audio::mapToRange(attackKnob, 0.0F, 0.750F);
+    auto const release = etl::audio::mapToRange(releaseKnob, 0.0F, 2.5F);
 
     oscillator.setFrequency(etl::audio::noteToHertz(note));
     oscillator.setShapeMorph(morph);
