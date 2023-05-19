@@ -10,6 +10,7 @@ static constexpr auto BLOCK_SIZE  = 16U;
 static constexpr auto SAMPLE_RATE = 96'000.0F;
 
 auto subOctaveToggle  = daisy::Switch{};
+auto envTriggerButton = daisy::Switch{};
 auto patch            = daisy::patch_sm::DaisyPatchSM{};
 auto& envelopeGate    = patch.gate_in_1;
 auto lastEnvelopeGate = false;
@@ -53,7 +54,7 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
 
     adsr.setAttack(attack * SAMPLE_RATE);
     adsr.setRelease(release * SAMPLE_RATE);
-    adsr.gate(envelopeGate.State());
+    adsr.gate(envelopeGate.State() or envTriggerButton.Pressed());
 
     for (size_t i = 0; i < size; ++i)
     {
@@ -63,12 +64,13 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
 
         auto const env = adsr.processSample();
         patch.WriteCvOut(daisy::patch_sm::CV_OUT_1, env * 5.0F);
+        patch.WriteCvOut(daisy::patch_sm::CV_OUT_2, env * 5.0F);
 
-        auto const osc = oscillator() * 0.5F;
-        auto const sub = subOscillator() * subGain * 0.5F;
+        auto const osc = oscillator() * env;
+        auto const sub = subOscillator() * env * subGain;
 
         OUT_L[i] = osc;
-        OUT_R[i] = (osc + sub) * env;
+        OUT_R[i] = osc + sub;
     }
 }
 
@@ -80,6 +82,7 @@ auto main() -> int
     patch.StartAudio(audioCallback);
 
     subOctaveToggle.Init(patch.B8);
+    envTriggerButton.Init(patch.B7);
 
     oscillator.setShapes(etl::audio::OscillatorShape::Sine, etl::audio::OscillatorShape::Square);
     oscillator.setSampleRate(SAMPLE_RATE);
@@ -90,7 +93,7 @@ auto main() -> int
     while (true)
     {
         subOctaveToggle.Debounce();
-        auto const state = subOctaveToggle.Pressed();
-        patch.SetLed(state);
+        envTriggerButton.Debounce();
+        patch.SetLed(subOctaveToggle.Pressed());
     }
 }
