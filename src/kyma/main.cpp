@@ -1,8 +1,8 @@
-#include "mc/envelope/adsr.hpp"
-#include "mc/math/decibel.hpp"
-#include "mc/math/range.hpp"
-#include "mc/music/note.hpp"
-#include "mc/oscillator/variable_shape_oscillator.hpp"
+#include <etl/audio/envelope/adsr.hpp>
+#include <etl/audio/math/decibel.hpp>
+#include <etl/audio/math/range.hpp>
+#include <etl/audio/music/note.hpp>
+#include <etl/audio/oscillator/variable_shape_oscillator.hpp>
 
 #include "daisy_patch_sm.h"
 
@@ -14,9 +14,9 @@ auto patch            = daisy::patch_sm::DaisyPatchSM{};
 auto& envelopeGate    = patch.gate_in_1;
 auto lastEnvelopeGate = false;
 
-auto adsr          = mc::ADSR{};
-auto oscillator    = mc::VariableShapeOscillator<float>{};
-auto subOscillator = mc::VariableShapeOscillator<float>{};
+auto adsr          = etl::audio::ADSR{};
+auto oscillator    = etl::audio::VariableShapeOscillator<float>{};
+auto subOscillator = etl::audio::VariableShapeOscillator<float>{};
 
 auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::OutputBuffer out, size_t size) -> void
 {
@@ -32,23 +32,23 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
     auto const subGainCV  = patch.GetAdcValue(daisy::patch_sm::CV_7);
     auto const subMorphCV = patch.GetAdcValue(daisy::patch_sm::CV_8);
 
-    auto const pitch          = mc::mapToRange(pitchKnob, 36.0F, 96.0F);
-    auto const voltsPerOctave = mc::mapToRange(vOctCV, 0.0F, 60.0F);
-    auto const note           = mc::clamp(pitch + voltsPerOctave, 0.0F, 127.0F);
-    auto const morph          = mc::clamp(morphKnob + morphCV, 0.0F, 1.0F);
+    auto const pitch          = etl::audio::mapToRange(pitchKnob, 36.0F, 96.0F);
+    auto const voltsPerOctave = etl::audio::mapToRange(vOctCV, 0.0F, 60.0F);
+    auto const note           = etl::audio::clamp(pitch + voltsPerOctave, 0.0F, 127.0F);
+    auto const morph          = etl::audio::clamp(morphKnob + morphCV, 0.0F, 1.0F);
 
     auto const subOffset     = subOctaveToggle.Pressed() ? 24.0F : 12.0F;
-    auto const subNoteNumber = mc::clamp(note - subOffset, 0.0F, 127.0F);
-    auto const subMorph      = mc::clamp(subMorphCV, 0.0F, 1.0F);
-    auto const subGain       = mc::mapToRange(subGainCV, 0.0F, 1.0F);
+    auto const subNoteNumber = etl::audio::clamp(note - subOffset, 0.0F, 127.0F);
+    auto const subMorph      = etl::audio::clamp(subMorphCV, 0.0F, 1.0F);
+    auto const subGain       = etl::audio::mapToRange(subGainCV, 0.0F, 1.0F);
 
-    auto const attack  = mc::mapToRange(attackKnob, 0.0F, 500.0F);
-    auto const release = mc::mapToRange(releaseKnob, 0.0F, 500.0F);
+    auto const attack  = etl::audio::mapToRange(attackKnob, 0.0F, 500.0F);
+    auto const release = etl::audio::mapToRange(releaseKnob, 0.0F, 500.0F);
 
-    oscillator.setFrequency(mc::noteToHertz(note));
+    oscillator.setFrequency(etl::audio::noteToHertz(note));
     oscillator.setShapeMorph(morph);
 
-    subOscillator.setFrequency(mc::noteToHertz(subNoteNumber));
+    subOscillator.setFrequency(etl::audio::noteToHertz(subNoteNumber));
     subOscillator.setShapeMorph(subMorph);
 
     adsr.setAttack(attack * SAMPLE_RATE);
@@ -81,10 +81,10 @@ auto main() -> int
 
     subOctaveToggle.Init(patch.B8);
 
-    oscillator.setShapes(mc::OscillatorShape::Sine, mc::OscillatorShape::Square);
+    oscillator.setShapes(etl::audio::OscillatorShape::Sine, etl::audio::OscillatorShape::Square);
     oscillator.setSampleRate(SAMPLE_RATE);
 
-    subOscillator.setShapes(mc::OscillatorShape::Sine, mc::OscillatorShape::Triangle);
+    subOscillator.setShapes(etl::audio::OscillatorShape::Sine, etl::audio::OscillatorShape::Triangle);
     subOscillator.setSampleRate(SAMPLE_RATE);
 
     while (true)

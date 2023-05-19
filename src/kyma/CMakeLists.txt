@@ -10,6 +10,7 @@ target_sources(kyma
 target_link_libraries(kyma
     PRIVATE
         daisy
+        etl::audio
 )
 
 set_target_properties(kyma PROPERTIES

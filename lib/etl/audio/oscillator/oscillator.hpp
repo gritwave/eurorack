@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../math/constants.hpp"
-#include "../math/range.hpp"
+#include <etl/audio/math/constants.hpp>
+#include <etl/audio/math/range.hpp>
 
-namespace mc
+namespace etl::audio
 {
 
 enum struct OscillatorShape
@@ -122,4 +122,4 @@ auto Oscillator<SampleType>::pulse(SampleType phase, SampleType width) noexcept 
     return SampleType{1};
 }
 
-}  // namespace mc
+}  // namespace etl::audio

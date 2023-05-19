@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../math/range.hpp"
-#include "../oscillator/oscillator.hpp"
+#include <etl/audio/math/range.hpp>
+#include <etl/audio/oscillator/oscillator.hpp>
 
-namespace mc
+namespace etl::audio
 {
 
 template<typename SampleType>
@@ -78,4 +78,4 @@ auto VariableShapeOscillator<SampleType>::operator()() noexcept -> SampleType
     return a * morph + b * (SampleType{1} - morph);
 }
 
-}  // namespace mc
+}  // namespace etl::audio

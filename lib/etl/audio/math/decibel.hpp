@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-namespace mc
+namespace etl::audio
 {
 
 template<typename T>
@@ -20,4 +20,4 @@ auto gainToDecibels(T gain, T minusInfinityDb = DefaultMinusInfinitydB<T>) -> T
     return gain > T() ? std::fmax(minusInfinityDb, static_cast<T>(std::log10(gain)) * T(20.0)) : minusInfinityDb;
 }
 
-}  // namespace mc
+}  // namespace etl::audio

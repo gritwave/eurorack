@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-namespace mc
+namespace etl::audio
 {
 
 template<typename T>
@@ -17,4 +17,4 @@ template<typename T>
     return clamp(min + in * (max - min), min, max);
 }
 
-}  // namespace mc
+}  // namespace etl::audio

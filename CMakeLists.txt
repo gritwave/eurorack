@@ -20,5 +20,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(LIBDAISY_DIR ${CMAKE_SOURCE_DIR}/3rd_party/libDaisy)
 set(LINKER_SCRIPT ${LIBDAISY_DIR}/core/STM32H750IB_flash.lds)
 
-add_subdirectory(${LIBDAISY_DIR} libdaisy)
+add_subdirectory(${LIBDAISY_DIR})
+add_subdirectory(lib)
 add_subdirectory(src/kyma)
