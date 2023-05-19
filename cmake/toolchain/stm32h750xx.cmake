@@ -3,13 +3,6 @@
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR arm)
 
-set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
-
-set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
-set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
-set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
-set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
-
 set(CMAKE_C_COMPILER_ID GNU)
 set(CMAKE_CXX_COMPILER_ID GNU)
 
@@ -17,11 +10,17 @@ set(CMAKE_C_COMPILER    "arm-none-eabi-gcc")
 set(CMAKE_CXX_COMPILER  "arm-none-eabi-g++")
 set(CMAKE_LINKER        "arm-none-eabi-ld")
 set(CMAKE_AR            "arm-none-eabi-ar")
+set(CMAKE_RANLIB        "arm-none-eabi-ranlib")
 set(CMAKE_OBJCOPY       "arm-none-eabi-objcopy")
 
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+
 set(MCU "-mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb")
-set(OBJECT_GEN_FLAGS "${MCU} -fno-builtin -fno-exceptions -Wall -ffunction-sections -fdata-sections -fomit-frame-pointer -finline-functions -Wno-attributes -Wno-strict-aliasing -Wno-maybe-uninitialized -Wno-missing-attributes -Wno-stringop-overflow")
+set(OBJECT_GEN_FLAGS "${MCU} -fno-builtin -fno-exceptions -Wall -Wextra -ffunction-sections -fdata-sections -fomit-frame-pointer -finline-functions -Wno-attributes -Wno-strict-aliasing -Wno-maybe-uninitialized -Wno-missing-attributes -Wno-stringop-overflow -Wno-unused-parameter -Wno-vla -Wno-missing-field-initializers")
 set(CMAKE_C_FLAGS   "${OBJECT_GEN_FLAGS} -std=gnu99 " CACHE INTERNAL "C Compiler options")
 set(CMAKE_CXX_FLAGS "${OBJECT_GEN_FLAGS} -Wno-register" CACHE INTERNAL "C++ Compiler options")
 set(CMAKE_ASM_FLAGS "${OBJECT_GEN_FLAGS} -x assembler-with-cpp " CACHE INTERNAL "ASM Compiler options")
@@ -34,14 +33,14 @@ set(CMAKE_ASM_FLAGS "${OBJECT_GEN_FLAGS} -x assembler-with-cpp " CACHE INTERNAL 
 # set(CMAKE_CXX_ARCHIVE_FINISH   true)
 
 add_compile_definitions(
-        CORE_CM7
-        STM32H750xx
-        STM32H750IB
-        ARM_MATH_CM7
-        flash_layout
-        HSE_VALUE=16000000
-        USE_HAL_DRIVER
-        USE_FULL_LL_DRIVER
+    CORE_CM7
+    STM32H750xx
+    STM32H750IB
+    ARM_MATH_CM7
+    flash_layout
+    HSE_VALUE=16000000
+    USE_HAL_DRIVER
+    USE_FULL_LL_DRIVER
 )
 
 

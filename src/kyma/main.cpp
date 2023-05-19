@@ -4,7 +4,7 @@
 #include <etl/audio/music/note.hpp>
 #include <etl/audio/oscillator/variable_shape_oscillator.hpp>
 
-#include "daisy_patch_sm.h"
+#include <daisy_patch_sm.h>
 
 static constexpr auto BLOCK_SIZE  = 16U;
 static constexpr auto SAMPLE_RATE = 96'000.0F;
