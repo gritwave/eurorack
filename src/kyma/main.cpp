@@ -26,27 +26,29 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
     auto const attackKnob  = patch.GetAdcValue(daisy::patch_sm::CV_2);
     auto const morphKnob   = patch.GetAdcValue(daisy::patch_sm::CV_3);
     auto const releaseKnob = patch.GetAdcValue(daisy::patch_sm::CV_4);
-    auto const vOctCV      = patch.GetAdcValue(daisy::patch_sm::CV_5);
-    auto const morphCV     = patch.GetAdcValue(daisy::patch_sm::CV_6);
-    auto const subGainCV   = patch.GetAdcValue(daisy::patch_sm::CV_7);
-    auto const subMorphCV  = patch.GetAdcValue(daisy::patch_sm::CV_8);
 
-    auto const pitch          = mc::mapToLinearRange(pitchKnob, 36.0F, 96.0F);
-    auto const voltsPerOctave = mc::mapToLinearRange(vOctCV, 0.0F, 60.0F);
-    auto const noteNumber     = pitch + voltsPerOctave;
+    auto const vOctCV     = patch.GetAdcValue(daisy::patch_sm::CV_5);
+    auto const morphCV    = patch.GetAdcValue(daisy::patch_sm::CV_6);
+    auto const subGainCV  = patch.GetAdcValue(daisy::patch_sm::CV_7);
+    auto const subMorphCV = patch.GetAdcValue(daisy::patch_sm::CV_8);
+
+    auto const pitch          = mc::mapToRange(pitchKnob, 36.0F, 96.0F);
+    auto const voltsPerOctave = mc::mapToRange(vOctCV, 0.0F, 60.0F);
+    auto const note           = mc::clamp(pitch + voltsPerOctave, 0.0F, 127.0F);
     auto const morph          = mc::clamp(morphKnob + morphCV, 0.0F, 1.0F);
 
-    auto const subGain   = mc::mapToLinearRange(subGainCV, 0.0F, 1.0F);
-    auto const subOffset = subOctaveToggle.Pressed() ? 24.0F : 12.0F;
-    auto const subMorph  = mc::clamp(subMorphCV, 0.0F, 1.0F);
+    auto const subOffset     = subOctaveToggle.Pressed() ? 24.0F : 12.0F;
+    auto const subNoteNumber = mc::clamp(note - subOffset, 0.0F, 127.0F);
+    auto const subMorph      = mc::clamp(subMorphCV, 0.0F, 1.0F);
+    auto const subGain       = mc::mapToRange(subGainCV, 0.0F, 1.0F);
 
-    auto const attack  = mc::mapToLinearRange(attackKnob, 0.0F, 500.0F);
-    auto const release = mc::mapToLinearRange(releaseKnob, 0.0F, 500.0F);
+    auto const attack  = mc::mapToRange(attackKnob, 0.0F, 500.0F);
+    auto const release = mc::mapToRange(releaseKnob, 0.0F, 500.0F);
 
-    oscillator.setFrequency(mc::noteToFrequency(mc::clamp(noteNumber, 0.0F, 127.0F)));
+    oscillator.setFrequency(mc::noteToHertz(note));
     oscillator.setShapeMorph(morph);
 
-    subOscillator.setFrequency(mc::noteToFrequency(mc::clamp(noteNumber - subOffset, 0.0F, 127.0F)));
+    subOscillator.setFrequency(mc::noteToHertz(subNoteNumber));
     subOscillator.setShapeMorph(subMorph);
 
     adsr.setAttack(attack * SAMPLE_RATE);
