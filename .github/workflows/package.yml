@@ -17,11 +17,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt install build-essential gcc-arm-none-eabi ninja-build cmake
+          sudo apt install gcc-arm-none-eabi ninja-build cmake
           arm-none-eabi-g++ --version
-
-      - name: Build firmware - Makefile
-        run: make all
 
       - name: Build firmware - CMake
         run: |
@@ -31,7 +28,7 @@ jobs:
       - name: Make firmware archive
         run: |
           mkdir firmware
-          cp src/kyma/build/kyma.bin firmware
+          cp build/src/kyma/Release/kyma.bin firmware
 
       - name: Upload coverage artifacts
         uses: actions/upload-artifact@v3
