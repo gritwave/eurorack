@@ -20,7 +20,7 @@ jobs:
           sudo apt install gcc-arm-none-eabi ninja-build cmake
           arm-none-eabi-g++ --version
 
-      - name: Build firmware - CMake
+      - name: Build firmware
         run: |
           cmake --preset arm-gnu
           cmake --build --preset release
