@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../math/constants.hpp"
+#include "../math/range.hpp"
 
 namespace mc
 {
@@ -9,7 +10,6 @@ enum struct OscillatorShape
 {
     Sine,
     Triangle,
-    Saw,
     Square,
 };
 
@@ -23,19 +23,20 @@ struct Oscillator
     auto setFrequency(SampleType frequency) noexcept -> void;
     auto setSampleRate(SampleType sampleRate) noexcept -> void;
 
+    auto addPhaseOffset(SampleType offset) noexcept -> void;
+
     [[nodiscard]] auto operator()() noexcept -> SampleType;
 
 private:
-    [[nodiscard]] auto sine() noexcept -> SampleType;
-    [[nodiscard]] auto triangle() noexcept -> SampleType;
-    [[nodiscard]] auto saw() noexcept -> SampleType;
-    [[nodiscard]] auto pulse(SampleType width) noexcept -> SampleType;
+    [[nodiscard]] static auto sine(SampleType phase) noexcept -> SampleType;
+    [[nodiscard]] static auto triangle(SampleType phase) noexcept -> SampleType;
+    [[nodiscard]] static auto pulse(SampleType phase, SampleType width) noexcept -> SampleType;
 
-    OscillatorShape _shape{};
-    SampleType _phase{0};
-    SampleType _frequency{0};
-    SampleType _pulseWidth{0.5};
+    OscillatorShape _shape{OscillatorShape::Sine};
     SampleType _sampleRate{0};
+    SampleType _phase{0};
+    SampleType _phaseIncrement{0};
+    SampleType _pulseWidth{0.5};
 };
 
 template<typename SampleType>
@@ -53,7 +54,7 @@ auto Oscillator<SampleType>::setPhase(SampleType phase) noexcept -> void
 template<typename SampleType>
 auto Oscillator<SampleType>::setFrequency(SampleType frequency) noexcept -> void
 {
-    _frequency = frequency;
+    _phaseIncrement = 1.0F / (_sampleRate / frequency);
 }
 
 template<typename SampleType>
@@ -61,59 +62,63 @@ auto Oscillator<SampleType>::setSampleRate(SampleType sampleRate) noexcept -> vo
 {
     _sampleRate = sampleRate;
 }
+template<typename SampleType>
+auto Oscillator<SampleType>::addPhaseOffset(SampleType offset) noexcept -> void
+{
+    _phase += offset;
+    _phase -= std::floor(_phase);
+}
 
 template<typename SampleType>
 auto Oscillator<SampleType>::operator()() noexcept -> SampleType
 {
-    if (_shape == OscillatorShape::Sine) { return sine(); }
-    if (_shape == OscillatorShape::Triangle) { return triangle(); }
-    if (_shape == OscillatorShape::Saw) { return saw(); }
-    if (_shape == OscillatorShape::Square) { return pulse(_pulseWidth); }
-    return 0.0F;
-}
+    auto output = SampleType{};
+    switch (_shape)
+    {
+        case OscillatorShape::Sine:
+        {
+            output = sine(_phase);
+            break;
+        }
+        case OscillatorShape::Triangle:
+        {
+            output = triangle(_phase);
+            break;
+        }
+        case OscillatorShape::Square:
+        {
+            output = pulse(_phase, _pulseWidth);
+            break;
+        }
+        default:
+        {
+            break;
+        }
+    }
 
-template<typename SampleType>
-auto Oscillator<SampleType>::sine() noexcept -> SampleType
-{
-    auto output = std::sin(_phase * numbers::twoPi<SampleType>);
-
-    _phase += 1.0F / (_sampleRate / _frequency);
-    _phase -= std::floor(_phase);
-
+    addPhaseOffset(_phaseIncrement);
     return output;
 }
 
 template<typename SampleType>
-auto Oscillator<SampleType>::pulse(SampleType width) noexcept -> SampleType
+auto Oscillator<SampleType>::sine(SampleType phase) noexcept -> SampleType
 {
-    if (width < 0.0F) { width = 0.0F; }
-    if (width > 1.0F) { width = 1; }
-
-    if (_phase >= 1.0F) { _phase -= 1.0F; }
-    _phase += (1.0F / (_sampleRate / (_frequency)));
-
-    if (_phase < width) { return SampleType{-1}; }
-    return 1.0F;
+    return std::sin(phase * numbers::twoPi<SampleType>);
 }
 
 template<typename SampleType>
-auto Oscillator<SampleType>::saw() noexcept -> SampleType
+auto Oscillator<SampleType>::triangle(SampleType phase) noexcept -> SampleType
 {
-    auto output = _phase;
-
-    if (_phase >= 1.0F) { _phase -= SampleType{2}; }
-    _phase += (1.0F / (_sampleRate / (_frequency))) * SampleType{2};
-
-    return output;
+    auto const x = phase <= SampleType{0.5} ? phase : SampleType{1} - phase;
+    return (x - SampleType{0.25}) * SampleType{4};
 }
 
 template<typename SampleType>
-auto Oscillator<SampleType>::triangle() noexcept -> SampleType
+auto Oscillator<SampleType>::pulse(SampleType phase, SampleType width) noexcept -> SampleType
 {
-    if (_phase >= 1.0F) { _phase -= 1.0F; }
-    _phase += (1.0F / (_sampleRate / (_frequency)));
-    if (_phase <= SampleType{0.5}) { return (_phase - SampleType{0.25}) * SampleType{4}; }
-    return ((1.0F - _phase) - SampleType{0.25}) * SampleType{4};
+    auto const w = clamp(width, SampleType{0}, SampleType{1});
+    if (phase < w) { return SampleType{-1}; }
+    return SampleType{1};
 }
 
 }  // namespace mc
