@@ -1,7 +1,7 @@
-#include "mc/dsp/adsr.hpp"
-#include "mc/dsp/note.hpp"
-#include "mc/dsp/oscillator.hpp"
-#include "mc/dsp/range.hpp"
+#include "mc/envelope/adsr.hpp"
+#include "mc/math/range.hpp"
+#include "mc/music/note.hpp"
+#include "mc/oscillator/variable_shape_oscillator.hpp"
 
 #include "daisy_patch_sm.h"
 
@@ -14,31 +14,39 @@ auto& envelopeGate    = patch.gate_in_1;
 auto lastEnvelopeGate = false;
 
 auto adsr          = mc::ADSR{};
-auto oscillator    = mc::Oscillator<float>{};
-auto subOscillator = mc::Oscillator<float>{};
+auto oscillator    = mc::VariableShapeOscillator<float>{};
+auto subOscillator = mc::VariableShapeOscillator<float>{};
 
 auto audioCallback(daisy::AudioHandle::InputBuffer /*in*/, daisy::AudioHandle::OutputBuffer out, size_t size) -> void
 {
     patch.ProcessAllControls();
 
-    auto const coarseKnob = patch.GetAdcValue(daisy::patch_sm::CV_1);
-    auto const coarse     = mc::mapToLinearRange(coarseKnob, 36.0F, 96.0F);
+    auto const pitchKnob   = patch.GetAdcValue(daisy::patch_sm::CV_1);
+    auto const attackKnob  = patch.GetAdcValue(daisy::patch_sm::CV_2);
+    auto const morphKnob   = patch.GetAdcValue(daisy::patch_sm::CV_3);
+    auto const releaseKnob = patch.GetAdcValue(daisy::patch_sm::CV_4);
+    auto const vOctCV      = patch.GetAdcValue(daisy::patch_sm::CV_5);
+    auto const morphCV     = patch.GetAdcValue(daisy::patch_sm::CV_6);
+    auto const subGainCV   = patch.GetAdcValue(daisy::patch_sm::CV_7);
+    auto const subMorphCV  = patch.GetAdcValue(daisy::patch_sm::CV_8);
 
-    auto const voctCV = patch.GetAdcValue(daisy::patch_sm::CV_5);
-    auto const voct   = mc::mapToLinearRange(voctCV, 0.0F, 60.0F);
+    auto const pitch          = mc::mapToLinearRange(pitchKnob, 36.0F, 96.0F);
+    auto const voltsPerOctave = mc::mapToLinearRange(vOctCV, 0.0F, 60.0F);
+    auto const noteNumber     = pitch + voltsPerOctave;
+    auto const morph          = mc::clamp(morphKnob + morphCV, 0.0F, 1.0F);
 
-    auto const noteNumber = coarse + voct;
-    oscillator.setFrequency(mc::noteToFrequency(mc::clamp(noteNumber, 0.0F, 127.0F)));
-
-    auto const subGainCV = patch.GetAdcValue(daisy::patch_sm::CV_7);
     auto const subGain   = mc::mapToLinearRange(subGainCV, 0.0F, 1.0F);
     auto const subOffset = subOctaveToggle.Pressed() ? 24.0F : 12.0F;
-    subOscillator.setFrequency(mc::noteToFrequency(mc::clamp(noteNumber - subOffset, 0.0F, 127.0F)));
+    auto const subMorph  = mc::clamp(subMorphCV, 0.0F, 1.0F);
 
-    auto const attackCV  = patch.GetAdcValue(daisy::patch_sm::CV_2);
-    auto const attack    = mc::mapToLinearRange(attackCV, 0.0F, 500.0F);
-    auto const releaseCV = patch.GetAdcValue(daisy::patch_sm::CV_4);
-    auto const release   = mc::mapToLinearRange(releaseCV, 0.0F, 500.0F);
+    auto const attack  = mc::mapToLinearRange(attackKnob, 0.0F, 500.0F);
+    auto const release = mc::mapToLinearRange(releaseKnob, 0.0F, 500.0F);
+
+    oscillator.setFrequency(mc::noteToFrequency(mc::clamp(noteNumber, 0.0F, 127.0F)));
+    oscillator.setShapeMorph(morph);
+
+    subOscillator.setFrequency(mc::noteToFrequency(mc::clamp(noteNumber - subOffset, 0.0F, 127.0F)));
+    subOscillator.setShapeMorph(subMorph);
 
     adsr.setAttack(attack * SAMPLE_RATE);
     adsr.setRelease(release * SAMPLE_RATE);
@@ -66,10 +74,10 @@ auto main() -> int
 
     subOctaveToggle.Init(patch.B8);
 
-    oscillator.setShape(mc::OscillatorShape::Square);
+    oscillator.setShapes(mc::OscillatorShape::Sine, mc::OscillatorShape::Square);
     oscillator.setSampleRate(SAMPLE_RATE);
 
-    subOscillator.setShape(mc::OscillatorShape::Sine);
+    subOscillator.setShapes(mc::OscillatorShape::Sine, mc::OscillatorShape::Triangle);
     subOscillator.setSampleRate(SAMPLE_RATE);
 
     while (true)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "constants.hpp"
+#include "../math/constants.hpp"
 
 namespace mc
 {
