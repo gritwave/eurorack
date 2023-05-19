@@ -18,6 +18,8 @@ struct VariableShapeOscillator
     auto setFrequency(SampleType frequency) noexcept -> void;
     auto setSampleRate(SampleType sampleRate) noexcept -> void;
 
+    auto addPhaseOffset(SampleType offset) noexcept -> void;
+
     [[nodiscard]] auto operator()() noexcept -> SampleType;
 
 private:
@@ -58,6 +60,13 @@ auto VariableShapeOscillator<SampleType>::setSampleRate(SampleType sampleRate) n
 {
     _oscA.setSampleRate(sampleRate);
     _oscB.setSampleRate(sampleRate);
+}
+
+template<typename SampleType>
+auto VariableShapeOscillator<SampleType>::addPhaseOffset(SampleType offset) noexcept -> void
+{
+    _oscA.addPhaseOffset(offset);
+    _oscB.addPhaseOffset(offset);
 }
 
 template<typename SampleType>

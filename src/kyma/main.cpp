@@ -1,4 +1,5 @@
 #include "mc/envelope/adsr.hpp"
+#include "mc/math/decibel.hpp"
 #include "mc/math/range.hpp"
 #include "mc/music/note.hpp"
 #include "mc/oscillator/variable_shape_oscillator.hpp"
@@ -17,7 +18,7 @@ auto adsr          = mc::ADSR{};
 auto oscillator    = mc::VariableShapeOscillator<float>{};
 auto subOscillator = mc::VariableShapeOscillator<float>{};
 
-auto audioCallback(daisy::AudioHandle::InputBuffer /*in*/, daisy::AudioHandle::OutputBuffer out, size_t size) -> void
+auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::OutputBuffer out, size_t size) -> void
 {
     patch.ProcessAllControls();
 
@@ -54,6 +55,10 @@ auto audioCallback(daisy::AudioHandle::InputBuffer /*in*/, daisy::AudioHandle::O
 
     for (size_t i = 0; i < size; ++i)
     {
+        auto const fmModulator = IN_L[i];
+        auto const fmAmount    = IN_R[i];
+        oscillator.addPhaseOffset(fmModulator * fmAmount);
+
         auto const env = adsr.processSample();
         patch.WriteCvOut(daisy::patch_sm::CV_OUT_1, env * 5.0F);
 

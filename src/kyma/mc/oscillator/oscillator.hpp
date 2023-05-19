@@ -62,6 +62,7 @@ auto Oscillator<SampleType>::setSampleRate(SampleType sampleRate) noexcept -> vo
 {
     _sampleRate = sampleRate;
 }
+
 template<typename SampleType>
 auto Oscillator<SampleType>::addPhaseOffset(SampleType offset) noexcept -> void
 {
