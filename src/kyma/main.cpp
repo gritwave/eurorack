@@ -34,12 +34,12 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
 
     auto const pitch          = etl::audio::mapToRange(pitchKnob, 36.0F, 96.0F);
     auto const voltsPerOctave = etl::audio::mapToRange(vOctCV, 0.0F, 60.0F);
-    auto const note           = etl::audio::clamp(pitch + voltsPerOctave, 0.0F, 127.0F);
-    auto const morph          = etl::audio::clamp(morphKnob + morphCV, 0.0F, 1.0F);
+    auto const note           = etl::clamp(pitch + voltsPerOctave, 0.0F, 127.0F);
+    auto const morph          = etl::clamp(morphKnob + morphCV, 0.0F, 1.0F);
 
     auto const subOffset     = subOctaveToggle.Pressed() ? 24.0F : 12.0F;
-    auto const subNoteNumber = etl::audio::clamp(note - subOffset, 0.0F, 127.0F);
-    auto const subMorph      = etl::audio::clamp(subMorphCV, 0.0F, 1.0F);
+    auto const subNoteNumber = etl::clamp(note - subOffset, 0.0F, 127.0F);
+    auto const subMorph      = etl::clamp(subMorphCV, 0.0F, 1.0F);
     auto const subGain       = etl::audio::mapToRange(subGainCV, 0.0F, 1.0F);
 
     auto const attack  = etl::audio::mapToRange(attackKnob, 0.0F, 500.0F);

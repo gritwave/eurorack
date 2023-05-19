@@ -1,3 +1,6 @@
 [submodule "3rd_party/libDaisy"]
 	path = 3rd_party/libDaisy
 	url = https://github.com/electro-smith/libDaisy
+[submodule "3rd_party/tetl"]
+	path = 3rd_party/tetl
+	url = https://github.com/tobanteEmbedded/tetl

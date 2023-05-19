@@ -1,7 +1,9 @@
 #pragma once
 
-#include <etl/audio/math/constants.hpp>
 #include <etl/audio/math/range.hpp>
+
+#include <etl/algorithm.hpp>
+#include <etl/numbers.hpp>
 
 namespace etl::audio
 {
@@ -104,7 +106,8 @@ auto Oscillator<SampleType>::operator()() noexcept -> SampleType
 template<typename SampleType>
 auto Oscillator<SampleType>::sine(SampleType phase) noexcept -> SampleType
 {
-    return std::sin(phase * numbers::twoPi<SampleType>);
+    static constexpr auto twoPi = static_cast<SampleType>(etl::numbers::pi) * SampleType{2};
+    return std::sin(phase * twoPi);
 }
 
 template<typename SampleType>
@@ -117,7 +120,7 @@ auto Oscillator<SampleType>::triangle(SampleType phase) noexcept -> SampleType
 template<typename SampleType>
 auto Oscillator<SampleType>::pulse(SampleType phase, SampleType width) noexcept -> SampleType
 {
-    auto const w = clamp(width, SampleType{0}, SampleType{1});
+    auto const w = etl::clamp(width, SampleType{0}, SampleType{1});
     if (phase < w) { return SampleType{-1}; }
     return SampleType{1};
 }

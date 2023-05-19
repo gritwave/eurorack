@@ -16,10 +16,11 @@ set(CMAKE_CXX_EXTENSIONS ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
 set(LIBDAISY_DIR ${CMAKE_SOURCE_DIR}/3rd_party/libDaisy)
 set(LINKER_SCRIPT ${LIBDAISY_DIR}/core/STM32H750IB_flash.lds)
 
 add_subdirectory(${LIBDAISY_DIR})
+add_subdirectory(3rd_party/tetl/include)
+
 add_subdirectory(lib)
 add_subdirectory(src/kyma)
