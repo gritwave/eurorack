@@ -10,14 +10,19 @@
   ],
   "buildPresets": [
     {
+      "name": "debug",
+      "configurePreset": "arm-gnu",
+      "configuration": "Debug"
+    },
+    {
       "name": "release",
       "configurePreset": "arm-gnu",
       "configuration": "Release"
     },
     {
-      "name": "debug",
+      "name": "release-with-debug-info",
       "configurePreset": "arm-gnu",
-      "configuration": "Debug"
+      "configuration": "RelWithDebInfo"
     }
   ]
 }
