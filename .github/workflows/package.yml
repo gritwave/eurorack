@@ -17,11 +17,16 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt install build-essential gcc-arm-none-eabi
+          sudo apt install build-essential gcc-arm-none-eabi ninja-build cmake
           arm-none-eabi-g++ --version
 
-      - name: Build firmware
+      - name: Build firmware - Makefile
         run: make all
+
+      - name: Build firmware - CMake
+        run: |
+          cmake --preset arm-gnu
+          cmake --build --preset release
 
       - name: Make firmware archive
         run: |

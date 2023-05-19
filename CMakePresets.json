@@ -2,7 +2,7 @@
   "version": 3,
   "configurePresets": [
     {
-      "name": "ARM Cortex-M (GNU)",
+      "name": "arm-gnu",
       "generator": "Ninja Multi-Config",
       "binaryDir": "${sourceDir}/build",
       "toolchainFile": "${sourceDir}/cmake/toolchain/stm32h750xx.cmake",
@@ -13,13 +13,13 @@
   ],
   "buildPresets": [
     {
-      "name": "GNU Release",
-      "configurePreset": "ARM Cortex-M (GNU)",
+      "name": "release",
+      "configurePreset": "arm-gnu",
       "configuration": "Release"
     },
     {
-      "name": "GNU Debug",
-      "configurePreset": "ARM Cortex-M (GNU)",
+      "name": "debug",
+      "configurePreset": "arm-gnu",
       "configuration": "Debug"
     }
   ]
