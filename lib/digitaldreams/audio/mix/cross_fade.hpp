@@ -33,15 +33,11 @@ struct CrossFade
     auto process(SampleType left, SampleType right) -> SampleType;
 
 private:
-    static constexpr auto const logMin = static_cast<SampleType>(etl::log(0.000001));
-    static constexpr auto const logMax = static_cast<SampleType>(etl::log(1.0));
-    static constexpr auto const halfPi = static_cast<SampleType>(etl::numbers::pi * 0.5);
-
     auto update() -> void;
 
     Parameter _parameter{};
-    SampleType _gainL{1.0};
-    SampleType _gainR{1.0};
+    SampleType _gainL{0.5};
+    SampleType _gainR{0.5};
 };
 
 template<typename SampleType>
@@ -66,6 +62,10 @@ auto CrossFade<SampleType>::process(SampleType left, SampleType right) -> Sample
 template<typename SampleType>
 auto CrossFade<SampleType>::update() -> void
 {
+    static constexpr auto const logMin = static_cast<SampleType>(etl::log(0.000001));
+    static constexpr auto const logMax = static_cast<SampleType>(etl::log(1.0));
+    static constexpr auto const halfPi = static_cast<SampleType>(etl::numbers::pi * 0.5);
+
     switch (_parameter.curve)
     {
         case CrossFadeCurve::Linear:
@@ -94,8 +94,8 @@ auto CrossFade<SampleType>::update() -> void
         }
         default:
         {
-            _gainR = SampleType{1};
-            _gainL = SampleType{1};
+            _gainR = SampleType{0.5};
+            _gainL = SampleType{0.5};
             return;
         }
     }
