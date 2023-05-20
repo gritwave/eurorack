@@ -1,11 +1,11 @@
 #pragma once
 
-#include <etl/audio/math/range.hpp>
+#include <digitaldreams/audio/math/range.hpp>
 
 #include <etl/algorithm.hpp>
 #include <etl/numbers.hpp>
 
-namespace etl::audio
+namespace digitaldreams::audio
 {
 
 enum struct OscillatorShape
@@ -125,4 +125,4 @@ auto Oscillator<SampleType>::pulse(SampleType phase, SampleType width) noexcept 
     return SampleType{1};
 }
 
-}  // namespace etl::audio
+}  // namespace digitaldreams::audio

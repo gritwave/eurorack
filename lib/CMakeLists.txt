@@ -1,5 +1,6 @@
-project(etl-audio)
+project(digitaldreams-audio)
 
-add_library(etl-audio INTERFACE)
-add_library(etl::audio ALIAS etl-audio)
-target_include_directories(etl-audio INTERFACE ${PROJECT_SOURCE_DIR})
+add_library(digitaldreams_audio INTERFACE)
+add_library(digitaldreams::audio ALIAS digitaldreams_audio)
+target_include_directories(digitaldreams_audio INTERFACE ${PROJECT_SOURCE_DIR})
+target_link_libraries(digitaldreams_audio INTERFACE tetl::etl)

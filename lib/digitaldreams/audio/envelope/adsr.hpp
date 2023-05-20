@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-namespace etl::audio
+namespace digitaldreams::audio
 {
 
 // https://github.com/fdeste/ADSR
@@ -172,4 +172,4 @@ inline auto ADSR::processSample() noexcept -> float
     return _output;
 }
 
-}  // namespace etl::audio
+}  // namespace digitaldreams::audio

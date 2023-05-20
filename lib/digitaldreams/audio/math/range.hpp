@@ -2,7 +2,7 @@
 
 #include <etl/algorithm.hpp>
 
-namespace etl::audio
+namespace digitaldreams::audio
 {
 
 template<typename T>
@@ -11,4 +11,4 @@ template<typename T>
     return etl::clamp(min + in * (max - min), min, max);
 }
 
-}  // namespace etl::audio
+}  // namespace digitaldreams::audio

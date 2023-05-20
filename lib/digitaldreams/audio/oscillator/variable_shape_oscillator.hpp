@@ -1,10 +1,10 @@
 #pragma once
 
-#include <etl/audio/math/range.hpp>
-#include <etl/audio/mix/cross_fade.hpp>
-#include <etl/audio/oscillator/oscillator.hpp>
+#include <digitaldreams/audio/math/range.hpp>
+#include <digitaldreams/audio/mix/cross_fade.hpp>
+#include <digitaldreams/audio/oscillator/oscillator.hpp>
 
-namespace etl::audio
+namespace digitaldreams::audio
 {
 
 template<typename SampleType>
@@ -40,7 +40,7 @@ template<typename SampleType>
 auto VariableShapeOscillator<SampleType>::setShapeMorph(SampleType morph) noexcept -> void
 {
     _crossFade.setParameter({
-        .mix   = clamp(morph, SampleType{0}, SampleType{1}),
+        .mix   = etl::clamp(morph, SampleType{0}, SampleType{1}),
         .curve = CrossFadeCurve::ConstantPower,
     });
 }
@@ -79,4 +79,4 @@ auto VariableShapeOscillator<SampleType>::operator()() noexcept -> SampleType
     return _crossFade.process(_oscA(), _oscB());
 }
 
-}  // namespace etl::audio
+}  // namespace digitaldreams::audio
