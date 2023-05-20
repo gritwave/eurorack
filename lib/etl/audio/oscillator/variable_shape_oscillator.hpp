@@ -1,6 +1,7 @@
 #pragma once
 
 #include <etl/audio/math/range.hpp>
+#include <etl/audio/mix/cross_fade.hpp>
 #include <etl/audio/oscillator/oscillator.hpp>
 
 namespace etl::audio
@@ -25,7 +26,7 @@ struct VariableShapeOscillator
 private:
     Oscillator<SampleType> _oscA{};
     Oscillator<SampleType> _oscB{};
-    SampleType _morph{0};
+    CrossFade<SampleType> _crossFade;
 };
 
 template<typename SampleType>
@@ -38,7 +39,10 @@ auto VariableShapeOscillator<SampleType>::setShapes(OscillatorShape a, Oscillato
 template<typename SampleType>
 auto VariableShapeOscillator<SampleType>::setShapeMorph(SampleType morph) noexcept -> void
 {
-    _morph = morph;
+    _crossFade.setParameter({
+        .mix   = clamp(morph, SampleType{0}, SampleType{1}),
+        .curve = CrossFadeCurve::ConstantPower,
+    });
 }
 
 template<typename SampleType>
@@ -72,10 +76,7 @@ auto VariableShapeOscillator<SampleType>::addPhaseOffset(SampleType offset) noex
 template<typename SampleType>
 auto VariableShapeOscillator<SampleType>::operator()() noexcept -> SampleType
 {
-    auto const a     = _oscA();
-    auto const b     = _oscB();
-    auto const morph = clamp(_morph, SampleType{0}, SampleType{1});
-    return a * morph + b * (SampleType{1} - morph);
+    return _crossFade.process(_oscA(), _oscB());
 }
 
 }  // namespace etl::audio
