@@ -3,6 +3,7 @@
 #include <digitaldreams/math/range.hpp>
 
 #include <etl/algorithm.hpp>
+#include <etl/concepts.hpp>
 #include <etl/numbers.hpp>
 
 namespace digitaldreams::audio
@@ -15,7 +16,7 @@ enum struct OscillatorShape
     Square,
 };
 
-template<typename SampleType>
+template<etl::floating_point SampleType>
 struct Oscillator
 {
     Oscillator() = default;
@@ -41,38 +42,38 @@ private:
     SampleType _pulseWidth{0.5};
 };
 
-template<typename SampleType>
+template<etl::floating_point SampleType>
 auto Oscillator<SampleType>::setShape(OscillatorShape shape) noexcept -> void
 {
     _shape = shape;
 }
 
-template<typename SampleType>
+template<etl::floating_point SampleType>
 auto Oscillator<SampleType>::setPhase(SampleType phase) noexcept -> void
 {
     _phase = phase;
 }
 
-template<typename SampleType>
+template<etl::floating_point SampleType>
 auto Oscillator<SampleType>::setFrequency(SampleType frequency) noexcept -> void
 {
     _phaseIncrement = 1.0F / (_sampleRate / frequency);
 }
 
-template<typename SampleType>
+template<etl::floating_point SampleType>
 auto Oscillator<SampleType>::setSampleRate(SampleType sampleRate) noexcept -> void
 {
     _sampleRate = sampleRate;
 }
 
-template<typename SampleType>
+template<etl::floating_point SampleType>
 auto Oscillator<SampleType>::addPhaseOffset(SampleType offset) noexcept -> void
 {
     _phase += offset;
     _phase -= std::floor(_phase);
 }
 
-template<typename SampleType>
+template<etl::floating_point SampleType>
 auto Oscillator<SampleType>::operator()() noexcept -> SampleType
 {
     auto output = SampleType{};
@@ -103,21 +104,21 @@ auto Oscillator<SampleType>::operator()() noexcept -> SampleType
     return output;
 }
 
-template<typename SampleType>
+template<etl::floating_point SampleType>
 auto Oscillator<SampleType>::sine(SampleType phase) noexcept -> SampleType
 {
     static constexpr auto twoPi = static_cast<SampleType>(etl::numbers::pi) * SampleType{2};
     return std::sin(phase * twoPi);
 }
 
-template<typename SampleType>
+template<etl::floating_point SampleType>
 auto Oscillator<SampleType>::triangle(SampleType phase) noexcept -> SampleType
 {
     auto const x = phase <= SampleType{0.5} ? phase : SampleType{1} - phase;
     return (x - SampleType{0.25}) * SampleType{4};
 }
 
-template<typename SampleType>
+template<etl::floating_point SampleType>
 auto Oscillator<SampleType>::pulse(SampleType phase, SampleType width) noexcept -> SampleType
 {
     auto const w = etl::clamp(width, SampleType{0}, SampleType{1});

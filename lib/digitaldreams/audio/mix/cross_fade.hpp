@@ -1,6 +1,7 @@
 #pragma once
 
 #include <etl/cmath.hpp>
+#include <etl/concepts.hpp>
 #include <etl/numbers.hpp>
 
 #include <cmath>
@@ -16,7 +17,7 @@ enum struct CrossFadeCurve
     Exponentail,
 };
 
-template<typename SampleType>
+template<etl::floating_point SampleType>
 struct CrossFade
 {
     struct Parameter
@@ -40,26 +41,26 @@ private:
     SampleType _gainR{0.5};
 };
 
-template<typename SampleType>
+template<etl::floating_point SampleType>
 auto CrossFade<SampleType>::setParameter(Parameter parameter) -> void
 {
     _parameter = parameter;
     update();
 }
 
-template<typename SampleType>
+template<etl::floating_point SampleType>
 auto CrossFade<SampleType>::getParameter() const -> Parameter
 {
     return _parameter;
 }
 
-template<typename SampleType>
+template<etl::floating_point SampleType>
 auto CrossFade<SampleType>::process(SampleType left, SampleType right) -> SampleType
 {
     return (left * _gainL) + (right * _gainR);
 }
 
-template<typename SampleType>
+template<etl::floating_point SampleType>
 auto CrossFade<SampleType>::update() -> void
 {
     static constexpr auto const logMin = static_cast<SampleType>(etl::log(0.000001));

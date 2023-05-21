@@ -1,6 +1,7 @@
 #pragma once
 
 #include <etl/algorithm.hpp>
+#include <etl/concepts.hpp>
 #include <etl/numbers.hpp>
 #include <etl/numeric.hpp>
 
@@ -10,7 +11,7 @@ namespace digitaldreams
 {
 
 /// \brief https://cytomic.com/files/dsp/DynamicSmoothing.pdf
-template<typename SampleType>
+template<etl::floating_point SampleType>
 struct DynamicSmoothing
 {
     DynamicSmoothing() = default;
@@ -29,7 +30,7 @@ private:
     SampleType _sense{};
 };
 
-template<typename SampleType>
+template<etl::floating_point SampleType>
 auto DynamicSmoothing<SampleType>::prepare(SampleType sampleRate) -> void
 {
     auto const wc = _baseFrequency / sampleRate;
@@ -39,7 +40,7 @@ auto DynamicSmoothing<SampleType>::prepare(SampleType sampleRate) -> void
     _sense = _sensitivity * SampleType(4);
 }
 
-template<typename SampleType>
+template<etl::floating_point SampleType>
 auto DynamicSmoothing<SampleType>::process(SampleType input) -> SampleType
 {
     auto const low1z = _low1;
@@ -51,7 +52,7 @@ auto DynamicSmoothing<SampleType>::process(SampleType input) -> SampleType
     return _low2;
 }
 
-template<typename SampleType>
+template<etl::floating_point SampleType>
 auto DynamicSmoothing<SampleType>::reset() -> void
 {
     _low1 = SampleType(0);

@@ -1,13 +1,15 @@
 #pragma once
 
+#include <etl/concepts.hpp>
+
 namespace digitaldreams
 {
 
-template<typename T>
-auto hermite4(T pos, T xm1, T x0, T x1, T x2) noexcept -> T
+template<etl::floating_point Float>
+[[nodiscard]] constexpr auto hermite4(Float pos, Float xm1, Float x0, Float x1, Float x2) noexcept -> Float
 {
-    auto const slope0 = (x1 - xm1) * static_cast<T>(0.5);
-    auto const slope1 = (x2 - x0) * static_cast<T>(0.5);
+    auto const slope0 = (x1 - xm1) * static_cast<Float>(0.5);
+    auto const slope1 = (x2 - x0) * static_cast<Float>(0.5);
 
     auto const v    = x0 - x1;
     auto const w    = slope0 + v;

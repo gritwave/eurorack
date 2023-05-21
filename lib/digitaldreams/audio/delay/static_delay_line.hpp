@@ -7,11 +7,13 @@
 #include <etl/algorithm.hpp>
 #include <etl/array.hpp>
 #include <etl/cmath.hpp>
+#include <etl/concepts.hpp>
 
 namespace digitaldreams::audio
 {
 
-template<typename SampleType, etl::size_t MaxSize, DelayInterpolation Interpolation = DelayInterpolation::Hermite4>
+template<etl::floating_point SampleType, etl::size_t MaxSize,
+         DelayInterpolation Interpolation = DelayInterpolation::Hermite4>
 struct StaticDelayLine
 {
     StaticDelayLine() = default;
@@ -30,7 +32,7 @@ private:
     etl::array<SampleType, MaxSize> _buffer;
 };
 
-template<typename SampleType, etl::size_t MaxSize, DelayInterpolation Interpolation>
+template<etl::floating_point SampleType, etl::size_t MaxSize, DelayInterpolation Interpolation>
 auto StaticDelayLine<SampleType, MaxSize, Interpolation>::setDelay(SampleType delayInSamples) -> void
 {
     auto const delay = static_cast<etl::size_t>(delayInSamples);
@@ -38,14 +40,14 @@ auto StaticDelayLine<SampleType, MaxSize, Interpolation>::setDelay(SampleType de
     _delay           = etl::clamp<etl::size_t>(delay, 0, MaxSize - 1);
 }
 
-template<typename SampleType, etl::size_t MaxSize, DelayInterpolation Interpolation>
+template<etl::floating_point SampleType, etl::size_t MaxSize, DelayInterpolation Interpolation>
 auto StaticDelayLine<SampleType, MaxSize, Interpolation>::pushSample(SampleType sample) -> void
 {
     _buffer[_writePos] = sample;
     _writePos          = (_writePos - 1 + MaxSize) % MaxSize;
 }
 
-template<typename SampleType, etl::size_t MaxSize, DelayInterpolation Interpolation>
+template<etl::floating_point SampleType, etl::size_t MaxSize, DelayInterpolation Interpolation>
 auto StaticDelayLine<SampleType, MaxSize, Interpolation>::popSample() -> SampleType
 {
     if constexpr (Interpolation == DelayInterpolation::None)
@@ -71,7 +73,7 @@ auto StaticDelayLine<SampleType, MaxSize, Interpolation>::popSample() -> SampleT
     }
 }
 
-template<typename SampleType, etl::size_t MaxSize, DelayInterpolation Interpolation>
+template<etl::floating_point SampleType, etl::size_t MaxSize, DelayInterpolation Interpolation>
 auto StaticDelayLine<SampleType, MaxSize, Interpolation>::reset() -> void
 {
     _writePos = 0;

@@ -4,10 +4,12 @@
 #include <digitaldreams/audio/oscillator/oscillator.hpp>
 #include <digitaldreams/math/range.hpp>
 
+#include <etl/concepts.hpp>
+
 namespace digitaldreams::audio
 {
 
-template<typename SampleType>
+template<etl::floating_point SampleType>
 struct VariableShapeOscillator
 {
     VariableShapeOscillator() = default;
@@ -29,14 +31,14 @@ private:
     CrossFade<SampleType> _crossFade;
 };
 
-template<typename SampleType>
+template<etl::floating_point SampleType>
 auto VariableShapeOscillator<SampleType>::setShapes(OscillatorShape a, OscillatorShape b) noexcept -> void
 {
     _oscA.setShape(a);
     _oscB.setShape(b);
 }
 
-template<typename SampleType>
+template<etl::floating_point SampleType>
 auto VariableShapeOscillator<SampleType>::setShapeMorph(SampleType morph) noexcept -> void
 {
     _crossFade.setParameter({
@@ -45,35 +47,35 @@ auto VariableShapeOscillator<SampleType>::setShapeMorph(SampleType morph) noexce
     });
 }
 
-template<typename SampleType>
+template<etl::floating_point SampleType>
 auto VariableShapeOscillator<SampleType>::setPhase(SampleType phase) noexcept -> void
 {
     _oscA.setPhase(phase);
     _oscB.setPhase(phase);
 }
 
-template<typename SampleType>
+template<etl::floating_point SampleType>
 auto VariableShapeOscillator<SampleType>::setFrequency(SampleType frequency) noexcept -> void
 {
     _oscA.setFrequency(frequency);
     _oscB.setFrequency(frequency);
 }
 
-template<typename SampleType>
+template<etl::floating_point SampleType>
 auto VariableShapeOscillator<SampleType>::setSampleRate(SampleType sampleRate) noexcept -> void
 {
     _oscA.setSampleRate(sampleRate);
     _oscB.setSampleRate(sampleRate);
 }
 
-template<typename SampleType>
+template<etl::floating_point SampleType>
 auto VariableShapeOscillator<SampleType>::addPhaseOffset(SampleType offset) noexcept -> void
 {
     _oscA.addPhaseOffset(offset);
     _oscB.addPhaseOffset(offset);
 }
 
-template<typename SampleType>
+template<etl::floating_point SampleType>
 auto VariableShapeOscillator<SampleType>::operator()() noexcept -> SampleType
 {
     return _crossFade.process(_oscA(), _oscB());
