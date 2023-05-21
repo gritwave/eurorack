@@ -2,7 +2,7 @@
 
 #include <etl/algorithm.hpp>
 
-namespace digitaldreams::audio
+namespace digitaldreams
 {
 
 template<typename Float>
@@ -11,4 +11,4 @@ template<typename Float>
     return a + (b - a) * t;
 }
 
-}  // namespace digitaldreams::audio
+}  // namespace digitaldreams

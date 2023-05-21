@@ -1,6 +1,6 @@
 #pragma once
 
-namespace digitaldreams::audio
+namespace digitaldreams
 {
 
 template<typename T>
@@ -20,4 +20,4 @@ auto hermite4(T pos, T xm1, T x0, T x1, T x2) noexcept -> T
     return stage2 * pos + x0;
 }
 
-}  // namespace digitaldreams::audio
+}  // namespace digitaldreams

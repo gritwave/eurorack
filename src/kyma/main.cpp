@@ -22,7 +22,7 @@ auto lastEnvelopeGate = false;
 auto adsr          = audio::ADSR{};
 auto oscillator    = audio::VariableShapeOscillator<float>{};
 auto subOscillator = audio::VariableShapeOscillator<float>{};
-auto smooth        = audio::DynamicSmoothing<float>{};
+auto smooth        = digitaldreams::DynamicSmoothing<float>{};
 auto delayN        = audio::StaticDelayLine<float, 32, audio::DelayInterpolation::None>{};
 auto delayL        = audio::StaticDelayLine<float, 32, audio::DelayInterpolation::Linear>{};
 auto delayH        = audio::StaticDelayLine<float, 32, audio::DelayInterpolation::Hermite4>{};
@@ -41,18 +41,18 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
     auto const subGainCV  = patch.GetAdcValue(daisy::patch_sm::CV_7);
     auto const subMorphCV = patch.GetAdcValue(daisy::patch_sm::CV_8);
 
-    auto const pitch          = audio::mapToRange(pitchKnob, 36.0F, 96.0F);
-    auto const voltsPerOctave = audio::mapToRange(vOctCV, 0.0F, 60.0F);
+    auto const pitch          = digitaldreams::mapToRange(pitchKnob, 36.0F, 96.0F);
+    auto const voltsPerOctave = digitaldreams::mapToRange(vOctCV, 0.0F, 60.0F);
     auto const note           = etl::clamp(pitch + voltsPerOctave, 0.0F, 127.0F);
     auto const morph          = etl::clamp(morphKnob + morphCV, 0.0F, 1.0F);
 
     auto const subOffset     = subOctaveToggle.Pressed() ? 12.0F : 24.0F;
     auto const subNoteNumber = etl::clamp(note - subOffset, 0.0F, 127.0F);
     auto const subMorph      = etl::clamp(subMorphCV, 0.0F, 1.0F);
-    auto const subGain       = audio::mapToRange(subGainCV, 0.0F, 1.0F);
+    auto const subGain       = digitaldreams::mapToRange(subGainCV, 0.0F, 1.0F);
 
-    auto const attack  = audio::mapToRange(attackKnob, 0.0F, 0.750F);
-    auto const release = audio::mapToRange(releaseKnob, 0.0F, 2.5F);
+    auto const attack  = digitaldreams::mapToRange(attackKnob, 0.0F, 0.750F);
+    auto const release = digitaldreams::mapToRange(releaseKnob, 0.0F, 2.5F);
 
     oscillator.setFrequency(audio::noteToHertz(note));
     oscillator.setShapeMorph(morph);

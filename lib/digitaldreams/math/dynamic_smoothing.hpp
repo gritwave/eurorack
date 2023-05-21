@@ -6,7 +6,7 @@
 
 #include <cmath>
 
-namespace digitaldreams::audio
+namespace digitaldreams
 {
 
 /// \brief https://cytomic.com/files/dsp/DynamicSmoothing.pdf
@@ -58,4 +58,4 @@ auto DynamicSmoothing<SampleType>::reset() -> void
     _low2 = SampleType(0);
 }
 
-}  // namespace digitaldreams::audio
+}  // namespace digitaldreams
