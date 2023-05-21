@@ -1,6 +1,7 @@
 #pragma once
 
 #include <digitaldreams/audio/delay/delay_interpolation.hpp>
+#include <digitaldreams/math/fast_lerp.hpp>
 #include <digitaldreams/math/hermite_interpolation.hpp>
 
 #include <etl/algorithm.hpp>
@@ -57,7 +58,7 @@ auto StaticDelayLine<SampleType, MaxSize, Interpolation>::popSample() -> SampleT
         auto const readPos = _writePos + _delay;
         auto const x0      = _buffer[readPos % MaxSize];
         auto const x1      = _buffer[(readPos + 1) % MaxSize];
-        return etl::lerp(x0, x1, _frac);
+        return fast_lerp(x0, x1, _frac);
     }
     else
     {
