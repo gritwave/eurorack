@@ -1,5 +1,6 @@
 #include <digitaldreams/audio/envelope/adsr.hpp>
 #include <digitaldreams/audio/math/decibel.hpp>
+#include <digitaldreams/audio/math/dynamic_smoothing.hpp>
 #include <digitaldreams/audio/math/range.hpp>
 #include <digitaldreams/audio/music/note.hpp>
 #include <digitaldreams/audio/oscillator/variable_shape_oscillator.hpp>
@@ -20,6 +21,7 @@ auto lastEnvelopeGate = false;
 auto adsr          = audio::ADSR{};
 auto oscillator    = audio::VariableShapeOscillator<float>{};
 auto subOscillator = audio::VariableShapeOscillator<float>{};
+auto smooth        = audio::DynamicSmoothing<float>{};
 
 auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::OutputBuffer out, size_t size) -> void
 {
