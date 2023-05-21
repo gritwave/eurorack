@@ -1,7 +1,7 @@
 #pragma once
 
 #include <digitaldreams/audio/delay/delay_interpolation.hpp>
-#include <digitaldreams/audio/math/hermite_interpolation.hpp>
+#include <digitaldreams/math/hermite_interpolation.hpp>
 
 #include <etl/algorithm.hpp>
 #include <etl/array.hpp>

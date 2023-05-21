@@ -1,10 +1,10 @@
 #include <digitaldreams/audio/delay/static_delay_line.hpp>
 #include <digitaldreams/audio/envelope/adsr.hpp>
-#include <digitaldreams/audio/math/decibel.hpp>
-#include <digitaldreams/audio/math/dynamic_smoothing.hpp>
-#include <digitaldreams/audio/math/range.hpp>
 #include <digitaldreams/audio/music/note.hpp>
 #include <digitaldreams/audio/oscillator/variable_shape_oscillator.hpp>
+#include <digitaldreams/audio/unit/decibel.hpp>
+#include <digitaldreams/math/dynamic_smoothing.hpp>
+#include <digitaldreams/math/range.hpp>
 
 #include <daisy_patch_sm.h>
 

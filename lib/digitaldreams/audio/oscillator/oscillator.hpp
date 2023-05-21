@@ -1,6 +1,6 @@
 #pragma once
 
-#include <digitaldreams/audio/math/range.hpp>
+#include <digitaldreams/math/range.hpp>
 
 #include <etl/algorithm.hpp>
 #include <etl/numbers.hpp>

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <digitaldreams/audio/math/range.hpp>
 #include <digitaldreams/audio/mix/cross_fade.hpp>
 #include <digitaldreams/audio/oscillator/oscillator.hpp>
+#include <digitaldreams/math/range.hpp>
 
 namespace digitaldreams::audio
 {
