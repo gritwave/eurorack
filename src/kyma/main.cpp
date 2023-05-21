@@ -1,3 +1,4 @@
+#include <digitaldreams/audio/delay/static_delay_line.hpp>
 #include <digitaldreams/audio/envelope/adsr.hpp>
 #include <digitaldreams/audio/math/decibel.hpp>
 #include <digitaldreams/audio/math/dynamic_smoothing.hpp>
@@ -22,6 +23,9 @@ auto adsr          = audio::ADSR{};
 auto oscillator    = audio::VariableShapeOscillator<float>{};
 auto subOscillator = audio::VariableShapeOscillator<float>{};
 auto smooth        = audio::DynamicSmoothing<float>{};
+auto delayN        = audio::StaticDelayLine<float, 32, audio::DelayInterpolation::None>{};
+auto delayL        = audio::StaticDelayLine<float, 32, audio::DelayInterpolation::Linear>{};
+auto delayH        = audio::StaticDelayLine<float, 32, audio::DelayInterpolation::Hermite4>{};
 
 auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::OutputBuffer out, size_t size) -> void
 {
