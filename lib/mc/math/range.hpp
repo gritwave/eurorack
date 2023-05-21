@@ -3,7 +3,7 @@
 #include <etl/algorithm.hpp>
 #include <etl/concepts.hpp>
 
-namespace digitaldreams
+namespace mc
 {
 
 template<etl::floating_point Float>
@@ -12,4 +12,4 @@ template<etl::floating_point Float>
     return etl::clamp(min + in * (max - min), min, max);
 }
 
-}  // namespace digitaldreams
+}  // namespace mc

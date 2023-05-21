@@ -10,7 +10,7 @@ target_sources(kyma
 target_link_libraries(kyma
     PRIVATE
         daisy
-        digitaldreams::audio
+        mc::audio
 )
 
 set_target_properties(kyma PROPERTIES

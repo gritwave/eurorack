@@ -1,12 +1,12 @@
 #pragma once
 
-#include <digitaldreams/audio/mix/cross_fade.hpp>
-#include <digitaldreams/audio/oscillator/oscillator.hpp>
-#include <digitaldreams/math/range.hpp>
+#include <mc/audio/mix/cross_fade.hpp>
+#include <mc/audio/oscillator/oscillator.hpp>
+#include <mc/math/range.hpp>
 
 #include <etl/concepts.hpp>
 
-namespace digitaldreams::audio
+namespace mc::audio
 {
 
 template<etl::floating_point SampleType>
@@ -81,4 +81,4 @@ auto VariableShapeOscillator<SampleType>::operator()() noexcept -> SampleType
     return _crossFade.process(_oscA(), _oscB());
 }
 
-}  // namespace digitaldreams::audio
+}  // namespace mc::audio

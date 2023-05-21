@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-namespace digitaldreams::audio
+namespace mc::audio
 {
 
 template<typename T>
@@ -11,4 +11,4 @@ template<typename T>
     return std::pow(T(2), (note - T(69)) / T(12)) * T(440);
 }
 
-}  // namespace digitaldreams::audio
+}  // namespace mc::audio

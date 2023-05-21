@@ -1,14 +1,12 @@
-#include <digitaldreams/audio/delay/static_delay_line.hpp>
-#include <digitaldreams/audio/envelope/adsr.hpp>
-#include <digitaldreams/audio/music/note.hpp>
-#include <digitaldreams/audio/oscillator/variable_shape_oscillator.hpp>
-#include <digitaldreams/audio/unit/decibel.hpp>
-#include <digitaldreams/math/dynamic_smoothing.hpp>
-#include <digitaldreams/math/range.hpp>
+#include <mc/audio/delay/static_delay_line.hpp>
+#include <mc/audio/envelope/adsr.hpp>
+#include <mc/audio/music/note.hpp>
+#include <mc/audio/oscillator/variable_shape_oscillator.hpp>
+#include <mc/audio/unit/decibel.hpp>
+#include <mc/math/dynamic_smoothing.hpp>
+#include <mc/math/range.hpp>
 
 #include <daisy_patch_sm.h>
-
-namespace audio = digitaldreams::audio;
 
 static constexpr auto BLOCK_SIZE  = 16U;
 static constexpr auto SAMPLE_RATE = 96'000.0F;
@@ -19,13 +17,14 @@ auto patch            = daisy::patch_sm::DaisyPatchSM{};
 auto& envelopeGate    = patch.gate_in_1;
 auto lastEnvelopeGate = false;
 
-auto adsr          = audio::ADSR{};
-auto oscillator    = audio::VariableShapeOscillator<float>{};
-auto subOscillator = audio::VariableShapeOscillator<float>{};
-auto smooth        = digitaldreams::DynamicSmoothing<float>{};
-auto delayN        = audio::StaticDelayLine<float, 32, audio::DelayInterpolation::None>{};
-auto delayL        = audio::StaticDelayLine<float, 32, audio::DelayInterpolation::Linear>{};
-auto delayH        = audio::StaticDelayLine<float, 32, audio::DelayInterpolation::Hermite4>{};
+auto adsr          = mc::audio::ADSR{};
+auto oscillator    = mc::audio::VariableShapeOscillator<float>{};
+auto subOscillator = mc::audio::VariableShapeOscillator<float>{};
+
+auto smooth = mc::DynamicSmoothing<float>{};
+auto delayN = mc::audio::StaticDelayLine<float, 32, mc::audio::DelayInterpolation::None>{};
+auto delayL = mc::audio::StaticDelayLine<float, 32, mc::audio::DelayInterpolation::Linear>{};
+auto delayH = mc::audio::StaticDelayLine<float, 32, mc::audio::DelayInterpolation::Hermite4>{};
 
 auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::OutputBuffer out, size_t size) -> void
 {
@@ -41,23 +40,23 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
     auto const subGainCV  = patch.GetAdcValue(daisy::patch_sm::CV_7);
     auto const subMorphCV = patch.GetAdcValue(daisy::patch_sm::CV_8);
 
-    auto const pitch          = digitaldreams::mapToRange(pitchKnob, 36.0F, 96.0F);
-    auto const voltsPerOctave = digitaldreams::mapToRange(vOctCV, 0.0F, 60.0F);
+    auto const pitch          = mc::mapToRange(pitchKnob, 36.0F, 96.0F);
+    auto const voltsPerOctave = mc::mapToRange(vOctCV, 0.0F, 60.0F);
     auto const note           = etl::clamp(pitch + voltsPerOctave, 0.0F, 127.0F);
     auto const morph          = etl::clamp(morphKnob + morphCV, 0.0F, 1.0F);
 
     auto const subOffset     = subOctaveToggle.Pressed() ? 12.0F : 24.0F;
     auto const subNoteNumber = etl::clamp(note - subOffset, 0.0F, 127.0F);
     auto const subMorph      = etl::clamp(subMorphCV, 0.0F, 1.0F);
-    auto const subGain       = digitaldreams::mapToRange(subGainCV, 0.0F, 1.0F);
+    auto const subGain       = mc::mapToRange(subGainCV, 0.0F, 1.0F);
 
-    auto const attack  = digitaldreams::mapToRange(attackKnob, 0.0F, 0.750F);
-    auto const release = digitaldreams::mapToRange(releaseKnob, 0.0F, 2.5F);
+    auto const attack  = mc::mapToRange(attackKnob, 0.0F, 0.750F);
+    auto const release = mc::mapToRange(releaseKnob, 0.0F, 2.5F);
 
-    oscillator.setFrequency(audio::noteToHertz(note));
+    oscillator.setFrequency(mc::audio::noteToHertz(note));
     oscillator.setShapeMorph(morph);
 
-    subOscillator.setFrequency(audio::noteToHertz(subNoteNumber));
+    subOscillator.setFrequency(mc::audio::noteToHertz(subNoteNumber));
     subOscillator.setShapeMorph(subMorph);
 
     adsr.setAttack(attack * SAMPLE_RATE);
@@ -92,10 +91,10 @@ auto main() -> int
     subOctaveToggle.Init(patch.B8);
     envTriggerButton.Init(patch.B7);
 
-    oscillator.setShapes(audio::OscillatorShape::Sine, audio::OscillatorShape::Square);
+    oscillator.setShapes(mc::audio::OscillatorShape::Sine, mc::audio::OscillatorShape::Square);
     oscillator.setSampleRate(SAMPLE_RATE);
 
-    subOscillator.setShapes(audio::OscillatorShape::Sine, audio::OscillatorShape::Triangle);
+    subOscillator.setShapes(mc::audio::OscillatorShape::Sine, mc::audio::OscillatorShape::Triangle);
     subOscillator.setSampleRate(SAMPLE_RATE);
 
     while (true)

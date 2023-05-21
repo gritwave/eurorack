@@ -1,6 +1,6 @@
 #pragma once
 
-namespace digitaldreams::audio
+namespace mc::audio
 {
 
 enum struct DelayInterpolation
@@ -10,4 +10,4 @@ enum struct DelayInterpolation
     Hermite4,
 };
 
-}  // namespace digitaldreams::audio
+}  // namespace mc::audio

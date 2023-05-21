@@ -6,7 +6,7 @@
 
 #include <cmath>
 
-namespace digitaldreams::audio
+namespace mc::audio
 {
 
 enum struct CrossFadeCurve
@@ -102,4 +102,4 @@ auto CrossFade<SampleType>::update() -> void
     }
 }
 
-}  // namespace digitaldreams::audio
+}  // namespace mc::audio

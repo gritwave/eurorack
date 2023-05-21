@@ -1,15 +1,15 @@
 #pragma once
 
-#include <digitaldreams/audio/delay/delay_interpolation.hpp>
-#include <digitaldreams/math/fast_lerp.hpp>
-#include <digitaldreams/math/hermite_interpolation.hpp>
+#include <mc/audio/delay/delay_interpolation.hpp>
+#include <mc/math/fast_lerp.hpp>
+#include <mc/math/hermite_interpolation.hpp>
 
 #include <etl/algorithm.hpp>
 #include <etl/array.hpp>
 #include <etl/cmath.hpp>
 #include <etl/concepts.hpp>
 
-namespace digitaldreams::audio
+namespace mc::audio
 {
 
 template<etl::floating_point SampleType, etl::size_t MaxSize,
@@ -80,4 +80,4 @@ auto StaticDelayLine<SampleType, MaxSize, Interpolation>::reset() -> void
     etl::fill(_buffer.begin(), _buffer.end(), SampleType{0});
 }
 
-}  // namespace digitaldreams::audio
+}  // namespace mc::audio

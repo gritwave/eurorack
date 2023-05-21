@@ -2,7 +2,7 @@
 
 #include <etl/concepts.hpp>
 
-namespace digitaldreams
+namespace mc
 {
 
 template<etl::floating_point Float>
@@ -22,4 +22,4 @@ template<etl::floating_point Float>
     return stage2 * pos + x0;
 }
 
-}  // namespace digitaldreams
+}  // namespace mc
