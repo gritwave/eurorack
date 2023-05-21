@@ -7,7 +7,7 @@ enum struct DelayInterpolation
 {
     None,
     Linear,
-    Hermite4,
+    Hermite,
 };
 
 }  // namespace mc::audio

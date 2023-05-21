@@ -24,7 +24,7 @@ auto subOscillator = mc::audio::VariableShapeOscillator<float>{};
 auto smooth = mc::DynamicSmoothing<float>{};
 auto delayN = mc::audio::StaticDelayLine<float, 32, mc::audio::DelayInterpolation::None>{};
 auto delayL = mc::audio::StaticDelayLine<float, 32, mc::audio::DelayInterpolation::Linear>{};
-auto delayH = mc::audio::StaticDelayLine<float, 32, mc::audio::DelayInterpolation::Hermite4>{};
+auto delayH = mc::audio::StaticDelayLine<float, 32, mc::audio::DelayInterpolation::Hermite>{};
 
 auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::OutputBuffer out, size_t size) -> void
 {

@@ -1,19 +1,16 @@
 #pragma once
 
 #include <mc/audio/delay/delay_interpolation.hpp>
-#include <mc/math/fast_lerp.hpp>
-#include <mc/math/hermite_interpolation.hpp>
+#include <mc/audio/delay/non_owning_delay_line.hpp>
 
-#include <etl/algorithm.hpp>
 #include <etl/array.hpp>
-#include <etl/cmath.hpp>
 #include <etl/concepts.hpp>
 
 namespace mc::audio
 {
 
-template<etl::floating_point SampleType, etl::size_t MaxSize,
-         DelayInterpolation Interpolation = DelayInterpolation::Hermite4>
+template<etl::floating_point SampleType, etl::size_t MaxDelay,
+         DelayInterpolation Interpolation = DelayInterpolation::Hermite>
 struct StaticDelayLine
 {
     StaticDelayLine() = default;
@@ -26,58 +23,32 @@ struct StaticDelayLine
     auto reset() -> void;
 
 private:
-    SampleType _frac{0};
-    etl::size_t _delay{0};
-    etl::size_t _writePos{0};
-    etl::array<SampleType, MaxSize> _buffer;
+    etl::array<SampleType, MaxDelay> _buffer;
+    NonOwningDelayLine<SampleType, Interpolation> _delayLine{_buffer};
 };
 
-template<etl::floating_point SampleType, etl::size_t MaxSize, DelayInterpolation Interpolation>
-auto StaticDelayLine<SampleType, MaxSize, Interpolation>::setDelay(SampleType delayInSamples) -> void
+template<etl::floating_point SampleType, etl::size_t MaxDelay, DelayInterpolation Interpolation>
+auto StaticDelayLine<SampleType, MaxDelay, Interpolation>::setDelay(SampleType delayInSamples) -> void
 {
-    auto const delay = static_cast<etl::size_t>(delayInSamples);
-    _frac            = delayInSamples - static_cast<SampleType>(delay);
-    _delay           = etl::clamp<etl::size_t>(delay, 0, MaxSize - 1);
+    _delayLine.setDelay(delayInSamples);
 }
 
-template<etl::floating_point SampleType, etl::size_t MaxSize, DelayInterpolation Interpolation>
-auto StaticDelayLine<SampleType, MaxSize, Interpolation>::pushSample(SampleType sample) -> void
+template<etl::floating_point SampleType, etl::size_t MaxDelay, DelayInterpolation Interpolation>
+auto StaticDelayLine<SampleType, MaxDelay, Interpolation>::pushSample(SampleType sample) -> void
 {
-    _buffer[_writePos] = sample;
-    _writePos          = (_writePos - 1 + MaxSize) % MaxSize;
+    _delayLine.pushSample(sample);
 }
 
-template<etl::floating_point SampleType, etl::size_t MaxSize, DelayInterpolation Interpolation>
-auto StaticDelayLine<SampleType, MaxSize, Interpolation>::popSample() -> SampleType
+template<etl::floating_point SampleType, etl::size_t MaxDelay, DelayInterpolation Interpolation>
+auto StaticDelayLine<SampleType, MaxDelay, Interpolation>::popSample() -> SampleType
 {
-    if constexpr (Interpolation == DelayInterpolation::None)
-    {
-        auto const readPos = _writePos + _delay;
-        return _buffer[readPos % MaxSize];
-    }
-    else if constexpr (Interpolation == DelayInterpolation::Linear)
-    {
-        auto const readPos = _writePos + _delay;
-        auto const x0      = _buffer[readPos % MaxSize];
-        auto const x1      = _buffer[(readPos + 1) % MaxSize];
-        return fast_lerp(x0, x1, _frac);
-    }
-    else
-    {
-        auto const readPos = static_cast<etl::ptrdiff_t>(_writePos + _delay);
-        auto const xm1     = _buffer[(readPos - 1) % MaxSize];
-        auto const x0      = _buffer[readPos % MaxSize];
-        auto const x1      = _buffer[(readPos + 1) % MaxSize];
-        auto const x2      = _buffer[(readPos + 2) % MaxSize];
-        return hermite_interpolation(xm1, x0, x1, x2, _frac);
-    }
+    return _delayLine.popSample();
 }
 
-template<etl::floating_point SampleType, etl::size_t MaxSize, DelayInterpolation Interpolation>
-auto StaticDelayLine<SampleType, MaxSize, Interpolation>::reset() -> void
+template<etl::floating_point SampleType, etl::size_t MaxDelay, DelayInterpolation Interpolation>
+auto StaticDelayLine<SampleType, MaxDelay, Interpolation>::reset() -> void
 {
-    _writePos = 0;
-    etl::fill(_buffer.begin(), _buffer.end(), SampleType{0});
+    _delayLine.reset();
 }
 
 }  // namespace mc::audio
