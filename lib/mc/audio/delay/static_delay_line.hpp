@@ -69,7 +69,7 @@ auto StaticDelayLine<SampleType, MaxSize, Interpolation>::popSample() -> SampleT
         auto const x0      = _buffer[readPos % MaxSize];
         auto const x1      = _buffer[(readPos + 1) % MaxSize];
         auto const x2      = _buffer[(readPos + 2) % MaxSize];
-        return hermite4(_frac, xm1, x0, x1, x2);
+        return hermite_interpolation(xm1, x0, x1, x2, _frac);
     }
 }
 
