@@ -1,7 +1,7 @@
 #pragma once
 
 #include <mc/audio/delay/delay_interpolation.hpp>
-#include <mc/audio/delay/non_owning_delay_line.hpp>
+#include <mc/audio/delay/delay_line.hpp>
 
 #include <etl/array.hpp>
 #include <etl/concepts.hpp>
@@ -23,7 +23,7 @@ struct StaticDelayLine
 
 private:
     etl::array<SampleType, MaxDelay> _buffer;
-    NonOwningDelayLine<SampleType, Interpolation> _delayLine{_buffer};
+    DelayLine<SampleType, Interpolation> _delayLine{_buffer};
 };
 
 template<etl::floating_point SampleType, etl::size_t MaxDelay, typename Interpolation>
