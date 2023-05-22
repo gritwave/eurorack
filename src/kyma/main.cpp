@@ -21,10 +21,11 @@ auto adsr          = mc::audio::ADSR{};
 auto oscillator    = mc::audio::VariableShapeOscillator<float>{};
 auto subOscillator = mc::audio::VariableShapeOscillator<float>{};
 
-auto smooth = mc::DynamicSmoothing<float>{};
-auto delayN = mc::audio::StaticDelayLine<float, 32, mc::audio::DelayInterpolation::None>{};
-auto delayL = mc::audio::StaticDelayLine<float, 32, mc::audio::DelayInterpolation::Linear>{};
-auto delayH = mc::audio::StaticDelayLine<float, 32, mc::audio::DelayInterpolation::Hermite>{};
+auto smoothE = mc::DynamicSmoothing<float, mc::DynamicSmoothingType::Efficient>{};
+auto smoothA = mc::DynamicSmoothing<float, mc::DynamicSmoothingType::Accurate>{};
+auto delayN  = mc::audio::StaticDelayLine<float, 32, mc::audio::DelayInterpolation::None>{};
+auto delayL  = mc::audio::StaticDelayLine<float, 32, mc::audio::DelayInterpolation::Linear>{};
+auto delayH  = mc::audio::StaticDelayLine<float, 32, mc::audio::DelayInterpolation::Hermite>{};
 
 auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::OutputBuffer out, size_t size) -> void
 {
