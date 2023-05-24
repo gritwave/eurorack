@@ -1,6 +1,16 @@
-# Patch.init() Firmware
+# Eurorack
 
-## Create Release
+## Projects
+
+|              Name              |         Description         |                                  Hardware                                  |
+| :----------------------------: | :-------------------------: | :------------------------------------------------------------------------: |
+| [Astra](./src/astra/README.md) | Multi-Effect Mono to Stereo | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
+| [Hades](./src/hades/README.md) | Multi-Mono Noise/Distortion | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
+|  [Kyma](./src/kyma/README.md)  |    Wavetable Oscillator     | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
+
+## Development
+
+### Create Release
 
 ```sh
 git commit -m "Releasing v0.1.0"
@@ -8,8 +18,8 @@ git tag v0.1.0
 git push --tags
 ```
 
-## Resources
+### Resources
 
-- [github.com/pichenettes/eurorack](https://github.com/pichenettes/eurorack)
 - [Pink Noise](https://www.firstpr.com.au/dsp/pink-noise)
-- [DynamicSoothing](https://cytomic.com/files/dsp/DynamicSmoothing.pdf)
+- [cytomic.com: DynamicSoothing](https://cytomic.com/files/dsp/DynamicSmoothing.pdf)
+- [Mutable Instruments' Eurorack Modules: github.com/pichenettes/eurorack](https://github.com/pichenettes/eurorack)
