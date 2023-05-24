@@ -1,6 +1,7 @@
 #include <mc/audio/waveshape/wave_shaper.hpp>
 
 #include <etl/array.hpp>
+#include <etl/functional.hpp>
 
 #include <daisy_patch_sm.h>
 
@@ -27,6 +28,13 @@ auto channels = etl::array<Channel, 2>{};
 auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::OutputBuffer out, size_t size) -> void
 {
     patch.ProcessAllControls();
+
+    // GATE DIGITAL LOGIC
+    auto const gate1   = patch.gate_in_1.State();
+    auto const gate2   = patch.gate_in_2.State();
+    auto const gateOut = gate1 != gate2;
+    dsy_gpio_write(&patch.gate_out_1, gateOut);
+    dsy_gpio_write(&patch.gate_out_2, not gateOut);
 
     for (size_t i = 0; i < size; ++i)
     {
