@@ -2,11 +2,11 @@
 
 ## Projects
 
-|              Name              |         Description         |                                  Hardware                                  |
-| :----------------------------: | :-------------------------: | :------------------------------------------------------------------------: |
-| [Astra](./src/astra/README.md) | Multi-Effect Mono to Stereo | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
-| [Hades](./src/hades/README.md) | Multi-Mono Noise/Distortion | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
-|  [Kyma](./src/kyma/README.md)  |    Wavetable Oscillator     | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
+|         Name         |         Description         |                                  Hardware                                  |
+| :------------------: | :-------------------------: | :------------------------------------------------------------------------: |
+| [Astra](./src/astra) | Multi-Effect Mono to Stereo | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
+| [Hades](./src/hades) | Multi-Mono Noise/Distortion | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
+|  [Kyma](./src/kyma)  |    Wavetable Oscillator     | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
 
 ## Development
 
