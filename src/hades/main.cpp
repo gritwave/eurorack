@@ -22,8 +22,8 @@ struct Channel
     }
 
 private:
-    mc::audio::WaveShaper<float> _waveShaper{std::tanh};
-    mc::audio::Compressor<float> _compressor;
+    mc::WaveShaper<float> _waveShaper{std::tanh};
+    mc::Compressor<float> _compressor;
 };
 
 static constexpr auto BLOCK_SIZE  = 16U;

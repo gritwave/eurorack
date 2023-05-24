@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-namespace mc::audio
+namespace mc
 {
 
 // https://github.com/fdeste/ADSR
@@ -172,4 +172,4 @@ inline auto ADSR::processSample() noexcept -> float
     return _output;
 }
 
-}  // namespace mc::audio
+}  // namespace mc

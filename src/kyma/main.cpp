@@ -13,22 +13,22 @@ namespace kyma
 {
 static constexpr auto BLOCK_SIZE     = 16U;
 static constexpr auto SAMPLE_RATE    = 96'000.0F;
-static constexpr auto WAVETABLE_SINE = mc::audio::makeSineWavetable<float, 2048>();
+static constexpr auto WAVETABLE_SINE = mc::makeSineWavetable<float, 2048>();
 
 auto subOctaveToggle  = daisy::Switch{};
 auto envTriggerButton = daisy::Switch{};
 auto patch            = daisy::patch_sm::DaisyPatchSM{};
 auto& envelopeGate    = patch.gate_in_1;
 
-auto adsr          = mc::audio::ADSR{};
-auto oscillator    = mc::audio::WavetableOscillator<float, WAVETABLE_SINE.size()>{WAVETABLE_SINE};
-auto subOscillator = mc::audio::WavetableOscillator<float, WAVETABLE_SINE.size()>{WAVETABLE_SINE};
+auto adsr          = mc::ADSR{};
+auto oscillator    = mc::WavetableOscillator<float, WAVETABLE_SINE.size()>{WAVETABLE_SINE};
+auto subOscillator = mc::WavetableOscillator<float, WAVETABLE_SINE.size()>{WAVETABLE_SINE};
 
 // auto smoothE = mc::DynamicSmoothing<float, mc::DynamicSmoothingType::Efficient>{};
 // auto smoothA = mc::DynamicSmoothing<float, mc::DynamicSmoothingType::Accurate>{};
-// auto delayN  = mc::audio::StaticDelayLine<float, 32, mc::audio::BufferInterpolation::None>{};
-// auto delayL  = mc::audio::StaticDelayLine<float, 32, mc::audio::BufferInterpolation::Linear>{};
-// auto delayH  = mc::audio::StaticDelayLine<float, 32, mc::audio::BufferInterpolation::Hermite>{};
+// auto delayN  = mc::StaticDelayLine<float, 32, mc::BufferInterpolation::None>{};
+// auto delayL  = mc::StaticDelayLine<float, 32, mc::BufferInterpolation::Linear>{};
+// auto delayH  = mc::StaticDelayLine<float, 32, mc::BufferInterpolation::Hermite>{};
 
 auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::OutputBuffer out, size_t size) -> void
 {
@@ -63,8 +63,8 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
     // subOscillator.setShapeMorph(subMorph);
     etl::ignore_unused(subMorph, morph);
 
-    oscillator.setFrequency(mc::audio::noteToHertz(note));
-    subOscillator.setFrequency(mc::audio::noteToHertz(subNoteNumber));
+    oscillator.setFrequency(mc::noteToHertz(note));
+    subOscillator.setFrequency(mc::noteToHertz(subNoteNumber));
 
     adsr.setAttack(attack * SAMPLE_RATE);
     adsr.setRelease(release * SAMPLE_RATE);

@@ -6,7 +6,7 @@
 
 #include <etl/concepts.hpp>
 
-namespace mc::audio
+namespace mc
 {
 
 template<etl::floating_point SampleType>
@@ -81,4 +81,4 @@ auto VariableShapeOscillator<SampleType>::operator()() noexcept -> SampleType
     return _crossFade.process(_oscA(), _oscB());
 }
 
-}  // namespace mc::audio
+}  // namespace mc

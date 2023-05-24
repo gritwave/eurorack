@@ -5,7 +5,7 @@
 
 #include <etl/span.hpp>
 
-namespace mc::audio
+namespace mc
 {
 
 struct BufferInterpolation
@@ -49,4 +49,4 @@ struct BufferInterpolation
     };
 };
 
-}  // namespace mc::audio
+}  // namespace mc

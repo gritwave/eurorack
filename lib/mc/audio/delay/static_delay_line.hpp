@@ -6,7 +6,7 @@
 #include <etl/array.hpp>
 #include <etl/concepts.hpp>
 
-namespace mc::audio
+namespace mc
 {
 
 template<etl::floating_point SampleType, etl::size_t MaxDelay, typename Interpolation = BufferInterpolation::Hermite>
@@ -50,4 +50,4 @@ auto StaticDelayLine<SampleType, MaxDelay, Interpolation>::reset() -> void
     _delayLine.reset();
 }
 
-}  // namespace mc::audio
+}  // namespace mc

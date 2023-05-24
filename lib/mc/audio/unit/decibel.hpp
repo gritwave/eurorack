@@ -4,7 +4,7 @@
 
 #include <cmath>
 
-namespace mc::audio
+namespace mc
 {
 
 template<etl::floating_point Float>
@@ -23,4 +23,4 @@ auto gainToDecibels(Float gain, Float minusInfinityDb = DefaultMinusInfinitydB<F
                           : minusInfinityDb;
 }
 
-}  // namespace mc::audio
+}  // namespace mc

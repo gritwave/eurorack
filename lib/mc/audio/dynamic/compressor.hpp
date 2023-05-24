@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-namespace mc::audio
+namespace mc
 {
 
 template<etl::floating_point SampleType>
@@ -101,4 +101,4 @@ private:
     SampleType _reduction{1};
 };
 
-}  // namespace mc::audio
+}  // namespace mc

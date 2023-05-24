@@ -6,7 +6,7 @@
 #include <etl/concepts.hpp>
 #include <etl/numbers.hpp>
 
-namespace mc::audio
+namespace mc
 {
 
 enum struct OscillatorShape
@@ -126,4 +126,4 @@ auto Oscillator<SampleType>::pulse(SampleType phase, SampleType width) noexcept 
     return SampleType{1};
 }
 
-}  // namespace mc::audio
+}  // namespace mc

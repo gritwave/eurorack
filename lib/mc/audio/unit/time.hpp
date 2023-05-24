@@ -2,7 +2,7 @@
 
 #include <etl/chrono.hpp>
 
-namespace mc::audio
+namespace mc
 {
 
 template<typename T>
@@ -14,4 +14,4 @@ using Milliseconds = etl::chrono::duration<T, etl::milli>;
 template<typename T>
 using Seconds = etl::chrono::duration<T>;
 
-}  // namespace mc::audio
+}  // namespace mc

@@ -9,7 +9,7 @@
 #include <etl/numbers.hpp>
 #include <etl/span.hpp>
 
-namespace mc::audio
+namespace mc
 {
 
 template<etl::floating_point SampleType, etl::size_t TableSize = etl::dynamic_extent>
@@ -112,4 +112,4 @@ constexpr auto makeSineWavetable() noexcept -> etl::array<SampleType, Size>
     etl::generate(begin(table), end(table), gen);
     return table;
 }
-}  // namespace mc::audio
+}  // namespace mc

@@ -7,7 +7,7 @@
 #include <etl/concepts.hpp>
 #include <etl/span.hpp>
 
-namespace mc::audio
+namespace mc
 {
 
 template<etl::floating_point SampleType, typename Interpolation = BufferInterpolation::Hermite>
@@ -64,4 +64,4 @@ auto DelayLine<SampleType, Interpolation>::reset() -> void
     etl::fill(_buffer.begin(), _buffer.end(), SampleType{0});
 }
 
-}  // namespace mc::audio
+}  // namespace mc

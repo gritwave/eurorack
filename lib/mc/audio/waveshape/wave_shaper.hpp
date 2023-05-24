@@ -4,7 +4,7 @@
 
 #include <cmath>
 
-namespace mc::audio
+namespace mc
 {
 
 template<etl::floating_point FloatType, typename Function = FloatType (*)(FloatType)>
@@ -23,4 +23,4 @@ private:
     Function _function;
 };
 
-}  // namespace mc::audio
+}  // namespace mc
