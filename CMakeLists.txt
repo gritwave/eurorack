@@ -26,4 +26,7 @@ add_subdirectory(${LIBDAISY_DIR})
 add_subdirectory(3rd_party/tetl/include)
 
 add_subdirectory(lib)
+
+add_subdirectory(src/astra)
+add_subdirectory(src/hades)
 add_subdirectory(src/kyma)

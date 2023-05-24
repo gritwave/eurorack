@@ -29,6 +29,8 @@ jobs:
         run: |
           mkdir firmware
           cp build/src/kyma/Release/kyma.bin firmware
+          cp build/src/hades/Release/hades.bin firmware
+          cp build/src/astra/Release/astra.bin firmware
 
       - name: Upload coverage artifacts
         uses: actions/upload-artifact@v3
