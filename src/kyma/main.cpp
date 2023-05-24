@@ -2,30 +2,33 @@
 #include <mc/audio/envelope/adsr.hpp>
 #include <mc/audio/music/note.hpp>
 #include <mc/audio/oscillator/variable_shape_oscillator.hpp>
+#include <mc/audio/oscillator/wavetable_oscillator.hpp>
 #include <mc/audio/unit/decibel.hpp>
 #include <mc/math/dynamic_smoothing.hpp>
 #include <mc/math/range.hpp>
 
 #include <daisy_patch_sm.h>
 
-static constexpr auto BLOCK_SIZE  = 16U;
-static constexpr auto SAMPLE_RATE = 96'000.0F;
+namespace kyma
+{
+static constexpr auto BLOCK_SIZE     = 16U;
+static constexpr auto SAMPLE_RATE    = 96'000.0F;
+static constexpr auto WAVETABLE_SINE = mc::audio::makeSineWavetable<float, 2048>();
 
 auto subOctaveToggle  = daisy::Switch{};
 auto envTriggerButton = daisy::Switch{};
 auto patch            = daisy::patch_sm::DaisyPatchSM{};
 auto& envelopeGate    = patch.gate_in_1;
-auto lastEnvelopeGate = false;
 
 auto adsr          = mc::audio::ADSR{};
-auto oscillator    = mc::audio::VariableShapeOscillator<float>{};
-auto subOscillator = mc::audio::VariableShapeOscillator<float>{};
+auto oscillator    = mc::audio::WavetableOscillator<float, WAVETABLE_SINE.size()>{WAVETABLE_SINE};
+auto subOscillator = mc::audio::WavetableOscillator<float, WAVETABLE_SINE.size()>{WAVETABLE_SINE};
 
-auto smoothE = mc::DynamicSmoothing<float, mc::DynamicSmoothingType::Efficient>{};
-auto smoothA = mc::DynamicSmoothing<float, mc::DynamicSmoothingType::Accurate>{};
-auto delayN  = mc::audio::StaticDelayLine<float, 32, mc::audio::DelayInterpolation::None>{};
-auto delayL  = mc::audio::StaticDelayLine<float, 32, mc::audio::DelayInterpolation::Linear>{};
-auto delayH  = mc::audio::StaticDelayLine<float, 32, mc::audio::DelayInterpolation::Hermite>{};
+// auto smoothE = mc::DynamicSmoothing<float, mc::DynamicSmoothingType::Efficient>{};
+// auto smoothA = mc::DynamicSmoothing<float, mc::DynamicSmoothingType::Accurate>{};
+// auto delayN  = mc::audio::StaticDelayLine<float, 32, mc::audio::BufferInterpolation::None>{};
+// auto delayL  = mc::audio::StaticDelayLine<float, 32, mc::audio::BufferInterpolation::Linear>{};
+// auto delayH  = mc::audio::StaticDelayLine<float, 32, mc::audio::BufferInterpolation::Hermite>{};
 
 auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::OutputBuffer out, size_t size) -> void
 {
@@ -54,11 +57,14 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
     auto const attack  = mc::mapToRange(attackKnob, 0.0F, 0.750F);
     auto const release = mc::mapToRange(releaseKnob, 0.0F, 2.5F);
 
-    oscillator.setFrequency(mc::audio::noteToHertz(note));
-    oscillator.setShapeMorph(morph);
+    oscillator.setWavetable(WAVETABLE_SINE);
+    subOscillator.setWavetable(WAVETABLE_SINE);
+    // oscillator.setShapeMorph(morph);
+    // subOscillator.setShapeMorph(subMorph);
+    etl::ignore_unused(subMorph, morph);
 
+    oscillator.setFrequency(mc::audio::noteToHertz(note));
     subOscillator.setFrequency(mc::audio::noteToHertz(subNoteNumber));
-    subOscillator.setShapeMorph(subMorph);
 
     adsr.setAttack(attack * SAMPLE_RATE);
     adsr.setRelease(release * SAMPLE_RATE);
@@ -75,15 +81,19 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
         patch.WriteCvOut(daisy::patch_sm::CV_OUT_2, env * 5.0F);
 
         auto const osc = oscillator() * env;
-        auto const sub = subOscillator() * env * subGain;
+        auto const sub = subOscillator() * env;  //* subGain;
+        etl::ignore_unused(subGain);
 
-        OUT_L[i] = osc;
-        OUT_R[i] = osc + sub;
+        OUT_L[i] = sub * 0.25F;
+        OUT_R[i] = osc * 0.25F;
     }
 }
+}  // namespace kyma
 
 auto main() -> int
 {
+    using namespace kyma;
+
     patch.Init();
     patch.SetAudioSampleRate(SAMPLE_RATE);
     patch.SetAudioBlockSize(BLOCK_SIZE);
@@ -92,10 +102,7 @@ auto main() -> int
     subOctaveToggle.Init(patch.B8);
     envTriggerButton.Init(patch.B7);
 
-    oscillator.setShapes(mc::audio::OscillatorShape::Sine, mc::audio::OscillatorShape::Square);
     oscillator.setSampleRate(SAMPLE_RATE);
-
-    subOscillator.setShapes(mc::audio::OscillatorShape::Sine, mc::audio::OscillatorShape::Triangle);
     subOscillator.setSampleRate(SAMPLE_RATE);
 
     while (true)

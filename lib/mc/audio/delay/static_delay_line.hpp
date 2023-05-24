@@ -1,7 +1,7 @@
 #pragma once
 
-#include <mc/audio/delay/delay_interpolation.hpp>
 #include <mc/audio/delay/delay_line.hpp>
+#include <mc/math/buffer_interpolation.hpp>
 
 #include <etl/array.hpp>
 #include <etl/concepts.hpp>
@@ -9,7 +9,7 @@
 namespace mc::audio
 {
 
-template<etl::floating_point SampleType, etl::size_t MaxDelay, typename Interpolation = DelayInterpolation::Hermite>
+template<etl::floating_point SampleType, etl::size_t MaxDelay, typename Interpolation = BufferInterpolation::Hermite>
 struct StaticDelayLine
 {
     StaticDelayLine() = default;

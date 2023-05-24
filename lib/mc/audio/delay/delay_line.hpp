@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mc/audio/delay/delay_interpolation.hpp>
+#include <mc/math/buffer_interpolation.hpp>
 
 #include <etl/algorithm.hpp>
 #include <etl/cmath.hpp>
@@ -10,7 +10,7 @@
 namespace mc::audio
 {
 
-template<etl::floating_point SampleType, typename Interpolation = DelayInterpolation::Hermite>
+template<etl::floating_point SampleType, typename Interpolation = BufferInterpolation::Hermite>
 struct DelayLine
 {
     explicit DelayLine(etl::span<SampleType> buffer) noexcept;

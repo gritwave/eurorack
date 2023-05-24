@@ -8,13 +8,13 @@
 namespace mc::audio
 {
 
-struct DelayInterpolation
+struct BufferInterpolation
 {
     struct None
     {
-        template<typename SampleType>
-        [[nodiscard]] constexpr auto operator()(etl::span<SampleType> buffer, etl::size_t readPos, SampleType fracPos)
-            -> SampleType
+        template<typename SampleType, etl::size_t Extent>
+        [[nodiscard]] constexpr auto operator()(etl::span<SampleType const, Extent> buffer, etl::size_t readPos,
+                                                SampleType fracPos) -> SampleType
         {
             etl::ignore_unused(fracPos);
             return buffer[readPos % buffer.size()];
@@ -23,9 +23,9 @@ struct DelayInterpolation
 
     struct Linear
     {
-        template<typename SampleType>
-        [[nodiscard]] constexpr auto operator()(etl::span<SampleType> buffer, etl::size_t readPos, SampleType fracPos)
-            -> SampleType
+        template<typename SampleType, etl::size_t Extent>
+        [[nodiscard]] constexpr auto operator()(etl::span<SampleType const, Extent> buffer, etl::size_t readPos,
+                                                SampleType fracPos) -> SampleType
         {
             auto const x0 = buffer[readPos % buffer.size()];
             auto const x1 = buffer[(readPos + 1) % buffer.size()];
@@ -35,11 +35,11 @@ struct DelayInterpolation
 
     struct Hermite
     {
-        template<typename SampleType>
-        [[nodiscard]] constexpr auto operator()(etl::span<SampleType> buffer, etl::size_t readPos, SampleType fracPos)
-            -> SampleType
+        template<typename SampleType, etl::size_t Extent>
+        [[nodiscard]] constexpr auto operator()(etl::span<SampleType const, Extent> buffer, etl::size_t readPos,
+                                                SampleType fracPos) -> SampleType
         {
-            auto const pos = static_cast<etl::ptrdiff_t>(readPos);
+            auto const pos = readPos + buffer.size();
             auto const xm1 = buffer[(pos - 1) % buffer.size()];
             auto const x0  = buffer[pos % buffer.size()];
             auto const x1  = buffer[(pos + 1) % buffer.size()];
