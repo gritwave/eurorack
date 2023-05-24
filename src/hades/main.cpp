@@ -1,3 +1,4 @@
+#include <mc/audio/dynamic/compressor.hpp>
 #include <mc/audio/waveshape/wave_shaper.hpp>
 
 #include <etl/array.hpp>
@@ -13,10 +14,16 @@ struct Channel
     Channel() = default;
 
     auto prepare(float sampleRate) -> void { etl::ignore_unused(sampleRate); }
-    [[nodiscard]] auto processSample(float sample) -> float { return _waveShaper.processSample(sample); }
+
+    [[nodiscard]] auto processSample(float sample) -> float
+    {
+        auto const distOut = _waveShaper.processSample(sample);
+        return _compressor.processSample(distOut, distOut);
+    }
 
 private:
     mc::audio::WaveShaper<float> _waveShaper{std::tanh};
+    mc::audio::Compressor<float> _compressor;
 };
 
 static constexpr auto BLOCK_SIZE  = 16U;
