@@ -10,7 +10,7 @@ target_sources(hades
 target_link_libraries(hades
     PRIVATE
         daisy
-        mc::eurorack
+        ta::eurorack
 )
 
 set_target_properties(hades PROPERTIES

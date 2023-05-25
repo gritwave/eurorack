@@ -1,11 +1,11 @@
-#include <mc/audio/delay/static_delay_line.hpp>
-#include <mc/audio/envelope/adsr.hpp>
-#include <mc/audio/music/note.hpp>
-#include <mc/audio/oscillator/variable_shape_oscillator.hpp>
-#include <mc/audio/oscillator/wavetable_oscillator.hpp>
-#include <mc/audio/unit/decibel.hpp>
-#include <mc/math/dynamic_smoothing.hpp>
-#include <mc/math/range.hpp>
+#include <ta/audio/delay/static_delay_line.hpp>
+#include <ta/audio/envelope/adsr.hpp>
+#include <ta/audio/music/note.hpp>
+#include <ta/audio/oscillator/variable_shape_oscillator.hpp>
+#include <ta/audio/oscillator/wavetable_oscillator.hpp>
+#include <ta/audio/unit/decibel.hpp>
+#include <ta/math/dynamic_smoothing.hpp>
+#include <ta/math/range.hpp>
 
 #include <daisy_patch_sm.h>
 
@@ -13,22 +13,22 @@ namespace kyma
 {
 static constexpr auto BLOCK_SIZE     = 16U;
 static constexpr auto SAMPLE_RATE    = 96'000.0F;
-static constexpr auto WAVETABLE_SINE = mc::makeSineWavetable<float, 2048>();
+static constexpr auto WAVETABLE_SINE = ta::makeSineWavetable<float, 2048>();
 
 auto subOctaveToggle  = daisy::Switch{};
 auto envTriggerButton = daisy::Switch{};
 auto patch            = daisy::patch_sm::DaisyPatchSM{};
 auto& envelopeGate    = patch.gate_in_1;
 
-auto adsr          = mc::ADSR{};
-auto oscillator    = mc::WavetableOscillator<float, WAVETABLE_SINE.size()>{WAVETABLE_SINE};
-auto subOscillator = mc::WavetableOscillator<float, WAVETABLE_SINE.size()>{WAVETABLE_SINE};
+auto adsr          = ta::ADSR{};
+auto oscillator    = ta::WavetableOscillator<float, WAVETABLE_SINE.size()>{WAVETABLE_SINE};
+auto subOscillator = ta::WavetableOscillator<float, WAVETABLE_SINE.size()>{WAVETABLE_SINE};
 
-// auto smoothE = mc::DynamicSmoothing<float, mc::DynamicSmoothingType::Efficient>{};
-// auto smoothA = mc::DynamicSmoothing<float, mc::DynamicSmoothingType::Accurate>{};
-// auto delayN  = mc::StaticDelayLine<float, 32, mc::BufferInterpolation::None>{};
-// auto delayL  = mc::StaticDelayLine<float, 32, mc::BufferInterpolation::Linear>{};
-// auto delayH  = mc::StaticDelayLine<float, 32, mc::BufferInterpolation::Hermite>{};
+// auto smoothE = ta::DynamicSmoothing<float, ta::DynamicSmoothingType::Efficient>{};
+// auto smoothA = ta::DynamicSmoothing<float, ta::DynamicSmoothingType::Accurate>{};
+// auto delayN  = ta::StaticDelayLine<float, 32, ta::BufferInterpolation::None>{};
+// auto delayL  = ta::StaticDelayLine<float, 32, ta::BufferInterpolation::Linear>{};
+// auto delayH  = ta::StaticDelayLine<float, 32, ta::BufferInterpolation::Hermite>{};
 
 auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::OutputBuffer out, size_t size) -> void
 {
@@ -44,18 +44,18 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
     auto const subGainCV  = patch.GetAdcValue(daisy::patch_sm::CV_7);
     auto const subMorphCV = patch.GetAdcValue(daisy::patch_sm::CV_8);
 
-    auto const pitch          = mc::mapToRange(pitchKnob, 36.0F, 96.0F);
-    auto const voltsPerOctave = mc::mapToRange(vOctCV, 0.0F, 60.0F);
+    auto const pitch          = ta::mapToRange(pitchKnob, 36.0F, 96.0F);
+    auto const voltsPerOctave = ta::mapToRange(vOctCV, 0.0F, 60.0F);
     auto const note           = etl::clamp(pitch + voltsPerOctave, 0.0F, 127.0F);
     auto const morph          = etl::clamp(morphKnob + morphCV, 0.0F, 1.0F);
 
     auto const subOffset     = subOctaveToggle.Pressed() ? 12.0F : 24.0F;
     auto const subNoteNumber = etl::clamp(note - subOffset, 0.0F, 127.0F);
     auto const subMorph      = etl::clamp(subMorphCV, 0.0F, 1.0F);
-    auto const subGain       = mc::mapToRange(subGainCV, 0.0F, 1.0F);
+    auto const subGain       = ta::mapToRange(subGainCV, 0.0F, 1.0F);
 
-    auto const attack  = mc::mapToRange(attackKnob, 0.0F, 0.750F);
-    auto const release = mc::mapToRange(releaseKnob, 0.0F, 2.5F);
+    auto const attack  = ta::mapToRange(attackKnob, 0.0F, 0.750F);
+    auto const release = ta::mapToRange(releaseKnob, 0.0F, 2.5F);
 
     oscillator.setWavetable(WAVETABLE_SINE);
     subOscillator.setWavetable(WAVETABLE_SINE);
@@ -63,8 +63,8 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
     // subOscillator.setShapeMorph(subMorph);
     etl::ignore_unused(subMorph, morph);
 
-    oscillator.setFrequency(mc::noteToHertz(note));
-    subOscillator.setFrequency(mc::noteToHertz(subNoteNumber));
+    oscillator.setFrequency(ta::noteToHertz(note));
+    subOscillator.setFrequency(ta::noteToHertz(subNoteNumber));
 
     adsr.setAttack(attack * SAMPLE_RATE);
     adsr.setRelease(release * SAMPLE_RATE);

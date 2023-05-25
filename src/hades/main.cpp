@@ -1,4 +1,4 @@
-#include <mc/eurorack/hades.hpp>
+#include <ta/eurorack/hades.hpp>
 
 #include <daisy_patch_sm.h>
 
@@ -9,7 +9,7 @@ static constexpr auto BLOCK_SIZE  = 16U;
 static constexpr auto SAMPLE_RATE = 96'000.0F;
 
 auto patch = daisy::patch_sm::DaisyPatchSM{};
-auto hades = mc::Hades{};
+auto hades = ta::Hades{};
 
 auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::OutputBuffer out, size_t size) -> void
 {
@@ -19,12 +19,12 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
     auto const rightIn  = etl::span<float const>{etl::addressof(IN_R[0]), BLOCK_SIZE};
     auto const leftOut  = etl::span<float>{etl::addressof(OUT_L[0]), BLOCK_SIZE};
     auto const rightOut = etl::span<float>{etl::addressof(OUT_R[0]), BLOCK_SIZE};
-    auto const context  = mc::Hades::Buffers{
+    auto const context  = ta::Hades::Buffers{
          .input  = {leftIn, rightIn},
          .output = {leftOut, rightOut},
     };
 
-    auto const inputs = mc::Hades::ControlInputs{
+    auto const inputs = ta::Hades::ControlInputs{
         .textureKnob    = patch.GetAdcValue(daisy::patch_sm::CV_1),
         .morphKnob      = patch.GetAdcValue(daisy::patch_sm::CV_3),
         .ampKnob        = patch.GetAdcValue(daisy::patch_sm::CV_2),

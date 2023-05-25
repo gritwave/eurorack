@@ -10,7 +10,7 @@ target_sources(astra
 target_link_libraries(astra
     PRIVATE
         daisy
-        mc::audio
+        ta::audio
 )
 
 set_target_properties(astra PROPERTIES
