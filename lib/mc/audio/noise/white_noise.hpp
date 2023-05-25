@@ -6,11 +6,13 @@
 namespace mc
 {
 
-template<etl::floating_point SampleType>
+template<etl::floating_point SampleType, typename URNG = etl::xoshiro128plusplus>
 struct WhiteNoise
 {
+    using SeedType = typename URNG::result_type;
+
     WhiteNoise() = default;
-    explicit WhiteNoise(etl::uint32_t seed) noexcept;
+    explicit WhiteNoise(SeedType seed) noexcept;
 
     auto setGain(SampleType gain) noexcept -> void;
     [[nodiscard]] auto getGain() const noexcept -> SampleType;
@@ -19,29 +21,29 @@ struct WhiteNoise
 
 private:
     SampleType _gain{};
-    etl::xoshiro128plusplus _rng{45643213};
+    URNG _rng{};
     etl::uniform_real_distribution<SampleType> _dist{SampleType(-1), SampleType(1)};
 };
 
-template<etl::floating_point SampleType>
-WhiteNoise<SampleType>::WhiteNoise(etl::uint32_t seed) noexcept : _rng{seed}
+template<etl::floating_point SampleType, typename URNG>
+WhiteNoise<SampleType, URNG>::WhiteNoise(SeedType seed) noexcept : _rng{seed}
 {
 }
 
-template<etl::floating_point SampleType>
-auto WhiteNoise<SampleType>::setGain(SampleType gain) noexcept -> void
+template<etl::floating_point SampleType, typename URNG>
+auto WhiteNoise<SampleType, URNG>::setGain(SampleType gain) noexcept -> void
 {
     _gain = gain;
 }
 
-template<etl::floating_point SampleType>
-auto WhiteNoise<SampleType>::getGain() const noexcept -> SampleType
+template<etl::floating_point SampleType, typename URNG>
+auto WhiteNoise<SampleType, URNG>::getGain() const noexcept -> SampleType
 {
     return _gain;
 }
 
-template<etl::floating_point SampleType>
-auto WhiteNoise<SampleType>::processSample() noexcept -> SampleType
+template<etl::floating_point SampleType, typename URNG>
+auto WhiteNoise<SampleType, URNG>::processSample() noexcept -> SampleType
 {
     return _dist(_rng) * _gain;
 }
