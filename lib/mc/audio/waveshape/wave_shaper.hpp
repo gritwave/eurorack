@@ -7,17 +7,14 @@
 namespace mc
 {
 
-template<etl::floating_point FloatType, typename Function = FloatType (*)(FloatType)>
+template<etl::floating_point SampleType, typename Function = SampleType (*)(SampleType)>
 struct WaveShaper
 {
     explicit WaveShaper(Function function) : _function{function} {}
 
     auto setFunction(Function function) -> void { _function = function; }
 
-    [[nodiscard]] auto processSample(FloatType inputSample) const noexcept -> FloatType
-    {
-        return _function(inputSample);
-    }
+    [[nodiscard]] auto processSample(SampleType input) const noexcept -> SampleType { return _function(input); }
 
 private:
     Function _function;
