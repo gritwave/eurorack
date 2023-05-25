@@ -1,5 +1,6 @@
 #include <mc/audio/dynamic/compressor.hpp>
 #include <mc/audio/dynamic/envelope_follower.hpp>
+#include <mc/audio/noise/white_noise.hpp>
 #include <mc/audio/waveshape/wave_shaper.hpp>
 
 #include <etl/array.hpp>
@@ -23,12 +24,16 @@ struct Channel
 
     [[nodiscard]] auto processSample(float sample) -> float
     {
-        auto const distOut = _waveShaper.processSample(sample);
+        auto const env     = _envelopeFollower.processSample(sample);
+        auto const noise   = _noise.processSample();
+        auto const noisy   = sample + noise * env;
+        auto const distOut = _waveShaper.processSample(noisy);
         return _compressor.processSample(distOut, distOut);
     }
 
 private:
     mc::EnvelopeFollower<float> _envelopeFollower{};
+    mc::WhiteNoise<float> _noise{};
     mc::WaveShaper<float> _waveShaper{std::tanh};
     mc::Compressor<float> _compressor;
 };
