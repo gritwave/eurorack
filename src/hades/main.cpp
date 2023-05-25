@@ -1,5 +1,5 @@
 #include <mc/audio/dynamic/compressor.hpp>
-#include <mc/audio/dynamic/envelope_follower.hpp>
+#include <mc/audio/envelope/envelope_follower.hpp>
 #include <mc/audio/noise/white_noise.hpp>
 #include <mc/audio/waveshape/wave_shaper.hpp>
 #include <mc/math/dynamic_smoothing.hpp>

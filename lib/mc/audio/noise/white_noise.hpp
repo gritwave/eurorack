@@ -20,9 +20,8 @@ struct WhiteNoise
     [[nodiscard]] auto processSample() noexcept -> SampleType;
 
 private:
-    SampleType _gain{};
     URNG _rng{};
-    etl::uniform_real_distribution<SampleType> _dist{SampleType(-1), SampleType(1)};
+    SampleType _gain{0.5};
 };
 
 template<etl::floating_point SampleType, typename URNG>
@@ -45,7 +44,8 @@ auto WhiteNoise<SampleType, URNG>::getGain() const noexcept -> SampleType
 template<etl::floating_point SampleType, typename URNG>
 auto WhiteNoise<SampleType, URNG>::processSample() noexcept -> SampleType
 {
-    return _dist(_rng) * _gain;
+    auto dist = etl::uniform_real_distribution<SampleType>{SampleType(-1), SampleType(1)};
+    return dist(_rng) * _gain;
 }
 
 }  // namespace mc

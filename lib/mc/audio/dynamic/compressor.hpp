@@ -5,6 +5,7 @@
 #include <etl/algorithm.hpp>
 #include <etl/concepts.hpp>
 #include <etl/numbers.hpp>
+#include <etl/optional.hpp>
 
 #include <cmath>
 
@@ -20,8 +21,8 @@ struct Compressor
         SampleType ratio{1};
         SampleType knee{0};
 
-        Milliseconds<float> attack{0};
-        Milliseconds<float> release{0};
+        Milliseconds<SampleType> attack{0};
+        Milliseconds<SampleType> release{0};
 
         SampleType makeUp{0};
         SampleType wet{0};
@@ -77,8 +78,7 @@ auto Compressor<SampleType>::processSample(SampleType signal, SampleType sideCha
     auto const ceilThreshold  = threshold + halfKneeRange / ratio;
     auto const limit          = etl::clamp(env, kneedThreshold, ceilThreshold);
     auto const factor         = -((limit - kneedThreshold) / fullKneeRange) + SampleType(1);
-    auto const ratioQuotient
-        = knee > SampleType(0) ? ratio * factor + SampleType(1) * (-factor + SampleType(1)) : SampleType(1);
+    auto const ratioQuotient  = knee > 0 ? ratio * factor + SampleType(1) * (-factor + SampleType(1)) : SampleType(1);
 
     auto yg = SampleType(0);
     if (env < kneedThreshold) { yg = env; }
