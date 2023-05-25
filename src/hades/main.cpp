@@ -1,6 +1,7 @@
 #include <mc/audio/dynamic/compressor.hpp>
 #include <mc/audio/envelope/envelope_follower.hpp>
 #include <mc/audio/noise/white_noise.hpp>
+#include <mc/audio/unit/decibel.hpp>
 #include <mc/audio/waveshape/wave_shaper.hpp>
 #include <mc/math/dynamic_smoothing.hpp>
 
@@ -38,6 +39,21 @@ struct Channel
 
     [[nodiscard]] auto processSample(float sample) -> float
     {
+        _envelopeFollower.setParameter({
+            .attack  = mc::Milliseconds<float>{50},
+            .release = mc::Milliseconds<float>{50},
+        });
+
+        _compressor.setParameter({
+            .threshold = mc::decibelsToGain(-12.0F),
+            .ratio     = 10.F,
+            .knee      = 1.0F,
+            .attack    = mc::Milliseconds<float>{50},
+            .release   = mc::Milliseconds<float>{50},
+            .makeUp    = 1.0F,
+            .wet       = 1.0F,
+        });
+
         auto const env     = _envelopeFollower.processSample(sample);
         auto const noise   = _noise.processSample();
         auto const noisy   = sample + noise * env;
