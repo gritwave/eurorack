@@ -81,13 +81,13 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
         patch.WriteCvOut(daisy::patch_sm::CV_OUT_2, env * 5.0F);
 
         auto const osc = oscillator() * env;
-        auto const sub = subOscillator() * env;  //* subGain;
-        etl::ignore_unused(subGain);
+        auto const sub = subOscillator() * env * subGain;
 
-        OUT_L[i] = sub * 0.25F;
-        OUT_R[i] = osc * 0.25F;
+        OUT_L[i] = sub * 0.75F;
+        OUT_R[i] = osc * 0.75F;
     }
 }
+
 }  // namespace kyma
 
 auto main() -> int

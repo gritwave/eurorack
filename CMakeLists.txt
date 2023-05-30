@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.23)
+
 file(STRINGS VERSION CURRENT_VERSION)
 project(patch-init-firmware VERSION ${CURRENT_VERSION} LANGUAGES C CXX)
 
@@ -7,8 +8,6 @@ if (CCACHE)
     set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE})
     set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE})
 endif ()
-
-message(${PROJECT_VERSION})
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_EXTENSIONS ON)

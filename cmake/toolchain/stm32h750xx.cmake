@@ -6,9 +6,9 @@ set(CMAKE_CXX_COMPILER_ID GNU)
 
 set(CMAKE_C_COMPILER    "arm-none-eabi-gcc")
 set(CMAKE_CXX_COMPILER  "arm-none-eabi-g++")
-set(CMAKE_LINKER        "arm-none-eabi-ld")
-set(CMAKE_AR            "arm-none-eabi-ar")
-set(CMAKE_RANLIB        "arm-none-eabi-ranlib")
+set(CMAKE_LINKER        "arm-none-eabi-gcc")
+set(CMAKE_AR            "arm-none-eabi-gcc-ar")
+set(CMAKE_RANLIB        "arm-none-eabi-gcc-ranlib")
 set(CMAKE_OBJCOPY       "arm-none-eabi-objcopy")
 
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
