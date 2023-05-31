@@ -36,7 +36,7 @@ struct Compressor
     auto prepare(SampleType sampleRate) noexcept -> void;
     [[nodiscard]] auto processSample(SampleType signal, SampleType sideChain) noexcept -> SampleType;
 
-    [[nodiscard]] auto getGainReduction() const -> SampleType;
+    [[nodiscard]] auto getGainReduction() const noexcept -> SampleType;
 
 private:
     [[nodiscard]] auto calculateTimeAlpha(Seconds<SampleType> value) const noexcept -> SampleType;

@@ -2,7 +2,7 @@
 RACK_DIR ?= ../..
 
 # FLAGS will be passed to both the C and C++ compiler
-FLAGS +=
+FLAGS += -I ../../3rd_party/tetl/include -I ../../lib
 CFLAGS +=
 CXXFLAGS +=
 

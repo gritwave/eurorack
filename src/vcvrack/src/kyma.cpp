@@ -1,5 +1,7 @@
 #include "plugin.hpp"
 
+#include "ta/eurorack/hades.hpp"
+
 struct Kyma final : Module
 {
     enum ParamId
