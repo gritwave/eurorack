@@ -47,11 +47,13 @@ struct complex_q15_t
 
     TA_ALWAYS_INLINE friend auto operator*(complex_q15_t lhs, complex_q15_t rhs) noexcept -> complex_q15_t
     {
-        // auto im = static_cast<etl::int16_t>(arm::smlad(lhs._data, rhs._data, 0));
-        // auto re = static_cast<etl::int16_t>(arm::smlsd(lhs._data, rhs._data, 0));
-        // return complex_q15_t{arm::saturate<etl::int16_t>(re), arm::saturate<etl::int16_t>(im)};
-        etl::int16_t re = lhs.real() * rhs.real() - lhs.imag() * rhs.imag();
-        etl::int16_t im = lhs.real() * rhs.imag() + lhs.imag() * rhs.real();
+        auto const lr = static_cast<etl::int32_t>(lhs.real());
+        auto const li = static_cast<etl::int32_t>(lhs.imag());
+        auto const rr = static_cast<etl::int32_t>(rhs.real());
+        auto const ri = static_cast<etl::int32_t>(rhs.imag());
+
+        auto const re = static_cast<etl::int16_t>(((lr * rr) >> 17) - ((li * ri) >> 17));
+        auto const im = static_cast<etl::int16_t>(((lr * ri) >> 17) + ((li * rr) >> 17));
         return complex_q15_t{re, im};
     }
 

@@ -30,26 +30,11 @@ TA_ALWAYS_INLINE inline auto qsub16(etl::uint32_t op1, etl::uint32_t op2) -> etl
     return result;
 }
 
-TA_ALWAYS_INLINE inline auto smlad(etl::uint32_t op1, etl::uint32_t op2, etl::uint32_t op3) -> etl::uint32_t
-{
-    etl::uint32_t result;
-    __asm volatile("smlad %0, %1, %2, %3" : "=r"(result) : "r"(op1), "r"(op2), "r"(op3));
-    return result;
-}
-
-TA_ALWAYS_INLINE inline auto smlsd(etl::uint32_t op1, etl::uint32_t op2, etl::uint32_t op3) -> etl::uint32_t
-{
-    etl::uint32_t result;
-    __asm volatile("smlsd %0, %1, %2, %3" : "=r"(result) : "r"(op1), "r"(op2), "r"(op3));
-    return result;
-}
-
-TA_ALWAYS_INLINE inline auto saturate16(etl::int32_t x) -> etl::int16_t
+TA_ALWAYS_INLINE inline auto ssat16(etl::int32_t x) -> etl::int16_t
 {
 #if __arm__
     auto result = etl::int32_t{};
-    // __asm volatile("ssat %[result], %[a], %[b]" : [result] "=r"(result) : [a] "r"(x), [b] "r"(depth));
-    __asm volatile("ssat %0, %1, %2" : "=r"(result) : "r"(x), "r"(16));
+    __asm volatile("ssat %0, %1, %2" : "=r"(result) : "I"(16), "r"(x));
     return result;
 
 #else
