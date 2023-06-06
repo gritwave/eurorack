@@ -32,6 +32,7 @@ add_compile_definitions(
     HSE_VALUE=16000000
     USE_HAL_DRIVER
     USE_FULL_LL_DRIVER
+    TETL_NDEBUG
 )
 
 

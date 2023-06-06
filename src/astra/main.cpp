@@ -40,8 +40,7 @@ auto timeit(char const* name, Func func)
 {
     using microseconds_t = etl::chrono::duration<float, etl::micro>;
 
-    auto runs    = etl::array<float, N>{};
-    auto results = etl::array<decltype(func()), N>{};
+    auto runs = etl::array<float, N>{};
 
     func();
     func();
@@ -49,15 +48,14 @@ auto timeit(char const* name, Func func)
 
     for (auto i{0U}; i < N; ++i)
     {
-        auto const start  = astra::mcu.system.GetUs();
-        auto const result = func();
-        auto const stop   = astra::mcu.system.GetUs();
+        auto const start = astra::mcu.system.GetUs();
+        func();
+        auto const stop = astra::mcu.system.GetUs();
 
-        results[i] = result;
-        runs[i]    = etl::chrono::duration_cast<microseconds_t>(etl::chrono::microseconds{stop - start}).count();
+        runs[i] = etl::chrono::duration_cast<microseconds_t>(etl::chrono::microseconds{stop - start}).count();
     }
 
-    astra::mcu.PrintLine("%30s Runs: %d - Average: %d us - Min: %d us - Max: %d us\n", name, etl::size(results),
+    astra::mcu.PrintLine("%30s Runs: %4d - Average: %4d us - Min: %4d us - Max: %4d us\n", name, N,
                          int(etl::reduce(runs.begin(), end(runs), 0.0F) / static_cast<float>(runs.size())),
                          int(*etl::min_element(runs.begin(), runs.end())),
                          int(*etl::max_element(runs.begin(), runs.end())));
@@ -87,6 +85,57 @@ static auto make_random_int_buffer(auto& rng) -> etl::array<T, N>
     return buf;
 };
 
+template<typename Float, int N>
+struct fft_benchmark
+{
+    fft_benchmark() = default;
+
+    auto operator()() -> void
+    {
+        etl::generate(_buf.begin(), _buf.end(), [i = 0]() mutable { return static_cast<Float>(i++); });
+        ta::fft::radix2_inplace<Float, N>(_buf, _tw);
+        etl::doNotOptimize(_buf.front());
+        etl::doNotOptimize(_buf.back());
+    }
+
+private:
+    etl::array<etl::complex<Float>, N> _buf{};
+    etl::array<etl::complex<Float>, N / 2> _tw{ta::fft::make_twiddle_factors<float, N>()};
+};
+
+template<int N>
+struct fft_benchmark_fixed
+{
+    fft_benchmark_fixed()
+    {
+        auto rng  = etl::xoshiro128plusplus{astra::mcu.GetRandomValue()};
+        auto dist = etl::uniform_int_distribution<int16_t>{-9999, 9999};
+        auto gen  = [&rng, &dist]()
+        {
+            auto const real = dist(rng);
+            auto const imag = dist(rng);
+            return ta::fft::complex_q15_t{
+                real == 0 ? int16_t(1) : real,
+                imag == 0 ? int16_t(1) : imag,
+            };
+        };
+
+        etl::generate(_tw.begin(), _tw.end(), gen);
+    }
+
+    auto operator()() -> void
+    {
+        etl::generate(_buf.begin(), _buf.end(), [i = 0]() mutable { return static_cast<int16_t>(i++); });
+        ta::fft::radix2_inplace<N>(_buf, _tw);
+        etl::doNotOptimize(_buf.front());
+        etl::doNotOptimize(_buf.back());
+    }
+
+private:
+    etl::array<ta::fft::complex_q15_t, N> _buf{};
+    etl::array<ta::fft::complex_q15_t, N / 2> _tw{};
+};
+
 auto main() -> int
 {
     using namespace astra;
@@ -96,171 +145,24 @@ auto main() -> int
     astra::mcu.StartLog(true);
     astra::mcu.PrintLine("Daisy Patch SM started. Test Beginning");
 
-    // {
-    //     auto const tw = ta::fft::make_twiddle_factors<float, 16>();
-    //     auto buf      = etl::array<etl::complex<float>, 16>{};
-
-    //     etl::timeit<256>("ta::fft::radix2_inplace<float, 16>(buf, tw)",
-    //                      [&buf, &tw]
-    //                      {
-    //                          etl::generate(buf.begin(), buf.end(),
-    //                                        [i = 0]() mutable { return static_cast<float>(i++); });
-    //                          ta::fft::radix2_inplace<float, 16>(buf, tw);
-    //                          return buf.back();
-    //                      });
-    // }
-
-    // {
-    //     auto const tw = ta::fft::make_twiddle_factors<float, 64>();
-    //     auto buf      = etl::array<etl::complex<float>, 64>{};
-
-    //     etl::timeit<256>("ta::fft::radix2_inplace<float, 64>(buf, tw)",
-    //                      [&buf, &tw]
-    //                      {
-    //                          etl::generate(buf.begin(), buf.end(),
-    //                                        [i = 0]() mutable { return static_cast<float>(i++); });
-    //                          ta::fft::radix2_inplace<float, 64>(buf, tw);
-    //                          return buf.back();
-    //                      });
-    // }
-
-    // {
-    //     auto const tw = ta::fft::make_twiddle_factors<float, 128>();
-    //     auto buf      = etl::array<etl::complex<float>, 128>{};
-
-    //     etl::timeit<256>("ta::fft::radix2_inplace<float, 128>(buf, tw)",
-    //                      [&buf, &tw]
-    //                      {
-    //                          etl::generate(buf.begin(), buf.end(),
-    //                                        [i = 0]() mutable { return static_cast<float>(i++); });
-    //                          ta::fft::radix2_inplace<float, 128>(buf, tw);
-    //                          return buf.back();
-    //                      });
-    // }
-
-    // {
-    //     auto const tw = ta::fft::make_twiddle_factors<float, 256>();
-    //     auto buf      = etl::array<etl::complex<float>, 256>{};
-
-    //     etl::timeit<256>("ta::fft::radix2_inplace<float, 256>(buf, tw)",
-    //                      [&buf, &tw]
-    //                      {
-    //                          etl::generate(buf.begin(), buf.end(),
-    //                                        [i = 0]() mutable { return static_cast<float>(i++); });
-    //                          ta::fft::radix2_inplace<float, 256>(buf, tw);
-    //                          return buf.back();
-    //                      });
-    // }
-
-    // {
-    //     auto const tw = ta::fft::make_twiddle_factors<float, 512>();
-    //     auto buf      = etl::array<etl::complex<float>, 512>{};
-
-    //     etl::timeit<256>("ta::fft::radix2_inplace<float, 512>(buf, tw)",
-    //                      [&buf, &tw]
-    //                      {
-    //                          etl::generate(buf.begin(), buf.end(),
-    //                                        [i = 0]() mutable { return static_cast<float>(i++); });
-    //                          ta::fft::radix2_inplace<float, 512>(buf, tw);
-    //                          return buf.back();
-    //                      });
-    // }
-
-    // {
-    //     auto const tw = ta::fft::make_twiddle_factors<float, 1024>();
-    //     auto buf      = etl::array<etl::complex<float>, 1024>{};
-
-    //     etl::timeit<256>("ta::fft::radix2_inplace<float, 1024>(buf, tw)",
-    //                      [&buf, &tw]
-    //                      {
-    //                          etl::generate(buf.begin(), buf.end(),
-    //                                        [i = 0]() mutable { return static_cast<float>(i++); });
-    //                          ta::fft::radix2_inplace<float, 1024>(buf, tw);
-    //                          return buf.back();
-    //                      });
-    // }
-    // {
-    //     auto const tw = ta::fft::make_twiddle_factors<float, 2048>();
-    //     auto buf      = etl::array<etl::complex<float>, 2048>{};
-
-    //     etl::timeit<256>("ta::fft::radix2_inplace<float, 2048>(buf, tw)",
-    //                      [&buf, &tw]
-    //                      {
-    //                          etl::generate(buf.begin(), buf.end(),
-    //                                        [i = 0]() mutable { return static_cast<float>(i++); });
-    //                          ta::fft::radix2_inplace<float, 2048>(buf, tw);
-    //                          return buf.back();
-    //                      });
-    // }
-
-    auto const seed = astra::mcu.GetRandomValue();
-    astra::mcu.PrintLine("Random Seed: %d", static_cast<int>(seed));
-    auto rng = etl::xoshiro128plusplus{seed};
-
-    {
-        auto lhs             = make_random_int_buffer<int32_t, 1024>(rng);
-        auto rhs             = make_random_int_buffer<int32_t, 1024>(rng);
-        auto const benchmark = [&lhs, &rhs]
-        {
-            etl::transform(lhs.begin(), lhs.end(), rhs.begin(), lhs.begin(), etl::divides{});
-            return lhs.front() + lhs.back();
-        };
-        etl::timeit<256>("etl::array<int32_t, 1024> / etl::array<int32_t, 1024>", benchmark);
-    }
-
-    {
-        auto lhs             = make_random_int_buffer<int32_t, 2048>(rng);
-        auto rhs             = make_random_int_buffer<int32_t, 2048>(rng);
-        auto const benchmark = [&lhs, &rhs]
-        {
-            etl::transform(lhs.begin(), lhs.end(), rhs.begin(), lhs.begin(), etl::divides{});
-            return lhs.front() + lhs.back();
-        };
-        etl::timeit<256>("etl::array<int32_t, 2048> / etl::array<int32_t, 2048>", benchmark);
-    }
-
-    {
-        auto lhs             = make_random_int_buffer<int32_t, 4096>(rng);
-        auto rhs             = make_random_int_buffer<int32_t, 4096>(rng);
-        auto const benchmark = [&lhs, &rhs]
-        {
-            etl::transform(lhs.begin(), lhs.end(), rhs.begin(), lhs.begin(), etl::divides{});
-            return lhs.front() + lhs.back();
-        };
-        etl::timeit<256>("etl::array<int32_t, 4096> / etl::array<int32_t, 4096>", benchmark);
-    }
-
-    {
-        auto lhs             = make_random_float_buffer<float, 1024>(rng);
-        auto rhs             = make_random_float_buffer<float, 1024>(rng);
-        auto const benchmark = [&lhs, &rhs]
-        {
-            etl::transform(lhs.begin(), lhs.end(), rhs.begin(), lhs.begin(), etl::divides{});
-            return lhs.front() + lhs.back();
-        };
-        etl::timeit<256>("etl::array<float, 1024> / etl::array<float, 1024>", benchmark);
-    }
-
-    {
-        auto lhs             = make_random_float_buffer<float, 2048>(rng);
-        auto rhs             = make_random_float_buffer<float, 2048>(rng);
-        auto const benchmark = [&lhs, &rhs]
-        {
-            etl::transform(lhs.begin(), lhs.end(), rhs.begin(), lhs.begin(), etl::divides{});
-            return lhs.front() + lhs.back();
-        };
-        etl::timeit<256>("etl::array<float, 2048> / etl::array<float, 2048>", benchmark);
-    }
-    {
-        auto lhs             = make_random_float_buffer<float, 4096>(rng);
-        auto rhs             = make_random_float_buffer<float, 4096>(rng);
-        auto const benchmark = [&lhs, &rhs]
-        {
-            etl::transform(lhs.begin(), lhs.end(), rhs.begin(), lhs.begin(), etl::divides{});
-            return lhs.front() + lhs.back();
-        };
-        etl::timeit<256>("etl::array<float, 4096> / etl::array<float, 4096>", benchmark);
-    }
+    etl::timeit<1024>("radix2_inplace<float, 16>   - ", fft_benchmark<float, 16>{});
+    etl::timeit<1024>("radix2_inplace<q15_t, 16>   - ", fft_benchmark_fixed<16>{});
+    etl::timeit<1024>("radix2_inplace<float, 32>   - ", fft_benchmark<float, 32>{});
+    etl::timeit<1024>("radix2_inplace<q15_t, 32>   - ", fft_benchmark_fixed<32>{});
+    etl::timeit<1024>("radix2_inplace<float, 64>   - ", fft_benchmark<float, 64>{});
+    etl::timeit<1024>("radix2_inplace<q15_t, 64>   - ", fft_benchmark_fixed<64>{});
+    etl::timeit<1024>("radix2_inplace<float, 128>  - ", fft_benchmark<float, 128>{});
+    etl::timeit<1024>("radix2_inplace<q15_t, 128>  - ", fft_benchmark_fixed<128>{});
+    etl::timeit<1024>("radix2_inplace<float, 256>  - ", fft_benchmark<float, 256>{});
+    etl::timeit<1024>("radix2_inplace<q15_t, 256>  - ", fft_benchmark_fixed<256>{});
+    etl::timeit<1024>("radix2_inplace<float, 512>  - ", fft_benchmark<float, 512>{});
+    etl::timeit<1024>("radix2_inplace<q15_t, 512>  - ", fft_benchmark_fixed<512>{});
+    etl::timeit<1024>("radix2_inplace<float, 1024> - ", fft_benchmark<float, 1024>{});
+    etl::timeit<1024>("radix2_inplace<q15_t, 1024> - ", fft_benchmark_fixed<1024>{});
+    etl::timeit<1024>("radix2_inplace<float, 2048> - ", fft_benchmark<float, 2048>{});
+    etl::timeit<1024>("radix2_inplace<q15_t, 2048> - ", fft_benchmark_fixed<2048>{});
+    etl::timeit<1024>("radix2_inplace<float, 4096> - ", fft_benchmark<float, 4096>{});
+    etl::timeit<1024>("radix2_inplace<q15_t, 4096> - ", fft_benchmark_fixed<4096>{});
 
     astra::mcu.SetAudioSampleRate(SAMPLE_RATE);
     astra::mcu.SetAudioBlockSize(BLOCK_SIZE);
