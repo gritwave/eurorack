@@ -1,3 +1,4 @@
+#include <ta/core/benchmark.hpp>
 #include <ta/fft/radix2.hpp>
 
 #include <etl/algorithm.hpp>
@@ -94,8 +95,8 @@ struct fft_benchmark
     {
         etl::generate(_buf.begin(), _buf.end(), [i = 0]() mutable { return static_cast<Float>(i++); });
         ta::fft::radix2_inplace<Float, N>(_buf, _tw);
-        etl::doNotOptimize(_buf.front());
-        etl::doNotOptimize(_buf.back());
+        ta::doNotOptimize(_buf.front());
+        ta::doNotOptimize(_buf.back());
     }
 
 private:
@@ -114,7 +115,7 @@ struct fft_benchmark_fixed
         {
             auto const real = dist(rng);
             auto const imag = dist(rng);
-            return ta::fft::complex_q15_t{
+            return ta::complex_q15_t{
                 real == 0 ? int16_t(1) : real,
                 imag == 0 ? int16_t(1) : imag,
             };
@@ -127,13 +128,13 @@ struct fft_benchmark_fixed
     {
         etl::generate(_buf.begin(), _buf.end(), [i = 0]() mutable { return static_cast<int16_t>(i++); });
         ta::fft::radix2_inplace<N>(_buf, _tw);
-        etl::doNotOptimize(_buf.front());
-        etl::doNotOptimize(_buf.back());
+        ta::doNotOptimize(_buf.front());
+        ta::doNotOptimize(_buf.back());
     }
 
 private:
-    etl::array<ta::fft::complex_q15_t, N> _buf{};
-    etl::array<ta::fft::complex_q15_t, N / 2> _tw{};
+    etl::array<ta::complex_q15_t, N> _buf{};
+    etl::array<ta::complex_q15_t, N / 2> _tw{};
 };
 
 auto main() -> int
