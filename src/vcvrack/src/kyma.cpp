@@ -1,6 +1,6 @@
 #include "plugin.hpp"
 
-#include "ta/eurorack/hades.hpp"
+#include "gw/eurorack/hades.hpp"
 
 struct Kyma final : Module
 {

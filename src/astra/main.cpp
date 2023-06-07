@@ -1,5 +1,5 @@
-#include <ta/core/benchmark.hpp>
-#include <ta/fft/radix2.hpp>
+#include <gw/core/benchmark.hpp>
+#include <gw/fft/radix2.hpp>
 
 #include <etl/algorithm.hpp>
 #include <etl/array.hpp>
@@ -94,14 +94,14 @@ struct fft_benchmark
     auto operator()() -> void
     {
         etl::generate(_buf.begin(), _buf.end(), [i = 0]() mutable { return static_cast<Float>(i++); });
-        ta::fft::radix2_inplace<Float, N>(_buf, _tw);
-        ta::doNotOptimize(_buf.front());
-        ta::doNotOptimize(_buf.back());
+        gw::fft::radix2_inplace<Float, N>(_buf, _tw);
+        gw::doNotOptimize(_buf.front());
+        gw::doNotOptimize(_buf.back());
     }
 
 private:
     etl::array<etl::complex<Float>, N> _buf{};
-    etl::array<etl::complex<Float>, N / 2> _tw{ta::fft::make_twiddle_factors<float, N>()};
+    etl::array<etl::complex<Float>, N / 2> _tw{gw::fft::make_twiddle_factors<float, N>()};
 };
 
 template<int N>
@@ -115,7 +115,7 @@ struct fft_benchmark_fixed
         {
             auto const real = dist(rng);
             auto const imag = dist(rng);
-            return ta::complex_q15_t{
+            return gw::complex_q15_t{
                 real == 0 ? int16_t(1) : real,
                 imag == 0 ? int16_t(1) : imag,
             };
@@ -127,14 +127,14 @@ struct fft_benchmark_fixed
     auto operator()() -> void
     {
         etl::generate(_buf.begin(), _buf.end(), [i = 0]() mutable { return static_cast<int16_t>(i++); });
-        ta::fft::radix2_inplace<N>(_buf, _tw);
-        ta::doNotOptimize(_buf.front());
-        ta::doNotOptimize(_buf.back());
+        gw::fft::radix2_inplace<N>(_buf, _tw);
+        gw::doNotOptimize(_buf.front());
+        gw::doNotOptimize(_buf.back());
     }
 
 private:
-    etl::array<ta::complex_q15_t, N> _buf{};
-    etl::array<ta::complex_q15_t, N / 2> _tw{};
+    etl::array<gw::complex_q15_t, N> _buf{};
+    etl::array<gw::complex_q15_t, N / 2> _tw{};
 };
 
 auto main() -> int
