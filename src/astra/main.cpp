@@ -13,24 +13,7 @@
 namespace astra
 {
 
-static constexpr auto BLOCK_SIZE  = 512U;
-static constexpr auto SAMPLE_RATE = 44'100.0F;
-
 auto mcu = daisy::patch_sm::DaisyPatchSM{};
-
-auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::OutputBuffer out, size_t size) -> void
-{
-    mcu.ProcessAllControls();
-
-    for (size_t i = 0; i < size; ++i)
-    {
-        auto const left  = IN_L[i];
-        auto const right = IN_R[i];
-
-        OUT_L[i] = left;
-        OUT_R[i] = right;
-    }
-}
 
 }  // namespace astra
 
@@ -105,9 +88,9 @@ private:
 };
 
 template<int N>
-struct fft_benchmark_fixed
+struct fft_benchmark_q15
 {
-    fft_benchmark_fixed()
+    fft_benchmark_q15()
     {
         auto rng  = etl::xoshiro128plusplus{astra::mcu.GetRandomValue()};
         auto dist = etl::uniform_int_distribution<int16_t>{-9999, 9999};
@@ -146,28 +129,24 @@ auto main() -> int
     astra::mcu.StartLog(true);
     astra::mcu.PrintLine("Daisy Patch SM started. Test Beginning");
 
-    etl::timeit<256>("radix2_inplace<float, 16>   - ", fft_benchmark<float, 16>{});
-    etl::timeit<256>("radix2_inplace<q15_t, 16>   - ", fft_benchmark_fixed<16>{});
-    etl::timeit<256>("radix2_inplace<float, 32>   - ", fft_benchmark<float, 32>{});
-    etl::timeit<256>("radix2_inplace<q15_t, 32>   - ", fft_benchmark_fixed<32>{});
-    etl::timeit<256>("radix2_inplace<float, 64>   - ", fft_benchmark<float, 64>{});
-    etl::timeit<256>("radix2_inplace<q15_t, 64>   - ", fft_benchmark_fixed<64>{});
-    etl::timeit<256>("radix2_inplace<float, 128>  - ", fft_benchmark<float, 128>{});
-    etl::timeit<256>("radix2_inplace<q15_t, 128>  - ", fft_benchmark_fixed<128>{});
-    etl::timeit<256>("radix2_inplace<float, 256>  - ", fft_benchmark<float, 256>{});
-    etl::timeit<256>("radix2_inplace<q15_t, 256>  - ", fft_benchmark_fixed<256>{});
-    etl::timeit<256>("radix2_inplace<float, 512>  - ", fft_benchmark<float, 512>{});
-    etl::timeit<256>("radix2_inplace<q15_t, 512>  - ", fft_benchmark_fixed<512>{});
-    etl::timeit<256>("radix2_inplace<float, 1024> - ", fft_benchmark<float, 1024>{});
-    etl::timeit<256>("radix2_inplace<q15_t, 1024> - ", fft_benchmark_fixed<1024>{});
-    etl::timeit<256>("radix2_inplace<float, 2048> - ", fft_benchmark<float, 2048>{});
-    etl::timeit<256>("radix2_inplace<q15_t, 2048> - ", fft_benchmark_fixed<2048>{});
-    // etl::timeit<256>("radix2_inplace<float, 4096> - ", fft_benchmark<float, 4096>{});
-    // etl::timeit<256>("radix2_inplace<q15_t, 4096> - ", fft_benchmark_fixed<4096>{});
-
-    astra::mcu.SetAudioSampleRate(SAMPLE_RATE);
-    astra::mcu.SetAudioBlockSize(BLOCK_SIZE);
-    astra::mcu.StartAudio(audioCallback);
+    etl::timeit<128>("radix2_inplace<float, 16>   - ", fft_benchmark<float, 16>{});
+    etl::timeit<128>("radix2_inplace<q15_t, 16>   - ", fft_benchmark_q15<16>{});
+    etl::timeit<128>("radix2_inplace<float, 32>   - ", fft_benchmark<float, 32>{});
+    etl::timeit<128>("radix2_inplace<q15_t, 32>   - ", fft_benchmark_q15<32>{});
+    etl::timeit<128>("radix2_inplace<float, 64>   - ", fft_benchmark<float, 64>{});
+    etl::timeit<128>("radix2_inplace<q15_t, 64>   - ", fft_benchmark_q15<64>{});
+    etl::timeit<128>("radix2_inplace<float, 128>  - ", fft_benchmark<float, 128>{});
+    etl::timeit<128>("radix2_inplace<q15_t, 128>  - ", fft_benchmark_q15<128>{});
+    etl::timeit<128>("radix2_inplace<float, 256>  - ", fft_benchmark<float, 256>{});
+    etl::timeit<128>("radix2_inplace<q15_t, 256>  - ", fft_benchmark_q15<256>{});
+    etl::timeit<128>("radix2_inplace<float, 512>  - ", fft_benchmark<float, 512>{});
+    etl::timeit<128>("radix2_inplace<q15_t, 512>  - ", fft_benchmark_q15<512>{});
+    etl::timeit<128>("radix2_inplace<float, 1024> - ", fft_benchmark<float, 1024>{});
+    etl::timeit<128>("radix2_inplace<q15_t, 1024> - ", fft_benchmark_q15<1024>{});
+    // etl::timeit<128>("radix2_inplace<float, 2048> - ", fft_benchmark<float, 2048>{});
+    // etl::timeit<128>("radix2_inplace<q15_t, 2048> - ", fft_benchmark_q15<2048>{});
+    // etl::timeit<128>("radix2_inplace<float, 4096> - ", fft_benchmark<float, 4096>{});
+    // etl::timeit<128>("radix2_inplace<q15_t, 4096> - ", fft_benchmark_q15<4096>{});
 
     while (true) {}
 }
