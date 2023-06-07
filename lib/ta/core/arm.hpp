@@ -30,6 +30,34 @@ TA_ALWAYS_INLINE inline auto qsub16(etl::uint32_t op1, etl::uint32_t op2) -> etl
     return result;
 }
 
+TA_ALWAYS_INLINE inline auto smuad(etl::uint32_t op1, etl::uint32_t op2) -> etl::uint32_t
+{
+    auto result = etl::uint32_t{};
+    __asm volatile("smuad %0, %1, %2" : "=r"(result) : "r"(op1), "r"(op2));
+    return result;
+}
+
+TA_ALWAYS_INLINE inline auto smuadx(etl::uint32_t op1, etl::uint32_t op2) -> etl::uint32_t
+{
+    auto result = etl::uint32_t{};
+    __asm volatile("smuadx %0, %1, %2" : "=r"(result) : "r"(op1), "r"(op2));
+    return result;
+}
+
+TA_ALWAYS_INLINE inline auto smusd(etl::uint32_t op1, etl::uint32_t op2) -> etl::uint32_t
+{
+    auto result = etl::uint32_t{};
+    __asm volatile("smusd %0, %1, %2" : "=r"(result) : "r"(op1), "r"(op2));
+    return result;
+}
+
+TA_ALWAYS_INLINE inline auto smusdx(etl::uint32_t op1, etl::uint32_t op2) -> etl::uint32_t
+{
+    auto result = etl::uint32_t{};
+    __asm volatile("smusdx %0, %1, %2" : "=r"(result) : "r"(op1), "r"(op2));
+    return result;
+}
+
 TA_ALWAYS_INLINE inline auto ssat16(etl::int32_t x) -> etl::int16_t
 {
 #if __arm__
