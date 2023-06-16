@@ -2,8 +2,6 @@
 
 #include <etl/concepts.hpp>
 
-#include <cmath>
-
 namespace gw
 {
 

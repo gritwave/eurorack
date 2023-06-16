@@ -14,17 +14,6 @@
 
 #include <cmath>
 
-namespace etl
-{
-
-template<typename T>
-inline auto polar(T const& rho, T const& theta) -> complex<T>
-{
-    return complex<T>(rho * std::cos(theta), rho * std::sin(theta));
-}
-
-}  // namespace etl
-
 namespace gw::fft
 {
 
@@ -58,7 +47,7 @@ auto radix2_inplace(etl::span<etl::complex<Float>, Extent> x, etl::span<etl::com
 {
     // bit-reverse ordering
     auto const len   = x.size();
-    auto const order = static_cast<int>(std::lround(std::log2(len)));
+    auto const order = static_cast<int>(std::lround(etl::log2(len)));
 
     // // Rearrange the input in bit-reversed order
     // unsigned j = 0;
@@ -99,11 +88,45 @@ auto radix2_inplace(etl::span<etl::complex<Float>, Extent> x, etl::span<etl::com
     }
 }
 
+template<typename Float, etl::size_t Extent>
+auto radix2_inplace_alt(etl::span<etl::complex<Float>, Extent> x, etl::span<etl::complex<Float> const, Extent / 2> w)
+{
+    auto const len = x.size();
+
+    auto stage_size = 2U;
+    while (stage_size <= len)
+    {
+        auto const halfStage = stage_size / 2;
+        auto const k_step    = len / stage_size;
+
+        for (auto i{0U}; i < len; i += stage_size)
+        {
+            for (auto k{i}; k < i + halfStage; ++k)
+            {
+                auto const index = k - i;
+                auto const tw    = w[index * k_step];
+
+                auto const idx1 = k;
+                auto const idx2 = k + halfStage;
+
+                auto const even = x[idx1];
+                auto const odd  = x[idx2];
+
+                auto const tmp = odd * tw;
+                x[idx1]        = even + tmp;
+                x[idx2]        = even - tmp;
+            }
+        }
+
+        stage_size *= 2;
+    }
+}
+
 template<typename Float, etl::size_t Size>
 auto radix2_inplace(etl::span<etl::complex<Float>, Size> x, twiddle_factor_lut<Float, Size> const& w) -> void
 {
     auto const len   = x.size();
-    auto const order = static_cast<int>(std::lround(std::log2(len)));
+    auto const order = static_cast<int>(std::lround(etl::log2(len)));
 
     // butterfly computation
     for (auto stage = 0; stage < order; ++stage)
@@ -133,30 +156,60 @@ auto radix2_inplace(etl::span<etl::complex<Float>, Size> x, twiddle_factor_lut<F
 template<etl::size_t Extent>
 auto radix2_inplace(etl::span<complex_q15_t, Extent> x, etl::span<complex_q15_t const, Extent / 2> w) -> void
 {
-    auto const len   = x.size();
-    auto const order = static_cast<int>(std::lround(std::log2(len)));
+    // auto const len   = x.size();
+    // auto const order = static_cast<int>(std::lround(etl::log2(len)));
 
-    // butterfly computation
-    for (auto stage = 0; stage < order; ++stage)
+    // // butterfly computation
+    // for (auto stage = 0; stage < order; ++stage)
+    // {
+    //     auto const stage_length = power<2>(stage);
+    //     auto const stride       = power<2>(stage + 1);
+    //     auto const tw_stride    = power<2>(order - stage - 1);
+
+    //     for (auto k = 0; etl::cmp_less(k, len); k += stride)
+    //     {
+    //         for (auto pair = 0; pair < stage_length; ++pair)
+    //         {
+    //             auto const tw = w[pair * tw_stride];
+
+    //             auto const i1 = k + pair;
+    //             auto const i2 = k + pair + stage_length;
+
+    //             auto const temp = x[i1] + tw * x[i2];
+    //             x[i2]           = x[i1] - tw * x[i2];
+    //             x[i1]           = temp;
+    //         }
+    //     }
+    // }
+
+    auto const len = x.size();
+
+    auto stage_size = 2U;
+    while (stage_size <= len)
     {
-        auto const stage_length = power<2>(stage);
-        auto const stride       = power<2>(stage + 1);
-        auto const tw_stride    = power<2>(order - stage - 1);
+        auto const halfStage = stage_size / 2;
+        auto const k_step    = len / stage_size;
 
-        for (auto k = 0; etl::cmp_less(k, len); k += stride)
+        for (auto i{0U}; i < len; i += stage_size)
         {
-            for (auto pair = 0; pair < stage_length; ++pair)
+            for (auto k{i}; k < i + halfStage; ++k)
             {
-                auto const tw = w[pair * tw_stride];
+                auto const index = k - i;
+                auto const tw    = w[index * k_step];
 
-                auto const i1 = k + pair;
-                auto const i2 = k + pair + stage_length;
+                auto const idx1 = k;
+                auto const idx2 = k + halfStage;
 
-                auto const temp = x[i1] + tw * x[i2];
-                x[i2]           = x[i1] - tw * x[i2];
-                x[i1]           = temp;
+                auto const even = x[idx1];
+                auto const odd  = x[idx2];
+
+                auto const tmp = odd * tw;
+                x[idx1]        = even + tmp;
+                x[idx2]        = even - tmp;
             }
         }
+
+        stage_size *= 2;
     }
 }
 

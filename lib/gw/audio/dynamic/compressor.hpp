@@ -3,6 +3,7 @@
 #include <gw/audio/unit/time.hpp>
 
 #include <etl/algorithm.hpp>
+#include <etl/cmath.hpp>
 #include <etl/concepts.hpp>
 #include <etl/numbers.hpp>
 #include <etl/optional.hpp>
@@ -89,7 +90,7 @@ auto Compressor<SampleType>::processSample(SampleType signal, SampleType sideCha
     if (xl > _ylPrev) { yl = alphaA * _ylPrev + (SampleType(1) - alphaA) * xl; }
     else { yl = alphaR * _ylPrev + (SampleType(1) - alphaR) * xl; }
 
-    auto const controlCompressor = std::pow(SampleType(10), (SampleType(1) - yl) * SampleType(0.05));
+    auto const controlCompressor = etl::pow(SampleType(10), (SampleType(1) - yl) * SampleType(0.05));
 
     _reduction = controlCompressor;
     _ylPrev    = yl;
@@ -122,7 +123,7 @@ auto Compressor<SampleType>::calculateTimeAlpha(Seconds<SampleType> value) const
 
     auto const sec = value.count();
     if (sec == SampleType(0)) { return SampleType(0); }
-    return std::pow(SampleType(1) / euler, SampleType(1) / static_cast<SampleType>(_sampleRate) / sec);
+    return etl::pow(SampleType(1) / euler, SampleType(1) / static_cast<SampleType>(_sampleRate) / sec);
 }
 
 }  // namespace gw

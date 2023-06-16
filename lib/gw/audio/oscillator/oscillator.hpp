@@ -70,7 +70,7 @@ template<etl::floating_point SampleType>
 auto Oscillator<SampleType>::addPhaseOffset(SampleType offset) noexcept -> void
 {
     _phase += offset;
-    _phase -= std::floor(_phase);
+    _phase -= etl::floor(_phase);
 }
 
 template<etl::floating_point SampleType>
@@ -108,7 +108,7 @@ template<etl::floating_point SampleType>
 auto Oscillator<SampleType>::sine(SampleType phase) noexcept -> SampleType
 {
     static constexpr auto twoPi = static_cast<SampleType>(etl::numbers::pi) * SampleType{2};
-    return std::sin(phase * twoPi);
+    return etl::sin(phase * twoPi);
 }
 
 template<etl::floating_point SampleType>

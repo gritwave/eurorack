@@ -1,11 +1,10 @@
 #pragma once
 
 #include <etl/algorithm.hpp>
+#include <etl/cmath.hpp>
 #include <etl/concepts.hpp>
 #include <etl/numbers.hpp>
 #include <etl/numeric.hpp>
-
-#include <cmath>
 
 namespace gw
 {
@@ -53,7 +52,7 @@ auto DynamicSmoothing<SampleType, SmoothingType>::prepare(SampleType sampleRate)
     if constexpr (SmoothingType == DynamicSmoothingType::Efficient)
     {
         auto const wc = _baseFrequency / sampleRate;
-        auto const gc = std::tan(static_cast<SampleType>(etl::numbers::pi) * wc);
+        auto const gc = etl::tan(static_cast<SampleType>(etl::numbers::pi) * wc);
 
         _state.g0    = SampleType(2) * gc / (SampleType(1) + gc);
         _state.sense = _sensitivity * SampleType(4);

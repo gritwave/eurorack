@@ -4,8 +4,6 @@
 #include <etl/concepts.hpp>
 #include <etl/numbers.hpp>
 
-#include <cmath>
-
 namespace gw
 {
 
@@ -77,13 +75,13 @@ auto CrossFade<SampleType>::update() -> void
         }
         case CrossFadeCurve::ConstantPower:
         {
-            _gainR = std::sin(_parameter.mix * halfPi);
-            _gainL = std::sin((SampleType{1} - _parameter.mix) * halfPi);
+            _gainR = etl::sin(_parameter.mix * halfPi);
+            _gainL = etl::sin((SampleType{1} - _parameter.mix) * halfPi);
             return;
         }
         case CrossFadeCurve::Logarithmic:
         {
-            _gainR = std::exp(_parameter.mix * (logMax - logMin) + logMin);
+            _gainR = etl::exp(_parameter.mix * (logMax - logMin) + logMin);
             _gainL = SampleType{1} - _gainR;
             return;
         }

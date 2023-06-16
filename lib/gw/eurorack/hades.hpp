@@ -74,7 +74,7 @@ private:
         Parameter _parameter{};
         EnvelopeFollower<float> _envelopeFollower{};
         WhiteNoise<float> _noise{};
-        WaveShaper<float> _waveShaper{std::tanh};
+        WaveShaper<float> _waveShaper{etl::tanh};
         Compressor<float> _compressor;
     };
 

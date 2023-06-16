@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cmath>
+#include <etl/cmath.hpp>
 
 namespace gw
 {
@@ -35,7 +35,7 @@ private:
 
     static float calcCoef(float rate, float targetRatio)
     {
-        return std::exp(-std::log((1.0F + targetRatio) / targetRatio) / rate);
+        return etl::exp(-etl::log((1.0F + targetRatio) / targetRatio) / rate);
     }
 
     State _state{State::Idle};

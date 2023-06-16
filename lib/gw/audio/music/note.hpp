@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cmath>
+#include <etl/cmath.hpp>
 
 namespace gw
 {
@@ -8,7 +8,7 @@ namespace gw
 template<typename T>
 [[nodiscard]] auto noteToHertz(T note) noexcept -> T
 {
-    return std::pow(T(2), (note - T(69)) / T(12)) * T(440);
+    return etl::pow(T(2), (note - T(69)) / T(12)) * T(440);
 }
 
 }  // namespace gw

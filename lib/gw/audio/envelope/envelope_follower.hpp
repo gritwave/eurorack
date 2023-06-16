@@ -6,8 +6,6 @@
 #include <etl/cmath.hpp>
 #include <etl/concepts.hpp>
 
-#include <cmath>
-
 namespace gw
 {
 
@@ -56,7 +54,7 @@ auto EnvelopeFollower<SampleType>::prepare(SampleType sampleRate) noexcept -> vo
 template<etl::floating_point SampleType>
 auto EnvelopeFollower<SampleType>::processSample(SampleType in) noexcept -> SampleType
 {
-    auto const env  = std::abs(in);
+    auto const env  = etl::abs(in);
     auto const coef = env > _envelope ? _attackCoef : _releaseCoef;
 
     _envelope = coef * (_envelope - env) + env;
@@ -77,8 +75,8 @@ auto EnvelopeFollower<SampleType>::update() noexcept -> void
     auto const attack  = _parameter.attack.count();
     auto const release = _parameter.release.count();
 
-    _attackCoef  = std::exp(log001 / (attack * _sampleRate * SampleType(0.001)));
-    _releaseCoef = std::exp(log001 / (release * _sampleRate * SampleType(0.001)));
+    _attackCoef  = etl::exp(log001 / (attack * _sampleRate * SampleType(0.001)));
+    _releaseCoef = etl::exp(log001 / (release * _sampleRate * SampleType(0.001)));
 }
 
 }  // namespace gw

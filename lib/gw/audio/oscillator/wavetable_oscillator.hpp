@@ -79,7 +79,7 @@ template<etl::floating_point SampleType, etl::size_t TableSize>
 auto WavetableOscillator<SampleType, TableSize>::addPhaseOffset(SampleType offset) noexcept -> void
 {
     _phase += offset;
-    _phase -= std::floor(_phase);
+    _phase -= etl::floor(_phase);
 }
 
 template<etl::floating_point SampleType, etl::size_t TableSize>
