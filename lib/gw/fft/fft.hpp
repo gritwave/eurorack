@@ -42,7 +42,7 @@ private:
 };
 
 template<typename Float, etl::size_t Extent>
-auto radix2_inplace(etl::span<etl::complex<Float>, Extent> x, etl::span<etl::complex<Float> const, Extent / 2> w)
+auto c2c_dit2_kernel(etl::span<etl::complex<Float>, Extent> x, etl::span<etl::complex<Float> const, Extent / 2> w)
     -> void
 {
     // bit-reverse ordering
@@ -89,7 +89,7 @@ auto radix2_inplace(etl::span<etl::complex<Float>, Extent> x, etl::span<etl::com
 }
 
 template<typename Float, etl::size_t Extent>
-auto radix2_inplace_alt(etl::span<etl::complex<Float>, Extent> x, etl::span<etl::complex<Float> const, Extent / 2> w)
+auto c2c_dit2_kernel_alt(etl::span<etl::complex<Float>, Extent> x, etl::span<etl::complex<Float> const, Extent / 2> w)
 {
     auto const len = x.size();
 
@@ -123,7 +123,7 @@ auto radix2_inplace_alt(etl::span<etl::complex<Float>, Extent> x, etl::span<etl:
 }
 
 template<typename Float, etl::size_t Size>
-auto radix2_inplace(etl::span<etl::complex<Float>, Size> x, twiddle_factor_lut<Float, Size> const& w) -> void
+auto c2c_dit2_kernel(etl::span<etl::complex<Float>, Size> x, twiddle_factor_lut<Float, Size> const& w) -> void
 {
     auto const len   = x.size();
     auto const order = static_cast<int>(std::lround(etl::log2(len)));
@@ -154,7 +154,7 @@ auto radix2_inplace(etl::span<etl::complex<Float>, Size> x, twiddle_factor_lut<F
 }
 
 template<etl::size_t Extent>
-auto radix2_inplace(etl::span<complex_q15_t, Extent> x, etl::span<complex_q15_t const, Extent / 2> w) -> void
+auto c2c_dit2_kernel(etl::span<complex_q15_t, Extent> x, etl::span<complex_q15_t const, Extent / 2> w) -> void
 {
     // auto const len   = x.size();
     // auto const order = static_cast<int>(std::lround(etl::log2(len)));

@@ -2,7 +2,7 @@
 #include <gw/audio/dither/rectangle_dither.hpp>
 #include <gw/audio/dither/triangle_dither.hpp>
 #include <gw/core/benchmark.hpp>
-#include <gw/fft/radix2.hpp>
+#include <gw/fft/fft.hpp>
 
 #include <etl/algorithm.hpp>
 #include <etl/array.hpp>
@@ -81,7 +81,7 @@ struct fft_benchmark
     auto operator()() -> void
     {
         etl::generate(_buf.begin(), _buf.end(), [i = 0]() mutable { return static_cast<Float>(i++); });
-        gw::fft::radix2_inplace<Float, N>(_buf, _tw);
+        gw::fft::c2c_dit2_kernel<Float, N>(_buf, _tw);
         gw::doNotOptimize(_buf.front());
         gw::doNotOptimize(_buf.back());
     }
@@ -114,7 +114,7 @@ struct fft_benchmark_q15
     auto operator()() -> void
     {
         etl::generate(_buf.begin(), _buf.end(), [i = 0]() mutable { return static_cast<int16_t>(i++); });
-        gw::fft::radix2_inplace<N>(_buf, _tw);
+        gw::fft::c2c_dit2_kernel<N>(_buf, _tw);
         gw::doNotOptimize(_buf.front());
         gw::doNotOptimize(_buf.back());
     }
@@ -267,25 +267,25 @@ auto main() -> int
     astra::mcu.StartLog(true);
     astra::mcu.PrintLine("Daisy Patch SM started. Test Beginning");
 
-    // etl::timeit<128>("radix2_inplace<float, 16>   - ", fft_benchmark<float, 16>{});
-    // etl::timeit<128>("radix2_inplace<float, 32>   - ", fft_benchmark<float, 32>{});
-    // etl::timeit<128>("radix2_inplace<float, 64>   - ", fft_benchmark<float, 64>{});
-    // etl::timeit<128>("radix2_inplace<float, 128>  - ", fft_benchmark<float, 128>{});
-    // etl::timeit<128>("radix2_inplace<float, 256>  - ", fft_benchmark<float, 256>{});
-    // etl::timeit<128>("radix2_inplace<float, 512>  - ", fft_benchmark<float, 512>{});
-    // etl::timeit<128>("radix2_inplace<float, 1024> - ", fft_benchmark<float, 1024>{});
-    // etl::timeit<128>("radix2_inplace<float, 2048> - ", fft_benchmark<float, 2048>{});
-    // etl::timeit<128>("radix2_inplace<float, 4096> - ", fft_benchmark<float, 4096>{});
+    // etl::timeit<128>("c2c_dit2_kernel<float, 16>   - ", fft_benchmark<float, 16>{});
+    // etl::timeit<128>("c2c_dit2_kernel<float, 32>   - ", fft_benchmark<float, 32>{});
+    // etl::timeit<128>("c2c_dit2_kernel<float, 64>   - ", fft_benchmark<float, 64>{});
+    // etl::timeit<128>("c2c_dit2_kernel<float, 128>  - ", fft_benchmark<float, 128>{});
+    // etl::timeit<128>("c2c_dit2_kernel<float, 256>  - ", fft_benchmark<float, 256>{});
+    // etl::timeit<128>("c2c_dit2_kernel<float, 512>  - ", fft_benchmark<float, 512>{});
+    // etl::timeit<128>("c2c_dit2_kernel<float, 1024> - ", fft_benchmark<float, 1024>{});
+    // etl::timeit<128>("c2c_dit2_kernel<float, 2048> - ", fft_benchmark<float, 2048>{});
+    // etl::timeit<128>("c2c_dit2_kernel<float, 4096> - ", fft_benchmark<float, 4096>{});
 
-    // etl::timeit<128>("radix2_inplace<q15_t, 16>   - ", fft_benchmark_q15<16>{});
-    // etl::timeit<128>("radix2_inplace<q15_t, 32>   - ", fft_benchmark_q15<32>{});
-    // etl::timeit<128>("radix2_inplace<q15_t, 64>   - ", fft_benchmark_q15<64>{});
-    // etl::timeit<128>("radix2_inplace<q15_t, 128>  - ", fft_benchmark_q15<128>{});
-    // etl::timeit<128>("radix2_inplace<q15_t, 256>  - ", fft_benchmark_q15<256>{});
-    // etl::timeit<128>("radix2_inplace<q15_t, 512>  - ", fft_benchmark_q15<512>{});
-    // etl::timeit<128>("radix2_inplace<q15_t, 1024> - ", fft_benchmark_q15<1024>{});
-    // etl::timeit<128>("radix2_inplace<q15_t, 2048> - ", fft_benchmark_q15<2048>{});
-    // etl::timeit<128>("radix2_inplace<q15_t, 4096> - ", fft_benchmark_q15<4096>{});
+    // etl::timeit<128>("c2c_dit2_kernel<q15_t, 16>   - ", fft_benchmark_q15<16>{});
+    // etl::timeit<128>("c2c_dit2_kernel<q15_t, 32>   - ", fft_benchmark_q15<32>{});
+    // etl::timeit<128>("c2c_dit2_kernel<q15_t, 64>   - ", fft_benchmark_q15<64>{});
+    // etl::timeit<128>("c2c_dit2_kernel<q15_t, 128>  - ", fft_benchmark_q15<128>{});
+    // etl::timeit<128>("c2c_dit2_kernel<q15_t, 256>  - ", fft_benchmark_q15<256>{});
+    // etl::timeit<128>("c2c_dit2_kernel<q15_t, 512>  - ", fft_benchmark_q15<512>{});
+    // etl::timeit<128>("c2c_dit2_kernel<q15_t, 1024> - ", fft_benchmark_q15<1024>{});
+    // etl::timeit<128>("c2c_dit2_kernel<q15_t, 2048> - ", fft_benchmark_q15<2048>{});
+    // etl::timeit<128>("c2c_dit2_kernel<q15_t, 4096> - ", fft_benchmark_q15<4096>{});
 
     // etl::timeit<256>("cmul<64>    - ", cmul<64>{});
     // etl::timeit<256>("cmul<128>   - ", cmul<128>{});
