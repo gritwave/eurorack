@@ -1,7 +1,7 @@
 #pragma once
 
 #include <gw/math/complex.hpp>
-#include <gw/math/power.hpp>
+#include <gw/math/ipow.hpp>
 
 #include <etl/algorithm.hpp>
 #include <etl/array.hpp>
@@ -67,9 +67,9 @@ auto radix2_inplace(etl::span<etl::complex<Float>, Extent> x, etl::span<etl::com
     for (auto stage = 0; stage < order; ++stage)
     {
 
-        auto const stage_length = power<2>(stage);
-        auto const stride       = power<2>(stage + 1);
-        auto const tw_stride    = power<2>(order - stage - 1);
+        auto const stage_length = ipow<2>(stage);
+        auto const stride       = ipow<2>(stage + 1);
+        auto const tw_stride    = ipow<2>(order - stage - 1);
 
         for (auto k = 0; etl::cmp_less(k, len); k += stride)
         {
@@ -132,9 +132,9 @@ auto radix2_inplace(etl::span<etl::complex<Float>, Size> x, twiddle_factor_lut<F
     for (auto stage = 0; stage < order; ++stage)
     {
 
-        auto const stage_length = power<2>(stage);
-        auto const stride       = power<2>(stage + 1);
-        auto const tw_stride    = power<2>(order - stage - 1);
+        auto const stage_length = ipow<2>(stage);
+        auto const stride       = ipow<2>(stage + 1);
+        auto const tw_stride    = ipow<2>(order - stage - 1);
 
         for (auto k = 0; etl::cmp_less(k, len); k += stride)
         {
@@ -162,9 +162,9 @@ auto radix2_inplace(etl::span<complex_q15_t, Extent> x, etl::span<complex_q15_t 
     // // butterfly computation
     // for (auto stage = 0; stage < order; ++stage)
     // {
-    //     auto const stage_length = power<2>(stage);
-    //     auto const stride       = power<2>(stage + 1);
-    //     auto const tw_stride    = power<2>(order - stage - 1);
+    //     auto const stage_length = ipow<2>(stage);
+    //     auto const stride       = ipow<2>(stage + 1);
+    //     auto const tw_stride    = ipow<2>(order - stage - 1);
 
     //     for (auto k = 0; etl::cmp_less(k, len); k += stride)
     //     {

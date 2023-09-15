@@ -4,7 +4,7 @@ namespace gw
 {
 
 template<typename T>
-auto power(T base, T exponent) -> T
+auto ipow(T base, T exponent) -> T
 {
     T result = 1;
     for (T i = 0; i < exponent; i++) { result *= base; }
@@ -12,9 +12,9 @@ auto power(T base, T exponent) -> T
 }
 
 template<auto Base>
-auto power(decltype(Base) exponent) -> decltype(Base)
+auto ipow(decltype(Base) exponent) -> decltype(Base)
 {
-    return power(Base, exponent);
+    return ipow(Base, exponent);
 }
 
 }  // namespace gw
