@@ -90,7 +90,33 @@ struct c2c_roundtrip
     }
 
 private:
-    etl::array<etl::complex<Float>, N / 2> _tw{gw::fft::make_twiddle_factors<float, N>()};
+    etl::array<etl::complex<Float>, N / 2> _tw{gw::fft::make_twiddles_r2<Float, N>()};
+    etl::array<etl::complex<Float>, N> _buf{[] {
+        auto rng = etl::xoshiro128plusplus{42};
+        return make_noise<etl::complex<Float>, N>(rng);
+    }()};
+};
+
+template<typename Float, int N>
+struct static_c2c_roundtrip
+{
+    static_c2c_roundtrip() = default;
+
+    static constexpr auto size() noexcept { return N; }
+
+    auto operator()() -> void
+    {
+        auto x = etl::mdspan<etl::complex<Float>, etl::extents<etl::size_t, N>>{_buf.data()};
+        _plan(x, gw::fft::direction::forward);
+        _plan(x, gw::fft::direction::backward);
+        etl::linalg::scale(Float(1) / Float(N), x);
+
+        gw::doNotOptimize(_buf.front());
+        gw::doNotOptimize(_buf.back());
+    }
+
+private:
+    gw::fft::static_fft_plan<etl::complex<Float>, gw::fft::ilog2(N)> _plan{};
     etl::array<etl::complex<Float>, N> _buf{[] {
         auto rng = etl::xoshiro128plusplus{42};
         return make_noise<etl::complex<Float>, N>(rng);
@@ -106,35 +132,42 @@ auto main() -> int
     astra::mcu.StartLog(true);
     astra::mcu.PrintLine("Daisy Patch SM started. Test Beginning");
 
-    etl::timeit<64>("c2c_roundtrip<float, 16, v1>   - ", c2c_roundtrip<float, 16, gw::fft::c2c_dit2_v1>{});
-    etl::timeit<64>("c2c_roundtrip<float, 32, v1>   - ", c2c_roundtrip<float, 32, gw::fft::c2c_dit2_v1>{});
-    etl::timeit<64>("c2c_roundtrip<float, 64, v1>   - ", c2c_roundtrip<float, 64, gw::fft::c2c_dit2_v1>{});
-    etl::timeit<64>("c2c_roundtrip<float, 128, v1>  - ", c2c_roundtrip<float, 128, gw::fft::c2c_dit2_v1>{});
-    etl::timeit<64>("c2c_roundtrip<float, 256, v1>  - ", c2c_roundtrip<float, 256, gw::fft::c2c_dit2_v1>{});
-    etl::timeit<64>("c2c_roundtrip<float, 512, v1>  - ", c2c_roundtrip<float, 512, gw::fft::c2c_dit2_v1>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 1024, v1> - ", c2c_roundtrip<float, 1024, gw::fft::c2c_dit2_v1>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 2048, v1> - ", c2c_roundtrip<float, 2048, gw::fft::c2c_dit2_v1>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 4096, v1> - ", c2c_roundtrip<float, 4096, gw::fft::c2c_dit2_v1>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 16, v1>      - ", c2c_roundtrip<float, 16, gw::fft::c2c_dit2_v1>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 32, v1>      - ", c2c_roundtrip<float, 32, gw::fft::c2c_dit2_v1>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 64, v1>      - ", c2c_roundtrip<float, 64, gw::fft::c2c_dit2_v1>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 128, v1>     - ", c2c_roundtrip<float, 128, gw::fft::c2c_dit2_v1>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 256, v1>     - ", c2c_roundtrip<float, 256, gw::fft::c2c_dit2_v1>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 512, v1>     - ", c2c_roundtrip<float, 512, gw::fft::c2c_dit2_v1>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 1024, v1>    - ", c2c_roundtrip<float, 1024, gw::fft::c2c_dit2_v1>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 2048, v1>    - ", c2c_roundtrip<float, 2048, gw::fft::c2c_dit2_v1>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 4096, v1>    - ", c2c_roundtrip<float, 4096, gw::fft::c2c_dit2_v1>{});
+    // astra::mcu.PrintLine("");
 
-    // etl::timeit<64>("c2c_roundtrip<float, 16, v2>   - ", c2c_roundtrip<float, 16, gw::fft::c2c_dit2_v2>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 32, v2>   - ", c2c_roundtrip<float, 32, gw::fft::c2c_dit2_v2>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 64, v2>   - ", c2c_roundtrip<float, 64, gw::fft::c2c_dit2_v2>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 128, v2>  - ", c2c_roundtrip<float, 128, gw::fft::c2c_dit2_v2>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 256, v2>  - ", c2c_roundtrip<float, 256, gw::fft::c2c_dit2_v2>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 512, v2>  - ", c2c_roundtrip<float, 512, gw::fft::c2c_dit2_v2>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 1024, v2> - ", c2c_roundtrip<float, 1024, gw::fft::c2c_dit2_v2>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 2048, v2> - ", c2c_roundtrip<float, 2048, gw::fft::c2c_dit2_v2>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 4096, v2> - ", c2c_roundtrip<float, 4096, gw::fft::c2c_dit2_v2>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 16, v2>      - ", c2c_roundtrip<float, 16, gw::fft::c2c_dit2_v2>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 32, v2>      - ", c2c_roundtrip<float, 32, gw::fft::c2c_dit2_v2>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 64, v2>      - ", c2c_roundtrip<float, 64, gw::fft::c2c_dit2_v2>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 128, v2>     - ", c2c_roundtrip<float, 128, gw::fft::c2c_dit2_v2>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 256, v2>     - ", c2c_roundtrip<float, 256, gw::fft::c2c_dit2_v2>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 512, v2>     - ", c2c_roundtrip<float, 512, gw::fft::c2c_dit2_v2>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 1024, v2>    - ", c2c_roundtrip<float, 1024, gw::fft::c2c_dit2_v2>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 2048, v2>    - ", c2c_roundtrip<float, 2048, gw::fft::c2c_dit2_v2>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 4096, v2>    - ", c2c_roundtrip<float, 4096, gw::fft::c2c_dit2_v2>{});
+    // astra::mcu.PrintLine("");
 
-    etl::timeit<64>("c2c_roundtrip<float, 16, v3>   - ", c2c_roundtrip<float, 16, gw::fft::c2c_dit2_v3>{});
-    etl::timeit<64>("c2c_roundtrip<float, 32, v3>   - ", c2c_roundtrip<float, 32, gw::fft::c2c_dit2_v3>{});
-    etl::timeit<64>("c2c_roundtrip<float, 64, v3>   - ", c2c_roundtrip<float, 64, gw::fft::c2c_dit2_v3>{});
-    etl::timeit<64>("c2c_roundtrip<float, 128, v3>  - ", c2c_roundtrip<float, 128, gw::fft::c2c_dit2_v3>{});
-    etl::timeit<64>("c2c_roundtrip<float, 256, v3>  - ", c2c_roundtrip<float, 256, gw::fft::c2c_dit2_v3>{});
-    etl::timeit<64>("c2c_roundtrip<float, 512, v3>  - ", c2c_roundtrip<float, 512, gw::fft::c2c_dit2_v3>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 1024, v3> - ", c2c_roundtrip<float, 1024, gw::fft::c2c_dit2_v3>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 2048, v3> - ", c2c_roundtrip<float, 2048, gw::fft::c2c_dit2_v3>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 4096, v3> - ", c2c_roundtrip<float, 4096, gw::fft::c2c_dit2_v3>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 16, v3>      - ", c2c_roundtrip<float, 16, gw::fft::c2c_dit2_v3>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 32, v3>      - ", c2c_roundtrip<float, 32, gw::fft::c2c_dit2_v3>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 64, v3>      - ", c2c_roundtrip<float, 64, gw::fft::c2c_dit2_v3>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 128, v3>     - ", c2c_roundtrip<float, 128, gw::fft::c2c_dit2_v3>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 256, v3>     - ", c2c_roundtrip<float, 256, gw::fft::c2c_dit2_v3>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 512, v3>     - ", c2c_roundtrip<float, 512, gw::fft::c2c_dit2_v3>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 1024, v3>    - ", c2c_roundtrip<float, 1024, gw::fft::c2c_dit2_v3>{});
+    etl::timeit<64>("c2c_roundtrip<float, 2048, v3>    - ", c2c_roundtrip<float, 2048, gw::fft::c2c_dit2_v3>{});
+    etl::timeit<64>("c2c_roundtrip<float, 4096, v3>    - ", c2c_roundtrip<float, 4096, gw::fft::c2c_dit2_v3>{});
+    astra::mcu.PrintLine("");
+
+    etl::timeit<64>("static_c2c_roundtrip<float, 2048> - ", static_c2c_roundtrip<float, 2048>{});
+    etl::timeit<64>("static_c2c_roundtrip<float, 4096> - ", static_c2c_roundtrip<float, 4096>{});
+    astra::mcu.PrintLine("");
 
     while (true) {}
 }
