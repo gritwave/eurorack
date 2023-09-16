@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo dnf update
-          sudo dnf install arm-none-eabi-binutils-cs arm-none-eabi-gcc-cs arm-none-eabi-gcc-cs-c++ arm-none-eabi-newlib ninja-build cmake
+          sudo dnf install git nodejs arm-none-eabi-binutils-cs arm-none-eabi-gcc-cs arm-none-eabi-gcc-cs-c++ arm-none-eabi-newlib ninja-build cmake
           arm-none-eabi-g++ --version
 
       - name: Build firmware
