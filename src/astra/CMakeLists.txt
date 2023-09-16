@@ -10,7 +10,7 @@ target_sources(astra
 target_link_libraries(astra
     PRIVATE
         daisy
-        gw::audio
+        gw::eurorack
 )
 
 set_target_properties(astra PROPERTIES
