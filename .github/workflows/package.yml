@@ -19,11 +19,18 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt install gcc-arm-none-eabi ninja-build cmake
+          sudo apt install ninja-build cmake wget
+
+      - name: Install GCC
+        run: |
+          wget https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu/12.3.rel1/binrel/arm-gnu-toolchain-12.3.rel1-x86_64-arm-none-eabi.tar.xz
+          tar -xvf arm-gnu-toolchain-12.3.rel1-x86_64-arm-none-eabi.tar.xz
+          export PATH="$PATH:$GITHUB_WORKSPACE/arm-gnu-toolchain-12.3.rel1-x86_64-arm-none-eabi/bin"
           arm-none-eabi-g++ --version
 
       - name: Build firmware
         run: |
+          export PATH="$PATH:$GITHUB_WORKSPACE/arm-gnu-toolchain-12.3.rel1-x86_64-arm-none-eabi/bin"
           cmake --preset arm-gnu
           cmake --build --preset release
 
