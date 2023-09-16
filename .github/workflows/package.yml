@@ -1,8 +1,10 @@
 name: Package
 
-on:
-  workflow_dispatch: # lets you run a build from the UI
-  push:
+on: push
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
 
 jobs:
   package:
