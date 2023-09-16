@@ -1,5 +1,8 @@
 # gritwave - eurorack
 
+[![Package](https://github.com/gritwave/eurorack/actions/workflows/package.yml/badge.svg)](https://github.com/gritwave/eurorack/actions/workflows/package.yml)
+[![codecov](https://codecov.io/gh/gritwave/eurorack/graph/badge.svg?token=7zVMQmr3Rb)](https://codecov.io/gh/gritwave/eurorack)
+
 ## Projects
 
 |         Name         |         Description         |                                  Hardware                                  |
