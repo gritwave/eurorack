@@ -20,6 +20,7 @@ target_sources(gw_eurorack_tests
         gw/audio/dither/no_dither_test.cpp
         gw/audio/dither/rectangle_dither_test.cpp
         gw/audio/dither/triangle_dither_test.cpp
+        gw/audio/envelope/envelope_follower_test.cpp
         gw/audio/music/note_test.cpp
         gw/audio/noise/white_noise_test.cpp
         gw/audio/unit/decibel_test.cpp
