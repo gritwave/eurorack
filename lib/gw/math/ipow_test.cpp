@@ -3,7 +3,9 @@
 #undef NDEBUG
 #include <cassert>
 
-[[nodiscard]] static constexpr auto test() -> bool
+auto test_ipow() -> bool;
+
+auto test_ipow() -> bool
 {
     assert(gw::ipow(1, 0) == 1);
     assert(gw::ipow(1, 1) == 1);
@@ -21,11 +23,4 @@
     assert(gw::ipow<2>(1) == 2);
     assert(gw::ipow<2>(2) == 4);
     return true;
-}
-
-auto main() -> int
-{
-    assert(test());
-    static_assert(test());
-    return 0;
 }

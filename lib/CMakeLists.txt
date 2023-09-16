@@ -14,5 +14,7 @@ add_test(NAME gw_eurorack_tests COMMAND gw_eurorack_tests)
 target_link_libraries(gw_eurorack_tests PRIVATE gw::eurorack)
 target_sources(gw_eurorack_tests
     PRIVATE
+        main_test.cpp
+        gw/fft/fft_test.cpp
         gw/math/ipow_test.cpp
 )
