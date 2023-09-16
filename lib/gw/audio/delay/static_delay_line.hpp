@@ -22,7 +22,9 @@ struct StaticDelayLine
 
 private:
     etl::array<SampleType, MaxDelay> _buffer;
-    DelayLine<SampleType, Interpolation> _delayLine{_buffer};
+    DelayLine<SampleType, Interpolation> _delayLine{
+        etl::mdspan{_buffer.data(), etl::dextents<etl::size_t, 1>{MaxDelay}}
+    };
 };
 
 template<etl::floating_point SampleType, etl::size_t MaxDelay, typename Interpolation>

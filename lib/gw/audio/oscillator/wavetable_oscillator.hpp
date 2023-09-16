@@ -6,18 +6,15 @@
 #include <etl/algorithm.hpp>
 #include <etl/cmath.hpp>
 #include <etl/concepts.hpp>
+#include <etl/mdspan.hpp>
 #include <etl/numbers.hpp>
-#include <etl/span.hpp>
 
 namespace gw {
 
 template<etl::floating_point SampleType, etl::size_t TableSize = etl::dynamic_extent>
 struct WavetableOscillator
 {
-    explicit WavetableOscillator(etl::span<SampleType const, TableSize> wavetable);
-
-    auto setWavetable(etl::span<SampleType const, TableSize> wavetable) noexcept -> void;
-    [[nodiscard]] auto getWavetable() const noexcept -> etl::span<SampleType const, TableSize>;
+    explicit WavetableOscillator(etl::mdspan<SampleType const, etl::extents<etl::size_t, TableSize>> wavetable);
 
     auto setPhase(SampleType phase) noexcept -> void;
     auto setFrequency(SampleType frequency) noexcept -> void;
@@ -31,29 +28,18 @@ private:
     SampleType _sampleRate{0};
     SampleType _phase{0};
     SampleType _phaseIncrement{0};
-    etl::span<SampleType const, TableSize> _wavetable;
+    etl::mdspan<SampleType const, etl::extents<etl::size_t, TableSize>> _wavetable;
 };
 
 template<typename SampleType, size_t Size>
 [[nodiscard]] constexpr auto makeSineWavetable() noexcept -> etl::array<SampleType, Size>;
 
 template<etl::floating_point SampleType, etl::size_t TableSize>
-WavetableOscillator<SampleType, TableSize>::WavetableOscillator(etl::span<SampleType const, TableSize> wavetable)
+WavetableOscillator<SampleType, TableSize>::WavetableOscillator(
+    etl::mdspan<SampleType const, etl::extents<etl::size_t, TableSize>> wavetable
+)
     : _wavetable{wavetable}
 {}
-
-template<etl::floating_point SampleType, etl::size_t TableSize>
-auto WavetableOscillator<SampleType, TableSize>::setWavetable(etl::span<SampleType const, TableSize> wavetable) noexcept
-    -> void
-{
-    _wavetable = wavetable;
-}
-
-template<etl::floating_point SampleType, etl::size_t TableSize>
-auto WavetableOscillator<SampleType, TableSize>::getWavetable() const noexcept -> etl::span<SampleType const, TableSize>
-{
-    return _wavetable;
-}
 
 template<etl::floating_point SampleType, etl::size_t TableSize>
 auto WavetableOscillator<SampleType, TableSize>::setPhase(SampleType phase) noexcept -> void

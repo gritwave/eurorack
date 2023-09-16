@@ -13,6 +13,10 @@ namespace kyma {
 static constexpr auto BLOCK_SIZE     = 16U;
 static constexpr auto SAMPLE_RATE    = 96'000.0F;
 static constexpr auto WAVETABLE_SINE = gw::makeSineWavetable<float, 2048>();
+static constexpr auto SineWavetable  = etl::mdspan{
+    WAVETABLE_SINE.data(),
+    etl::extents<etl::size_t, WAVETABLE_SINE.size()>{},
+};
 
 auto subOctaveToggle  = daisy::Switch{};
 auto envTriggerButton = daisy::Switch{};
@@ -20,8 +24,8 @@ auto patch            = daisy::patch_sm::DaisyPatchSM{};
 auto& envelopeGate    = patch.gate_in_1;
 
 auto adsr          = gw::ADSR{};
-auto oscillator    = gw::WavetableOscillator<float, WAVETABLE_SINE.size()>{WAVETABLE_SINE};
-auto subOscillator = gw::WavetableOscillator<float, WAVETABLE_SINE.size()>{WAVETABLE_SINE};
+auto oscillator    = gw::WavetableOscillator<float, WAVETABLE_SINE.size()>{SineWavetable};
+auto subOscillator = gw::WavetableOscillator<float, WAVETABLE_SINE.size()>{SineWavetable};
 
 // auto smoothE = gw::DynamicSmoothing<float, gw::DynamicSmoothingType::Efficient>{};
 // auto smoothA = gw::DynamicSmoothing<float, gw::DynamicSmoothingType::Accurate>{};
@@ -56,8 +60,8 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
     auto const attack  = gw::mapToRange(attackKnob, 0.0F, 0.750F);
     auto const release = gw::mapToRange(releaseKnob, 0.0F, 2.5F);
 
-    oscillator.setWavetable(WAVETABLE_SINE);
-    subOscillator.setWavetable(WAVETABLE_SINE);
+    // oscillator.setWavetable(SineWavetable);
+    // subOscillator.setWavetable(SineWavetable);
     // oscillator.setShapeMorph(morph);
     // subOscillator.setShapeMorph(subMorph);
     etl::ignore_unused(subMorph, morph);
