@@ -3,6 +3,7 @@
 #include <gw/core/mdspan.hpp>
 #include <gw/fft/bitrevorder.hpp>
 #include <gw/fft/direction.hpp>
+#include <gw/math/ilog2.hpp>
 #include <gw/math/ipow.hpp>
 
 #include <etl/algorithm.hpp>
@@ -15,8 +16,6 @@
 #include <etl/numbers.hpp>
 #include <etl/span.hpp>
 #include <etl/utility.hpp>
-
-#include <cmath>
 
 namespace gw::fft {
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <gw/core/mdspan.hpp>
+#include <gw/math/ilog2.hpp>
 
 #include <etl/array.hpp>
 #include <etl/bit.hpp>
@@ -10,16 +11,6 @@
 #include <etl/utility.hpp>
 
 namespace gw::fft {
-
-template<etl::integral Int>
-[[nodiscard]] constexpr auto ilog2(Int x) -> Int
-{
-    auto result = Int{0};
-    for (; x > Int(1); x >>= Int(1)) {
-        ++result;
-    }
-    return result;
-}
 
 template<etl::size_t Size>
     requires(etl::has_single_bit(Size))
