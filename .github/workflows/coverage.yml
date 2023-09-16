@@ -1,0 +1,59 @@
+name: Coverage
+
+on: push
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  linux-gcc:
+    name: Linux GCC
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          lfs: true
+
+      - name: Install dependencies
+        run: >
+          sudo apt update &&
+          sudo apt install
+          cmake
+          ninja-build
+          gcovr
+
+      - name: CMake configure
+        shell: bash
+        run: cmake -S . -B build -G Ninja -D CMAKE_BUILD_TYPE=Debug -D CMAKE_CXX_FLAGS="--coverage"
+
+      - name: CMake build
+        shell: bash
+        run: cmake --build build
+
+      - name: CTest
+        shell: bash
+        run: ctest --test-dir build -C ${{ matrix.build_type }} --output-on-failure
+
+      - name: Coverage report
+        if: contains(matrix.name, 'Coverage')
+        shell: bash
+        run: >
+          gcovr
+          --xml-pretty
+          -e ".*_test\.cpp"
+          --exclude-unreachable-branches
+          --exclude-throw-branches
+          -r lib
+          -s build
+          -o build/coverage.xml
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v3
+        if: contains(matrix.name, 'Coverage')
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./build/coverage.xml
+          fail_ci_if_error: true
