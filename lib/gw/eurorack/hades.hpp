@@ -105,7 +105,7 @@ inline auto Hades::Channel::processSample(float sample) -> float
     });
 
     _compressor.setParameter({
-        .threshold = decibelsToGain(-12.0F),
+        .threshold = fromDecibels(-12.0F),
         .ratio     = 10.F,
         .knee      = 1.0F,
         .attack    = Milliseconds<float>{50},

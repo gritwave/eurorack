@@ -15,6 +15,7 @@ target_link_libraries(gw_eurorack_tests PRIVATE gw::eurorack)
 target_sources(gw_eurorack_tests
     PRIVATE
         main_test.cpp
+        gw/audio/unit/decibel_test.cpp
         gw/fft/fft_test.cpp
         gw/math/ilog2_test.cpp
         gw/math/ipow_test.cpp
