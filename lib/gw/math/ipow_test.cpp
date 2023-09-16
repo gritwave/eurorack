@@ -1,7 +1,6 @@
 #include "ipow.hpp"
 
-#undef NDEBUG
-#include <cassert>
+#include <gw/testing/assert.hpp>
 
 auto test_ipow() -> bool;
 

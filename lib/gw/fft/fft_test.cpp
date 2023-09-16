@@ -1,14 +1,7 @@
 #include "fft.hpp"
 
-#undef NDEBUG
-#include <cassert>
-
-template<etl::floating_point Float>
-[[nodiscard]] static auto approx(etl::complex<Float> val, etl::complex<Float> expected) -> bool
-{
-    auto const margin = etl::numeric_limits<Float>::epsilon() * 8;
-    return etl::abs(val - expected) <= margin;
-}
+#include <gw/testing/approx.hpp>
+#include <gw/testing/assert.hpp>
 
 template<etl::floating_point Float, etl::size_t Size>
 auto test_static_fft_plan() -> bool
@@ -23,14 +16,14 @@ auto test_static_fft_plan() -> bool
 
     plan(x, gw::fft::direction::forward);
     for (auto val : x_buf) {
-        assert(approx(val, etl::complex{Float(1)}));
+        assert(gw::approx(val, etl::complex{Float(1)}));
     }
 
     plan(x, gw::fft::direction::backward);
-    assert(approx(x(0), etl::complex{Float(1) * Float(Plan::size())}));
+    assert(gw::approx(x(0), etl::complex{Float(1) * Float(Plan::size())}));
 
     for (auto val : etl::span{x_buf}.last(Plan::size() - 1)) {
-        assert(approx(val, etl::complex{Float(0)}));
+        assert(gw::approx(val, etl::complex{Float(0)}));
     }
 
     return true;

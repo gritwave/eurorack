@@ -1,9 +1,8 @@
 #include "ilog2.hpp"
 
-#include <etl/type_traits.hpp>
+#include <gw/testing/assert.hpp>
 
-#undef NDEBUG
-#include <cassert>
+#include <etl/type_traits.hpp>
 
 template<etl::integral Int>
 static auto test() -> bool
