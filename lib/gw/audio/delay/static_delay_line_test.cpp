@@ -16,6 +16,10 @@ template<etl::floating_point Float, typename Interpolator>
     delay.pushSample(Float(1.0));
     assert(gw::approx(delay.popSample(), Float(1.0)));
 
+    delay.pushSample(Float(1.0));
+    delay.reset();
+    assert(gw::approx(delay.popSample(), Float(0.0)));
+
     return true;
 }
 
