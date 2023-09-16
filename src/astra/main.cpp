@@ -116,7 +116,7 @@ struct static_c2c_roundtrip
     }
 
 private:
-    gw::fft::static_fft_plan<etl::complex<Float>, gw::fft::ilog2(N)> _plan{};
+    gw::fft::static_fft_plan<etl::complex<Float>, N> _plan{};
     etl::array<etl::complex<Float>, N> _buf{[] {
         auto rng = etl::xoshiro128plusplus{42};
         return make_noise<etl::complex<Float>, N>(rng);

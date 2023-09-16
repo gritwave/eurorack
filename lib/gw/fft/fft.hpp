@@ -2,7 +2,7 @@
 
 #include <gw/core/mdspan.hpp>
 #include <gw/fft/bitrevorder.hpp>
-#include <gw/math/complex.hpp>
+#include <gw/fft/direction.hpp>
 #include <gw/math/ipow.hpp>
 
 #include <etl/algorithm.hpp>
@@ -19,12 +19,6 @@
 #include <cmath>
 
 namespace gw::fft {
-
-enum struct direction : int
-{
-    forward  = -1,
-    backward = 1,
-};
 
 template<typename Float, unsigned Size>
 auto make_twiddles_r2(direction dir = direction::forward) -> etl::array<etl::complex<Float>, Size / 2>
@@ -210,17 +204,21 @@ struct static_c2c_dit2_stage
 
 }  // namespace detail
 
-template<typename Complex, etl::size_t Order>
+template<typename Complex, etl::size_t Size>
 struct static_fft_plan
 {
     using value_type = Complex;
     using size_type  = etl::size_t;
 
-    static_fft_plan() = default;
+    explicit static_fft_plan(direction default_direction = direction::forward) noexcept
+        : _default_direction{default_direction}
+        , _reorder{}
+        , _w{make_twiddles_r2<typename Complex::value_type, size()>(default_direction)}
+    {}
 
-    [[nodiscard]] static constexpr auto size() noexcept -> etl::size_t { return 1 << Order; }
+    [[nodiscard]] static constexpr auto size() noexcept -> etl::size_t { return Size; }
 
-    [[nodiscard]] static constexpr auto order() noexcept -> etl::size_t { return Order; }
+    [[nodiscard]] static constexpr auto order() noexcept -> etl::size_t { return ilog2(Size); }
 
     template<etl::linalg::inout_vector InOutVec>
         requires etl::same_as<typename InOutVec::value_type, Complex>
@@ -230,18 +228,17 @@ struct static_fft_plan
 
         auto const w = etl::mdspan<Complex, etl::extents<etl::size_t, size()>>{_w.data()};
 
-        if (dir == direction::forward) {
-            detail::static_c2c_dit2_stage<Complex, Order, 0>{}(x, w);
+        if (dir == _default_direction) {
+            detail::static_c2c_dit2_stage<Complex, order(), 0>{}(x, w);
         } else {
-            detail::static_c2c_dit2_stage<Complex, Order, 0>{}(x, etl::linalg::conjugated(w));
+            detail::static_c2c_dit2_stage<Complex, order(), 0>{}(x, etl::linalg::conjugated(w));
         }
     }
 
 private:
-    static_bitrevorder_plan<size()> _reorder{};
-    etl::array<Complex, size() / 2> _w{
-        make_twiddles_r2<typename Complex::value_type, size()>(direction::forward),
-    };
+    direction _default_direction;
+    static_bitrevorder_plan<size()> _reorder;
+    etl::array<Complex, size() / 2> _w;
 };
 
 }  // namespace gw::fft
