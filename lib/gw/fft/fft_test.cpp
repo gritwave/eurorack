@@ -4,6 +4,20 @@
 #include <gw/testing/assert.hpp>
 
 template<etl::floating_point Float, etl::size_t Size>
+auto test_twiddles() -> bool
+{
+    auto const wf = gw::fft::make_twiddles_r2<Float, Size>(gw::fft::direction::forward);
+    auto const wb = gw::fft::make_twiddles_r2<Float, Size>(gw::fft::direction::backward);
+    assert(wf.size() == wb.size());
+
+    for (auto i{0U}; i < wf.size(); ++i) {
+        assert(gw::approx(wf[i], etl::conj(wb[i])));
+    }
+
+    return true;
+}
+
+template<etl::floating_point Float, etl::size_t Size>
 auto test_static_fft_plan() -> bool
 {
     using Complex = etl::complex<Float>;
@@ -29,28 +43,29 @@ auto test_static_fft_plan() -> bool
     return true;
 }
 
+template<etl::size_t Size>
+static auto test_size() -> bool
+{
+    assert((test_twiddles<float, Size>()));
+    assert((test_twiddles<double, Size>()));
+    assert((test_static_fft_plan<float, Size>()));
+    assert((test_static_fft_plan<double, Size>()));
+    return true;
+}
+
 auto test_fft() -> bool;
 
 auto test_fft() -> bool
 {
-    assert((test_static_fft_plan<float, 4>()));
-    assert((test_static_fft_plan<float, 8>()));
-    assert((test_static_fft_plan<float, 16>()));
-    assert((test_static_fft_plan<float, 32>()));
-    assert((test_static_fft_plan<float, 64>()));
-    assert((test_static_fft_plan<float, 128>()));
-    assert((test_static_fft_plan<float, 256>()));
-    assert((test_static_fft_plan<float, 512>()));
-    assert((test_static_fft_plan<float, 1024>()));
+    assert((test_size<4>()));
+    assert((test_size<8>()));
+    assert((test_size<16>()));
+    assert((test_size<32>()));
+    assert((test_size<64>()));
+    assert((test_size<128>()));
+    assert((test_size<256>()));
+    assert((test_size<512>()));
+    assert((test_size<1024>()));
 
-    assert((test_static_fft_plan<double, 4>()));
-    assert((test_static_fft_plan<double, 8>()));
-    assert((test_static_fft_plan<double, 16>()));
-    assert((test_static_fft_plan<double, 32>()));
-    assert((test_static_fft_plan<double, 64>()));
-    assert((test_static_fft_plan<double, 128>()));
-    assert((test_static_fft_plan<double, 256>()));
-    assert((test_static_fft_plan<double, 512>()));
-    assert((test_static_fft_plan<double, 1024>()));
     return true;
 }
