@@ -15,6 +15,8 @@ target_link_libraries(gw_eurorack_tests PRIVATE gw::eurorack)
 target_sources(gw_eurorack_tests
     PRIVATE
         main_test.cpp
+        
+        gw/audio/delay/static_delay_line_test.cpp
         gw/audio/music/note_test.cpp
         gw/audio/noise/white_noise_test.cpp
         gw/audio/unit/decibel_test.cpp

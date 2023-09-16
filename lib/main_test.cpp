@@ -6,6 +6,7 @@ extern auto test_fft() -> bool;
 extern auto test_ilog2() -> bool;
 extern auto test_ipow() -> bool;
 extern auto test_note() -> bool;
+extern auto test_static_delay_line() -> bool;
 extern auto test_white_noise() -> bool;
 
 auto main() -> int
@@ -15,6 +16,7 @@ auto main() -> int
     assert(test_ilog2());
     assert(test_ipow());
     assert(test_note());
+    assert(test_static_delay_line());
     assert(test_white_noise());
     return 0;
 }
