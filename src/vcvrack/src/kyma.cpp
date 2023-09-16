@@ -102,8 +102,12 @@ struct KymaWidget final : ModuleWidget
         addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(40.0, 42.0)), module, Kyma::RELEASE_PARAM));
 
         addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(42.0, 60.0)), module, Kyma::ENV_OUTPUT));
-        addParam(createLightParamCentered<VCVLightBezel<WhiteLight>>(mm2px(Vec(8.0, 60.0)), module, Kyma::SELECT_PARAM,
-                                                                     Kyma::SELECT_LIGHT));
+        addParam(createLightParamCentered<VCVLightBezel<WhiteLight>>(
+            mm2px(Vec(8.0, 60.0)),
+            module,
+            Kyma::SELECT_PARAM,
+            Kyma::SELECT_LIGHT
+        ));
 
         addInput(createInputCentered<PJ301MPort>(mm2px(Vec(6.0, 84.0)), module, Kyma::ENV_GATE_INPUT));
         addInput(createInputCentered<PJ301MPort>(mm2px(Vec(18.0, 84.0)), module, Kyma::CLOCK_GATE_INPUT));

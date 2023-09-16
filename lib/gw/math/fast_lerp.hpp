@@ -3,8 +3,7 @@
 #include <etl/algorithm.hpp>
 #include <etl/concepts.hpp>
 
-namespace gw
-{
+namespace gw {
 
 template<etl::floating_point Float>
 [[nodiscard]] constexpr auto fast_lerp(Float a, Float b, Float t) noexcept -> Float

@@ -14,15 +14,13 @@
 
 #include <daisy_patch_sm.h>
 
-namespace astra
-{
+namespace astra {
 
 auto mcu = daisy::patch_sm::DaisyPatchSM{};
 
 }  // namespace astra
 
-namespace etl
-{
+namespace etl {
 template<int N, typename Func>
 auto timeit(char const* name, Func func)
 {
@@ -34,8 +32,7 @@ auto timeit(char const* name, Func func)
     func();
     func();
 
-    for (auto i{0U}; i < N; ++i)
-    {
+    for (auto i{0U}; i < N; ++i) {
         auto const start = astra::mcu.system.GetUs();
         func();
         auto const stop = astra::mcu.system.GetUs();
@@ -43,10 +40,14 @@ auto timeit(char const* name, Func func)
         runs[i] = etl::chrono::duration_cast<microseconds_t>(etl::chrono::microseconds{stop - start}).count();
     }
 
-    astra::mcu.PrintLine("%30s Runs: %4d - Average: %4d us - Min: %4d us - Max: %4d us\n", name, N,
-                         int(etl::reduce(runs.begin(), end(runs), 0.0F) / static_cast<float>(runs.size())),
-                         int(*etl::min_element(runs.begin(), runs.end())),
-                         int(*etl::max_element(runs.begin(), runs.end())));
+    astra::mcu.PrintLine(
+        "%30s Runs: %4d - Average: %4d us - Min: %4d us - Max: %4d us\n",
+        name,
+        N,
+        int(etl::reduce(runs.begin(), end(runs), 0.0F) / static_cast<float>(runs.size())),
+        int(*etl::min_element(runs.begin(), runs.end())),
+        int(*etl::max_element(runs.begin(), runs.end()))
+    );
 }
 }  // namespace etl
 
@@ -63,10 +64,11 @@ template<typename T, unsigned N>
 static auto make_random_int_buffer(auto& rng) -> etl::array<T, N>
 {
     auto buf = etl::array<T, N>{};
-    auto gen = [&rng]
-    {
+    auto gen = [&rng] {
         auto x = etl::uniform_int_distribution<T>{-9999, 9999}(rng);
-        if (x == 0) { return T(1); }  // for divide benchmarks
+        if (x == 0) {
+            return T(1);
+        }  // for divide benchmarks
         return x;
     };
     etl::generate(buf.begin(), buf.end(), gen);
@@ -98,8 +100,7 @@ struct fft_benchmark_q15
     {
         auto rng  = etl::xoshiro128plusplus{astra::mcu.GetRandomValue()};
         auto dist = etl::uniform_int_distribution<int16_t>{-9999, 9999};
-        auto gen  = [&rng, &dist]()
-        {
+        auto gen  = [&rng, &dist]() {
             auto const real = dist(rng);
             auto const imag = dist(rng);
             return gw::complex_q15_t{
@@ -153,7 +154,9 @@ template<etl::size_t N>
 struct cmul_sdram
 {
     explicit cmul_sdram(etl::span<etl::complex<float>> sdram_buffer)
-        : _lhs{sdram_buffer.data(), N}, _rhs{sdram_buffer.data() + N, N}, _out{sdram_buffer.data() + N + N, N}
+        : _lhs{sdram_buffer.data(), N}
+        , _rhs{sdram_buffer.data() + N, N}
+        , _out{sdram_buffer.data() + N + N, N}
     {
         auto rng  = etl::xoshiro128plusplus{astra::mcu.GetRandomValue()};
         auto dist = etl::uniform_real_distribution<float>{-1.0F, 1.0F};
@@ -183,9 +186,9 @@ struct complex8_t
     constexpr complex8_t() = default;
 
     constexpr complex8_t(float re, float im) noexcept
-        : real{static_cast<etl::int8_t>(re * scale)}, imag{static_cast<etl::int8_t>(im * scale)}
-    {
-    }
+        : real{static_cast<etl::int8_t>(re * scale)}
+        , imag{static_cast<etl::int8_t>(im * scale)}
+    {}
 
     [[nodiscard]] constexpr operator etl::complex<float>() const noexcept
     {
@@ -209,9 +212,9 @@ struct complex16_t
     constexpr complex16_t() = default;
 
     constexpr complex16_t(float re, float im) noexcept
-        : real{static_cast<etl::int16_t>(re * scale)}, imag{static_cast<etl::int16_t>(im * scale)}
-    {
-    }
+        : real{static_cast<etl::int16_t>(re * scale)}
+        , imag{static_cast<etl::int16_t>(im * scale)}
+    {}
 
     [[nodiscard]] constexpr operator etl::complex<float>() const noexcept
     {
@@ -231,7 +234,9 @@ template<typename CompressedComplex, etl::size_t N>
 struct cmul_compressed
 {
     cmul_compressed(etl::span<CompressedComplex> ints, etl::span<etl::complex<float>> floats)
-        : _lhs{ints.data(), N}, _rhs{ints.data() + N, N}, _out{floats.data(), N}
+        : _lhs{ints.data(), N}
+        , _rhs{ints.data() + N, N}
+        , _out{floats.data(), N}
     {
         auto rng  = etl::xoshiro128plusplus{astra::mcu.GetRandomValue()};
         auto dist = etl::uniform_real_distribution<float>{-1.0F, 1.0F};

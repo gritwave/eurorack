@@ -2,8 +2,7 @@
 
 #include <etl/concepts.hpp>
 
-namespace gw
-{
+namespace gw {
 
 template<etl::floating_point Float>
 [[nodiscard]] constexpr auto hermite_interpolation(Float xm1, Float x0, Float x1, Float x2, Float pos) noexcept -> Float

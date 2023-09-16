@@ -6,8 +6,7 @@
 #include <etl/cmath.hpp>
 #include <etl/concepts.hpp>
 
-namespace gw
-{
+namespace gw {
 
 template<etl::floating_point SampleType>
 struct EnvelopeFollower

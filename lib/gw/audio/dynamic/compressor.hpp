@@ -10,8 +10,7 @@
 
 #include <cmath>
 
-namespace gw
-{
+namespace gw {
 
 template<etl::floating_point SampleType>
 struct Compressor
@@ -82,13 +81,19 @@ auto Compressor<SampleType>::processSample(SampleType signal, SampleType sideCha
     auto const ratioQuotient  = knee > 0 ? ratio * factor + SampleType(1) * (-factor + SampleType(1)) : SampleType(1);
 
     auto yg = SampleType(0);
-    if (env < kneedThreshold) { yg = env; }
-    else { yg = kneedThreshold + (env - kneedThreshold) / (ratio / ratioQuotient); }
+    if (env < kneedThreshold) {
+        yg = env;
+    } else {
+        yg = kneedThreshold + (env - kneedThreshold) / (ratio / ratioQuotient);
+    }
 
     auto yl       = SampleType(0);
     auto const xl = env - yg;
-    if (xl > _ylPrev) { yl = alphaA * _ylPrev + (SampleType(1) - alphaA) * xl; }
-    else { yl = alphaR * _ylPrev + (SampleType(1) - alphaR) * xl; }
+    if (xl > _ylPrev) {
+        yl = alphaA * _ylPrev + (SampleType(1) - alphaA) * xl;
+    } else {
+        yl = alphaR * _ylPrev + (SampleType(1) - alphaR) * xl;
+    }
 
     auto const controlCompressor = etl::pow(SampleType(10), (SampleType(1) - yl) * SampleType(0.05));
 
@@ -122,7 +127,9 @@ auto Compressor<SampleType>::calculateTimeAlpha(Seconds<SampleType> value) const
     static constexpr auto const euler = static_cast<SampleType>(etl::numbers::e);
 
     auto const sec = value.count();
-    if (sec == SampleType(0)) { return SampleType(0); }
+    if (sec == SampleType(0)) {
+        return SampleType(0);
+    }
     return etl::pow(SampleType(1) / euler, SampleType(1) / static_cast<SampleType>(_sampleRate) / sec);
 }
 

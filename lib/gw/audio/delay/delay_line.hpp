@@ -7,8 +7,7 @@
 #include <etl/concepts.hpp>
 #include <etl/span.hpp>
 
-namespace gw
-{
+namespace gw {
 
 template<etl::floating_point SampleType, typename Interpolation = BufferInterpolation::Hermite>
 struct DelayLine
@@ -32,8 +31,7 @@ private:
 
 template<etl::floating_point SampleType, typename Interpolation>
 DelayLine<SampleType, Interpolation>::DelayLine(etl::span<SampleType> buffer) noexcept : _buffer{buffer}
-{
-}
+{}
 
 template<etl::floating_point SampleType, typename Interpolation>
 auto DelayLine<SampleType, Interpolation>::setDelay(SampleType delayInSamples) -> void

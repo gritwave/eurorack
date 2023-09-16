@@ -2,8 +2,7 @@
 
 #include <etl/cmath.hpp>
 
-namespace gw
-{
+namespace gw {
 
 // https://github.com/fdeste/ADSR
 // http://www.earlevel.com/main/2013/06/03/envelope-generators-adsr-code
@@ -100,14 +99,16 @@ inline auto ADSR::setRelease(float rate) noexcept -> void
 
 inline auto ADSR::setTargetRatioA(float ratio) noexcept -> void
 {
-    if (ratio < 0.000000001) ratio = 0.000000001;  // -180 dB
+    if (ratio < 0.000000001)
+        ratio = 0.000000001;  // -180 dB
     _targetRatioA = ratio;
     _attackBase   = (1.0 + _targetRatioA) * (1.0 - _attackCoef);
 }
 
 inline auto ADSR::setTargetRatioDR(float ratio) noexcept -> void
 {
-    if (ratio < 0.000000001) ratio = 0.000000001;  // -180 dB
+    if (ratio < 0.000000001)
+        ratio = 0.000000001;  // -180 dB
     _targetRatioDR = ratio;
     _decayBase     = (_sustainLevel - _targetRatioDR) * (1.0 - _decayCoef);
     _releaseBase   = -_targetRatioDR * (1.0 - _releaseCoef);
@@ -115,8 +116,11 @@ inline auto ADSR::setTargetRatioDR(float ratio) noexcept -> void
 
 inline auto ADSR::gate(bool isOn) noexcept -> void
 {
-    if (isOn) { _state = State::Attack; }
-    else if (_state != State::Idle) { _state = State::Release; }
+    if (isOn) {
+        _state = State::Attack;
+    } else if (_state != State::Idle) {
+        _state = State::Release;
+    }
 }
 
 inline auto ADSR::reset() noexcept -> void
@@ -127,41 +131,32 @@ inline auto ADSR::reset() noexcept -> void
 
 inline auto ADSR::processSample() noexcept -> float
 {
-    switch (_state)
-    {
-        case State::Idle:
-        {
+    switch (_state) {
+        case State::Idle: {
             break;
         }
-        case State::Attack:
-        {
+        case State::Attack: {
             _output = _attackBase + _output * _attackCoef;
-            if (_output >= 1.0)
-            {
+            if (_output >= 1.0) {
                 _output = 1.0;
                 _state  = State::Decay;
             }
             break;
         }
-        case State::Decay:
-        {
+        case State::Decay: {
             _output = _decayBase + _output * _decayCoef;
-            if (_output <= _sustainLevel)
-            {
+            if (_output <= _sustainLevel) {
                 _output = _sustainLevel;
                 _state  = State::Sustain;
             }
             break;
         }
-        case State::Sustain:
-        {
+        case State::Sustain: {
             break;
         }
-        case State::Release:
-        {
+        case State::Release: {
             _output = _releaseBase + _output * _releaseCoef;
-            if (_output <= 0.0)
-            {
+            if (_output <= 0.0) {
                 _output = 0.0;
                 _state  = State::Idle;
             }

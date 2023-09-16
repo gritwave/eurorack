@@ -9,8 +9,7 @@
 #include <etl/numbers.hpp>
 #include <etl/span.hpp>
 
-namespace gw
-{
+namespace gw {
 
 template<etl::floating_point SampleType, etl::size_t TableSize = etl::dynamic_extent>
 struct WavetableOscillator
@@ -41,8 +40,7 @@ template<typename SampleType, size_t Size>
 template<etl::floating_point SampleType, etl::size_t TableSize>
 WavetableOscillator<SampleType, TableSize>::WavetableOscillator(etl::span<SampleType const, TableSize> wavetable)
     : _wavetable{wavetable}
-{
-}
+{}
 
 template<etl::floating_point SampleType, etl::size_t TableSize>
 auto WavetableOscillator<SampleType, TableSize>::setWavetable(etl::span<SampleType const, TableSize> wavetable) noexcept
@@ -85,7 +83,9 @@ auto WavetableOscillator<SampleType, TableSize>::addPhaseOffset(SampleType offse
 template<etl::floating_point SampleType, etl::size_t TableSize>
 auto WavetableOscillator<SampleType, TableSize>::operator()() noexcept -> SampleType
 {
-    if (_wavetable.empty()) { return SampleType(0); }
+    if (_wavetable.empty()) {
+        return SampleType(0);
+    }
 
     auto const scaledPhase  = _phase * static_cast<SampleType>(_wavetable.size());
     auto const sampleIndex  = static_cast<size_t>(scaledPhase);
@@ -102,8 +102,7 @@ constexpr auto makeSineWavetable() noexcept -> etl::array<SampleType, Size>
 
     auto table = etl::array<SampleType, Size>{};
     auto phase = SampleType(0);
-    auto gen   = [&]
-    {
+    auto gen   = [&] {
         auto const value = etl::sin(phase);
         phase += delta;
         return value;

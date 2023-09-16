@@ -11,8 +11,7 @@
 #include <etl/functional.hpp>
 #include <etl/span.hpp>
 
-namespace gw
-{
+namespace gw {
 
 struct Hades
 {
@@ -160,10 +159,11 @@ inline auto Hades::processBlock(Buffers const& context, ControlInputs const& inp
         .release    = releaseCV,
     };
 
-    for (auto& channel : _channels) { channel.setParameter(channelParameter); }
+    for (auto& channel : _channels) {
+        channel.setParameter(channelParameter);
+    }
 
-    for (size_t i = 0; i < context.input[0].size(); ++i)
-    {
+    for (size_t i = 0; i < context.input[0].size(); ++i) {
         auto const left  = context.input[0][i];
         auto const right = context.input[1][i];
 
@@ -171,7 +171,7 @@ inline auto Hades::processBlock(Buffers const& context, ControlInputs const& inp
         context.output[1][i] = _channels[1].processSample(right);
     }
 
-    //  "DIGITAL" GATE LOGIC
+    // "DIGITAL" GATE LOGIC
     auto const gateOut = inputs.gate1 != inputs.gate2;
 
     return {

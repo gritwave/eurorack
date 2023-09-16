@@ -9,8 +9,7 @@
 
 #include <daisy_patch_sm.h>
 
-namespace kyma
-{
+namespace kyma {
 static constexpr auto BLOCK_SIZE     = 16U;
 static constexpr auto SAMPLE_RATE    = 96'000.0F;
 static constexpr auto WAVETABLE_SINE = gw::makeSineWavetable<float, 2048>();
@@ -70,8 +69,7 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
     adsr.setRelease(release * SAMPLE_RATE);
     adsr.gate(envelopeGate.State() or envTriggerButton.Pressed());
 
-    for (size_t i = 0; i < size; ++i)
-    {
+    for (size_t i = 0; i < size; ++i) {
         auto const fmModulator = IN_L[i];
         auto const fmAmount    = IN_R[i];
         oscillator.addPhaseOffset(fmModulator * fmAmount);
@@ -105,8 +103,7 @@ auto main() -> int
     oscillator.setSampleRate(SAMPLE_RATE);
     subOscillator.setSampleRate(SAMPLE_RATE);
 
-    while (true)
-    {
+    while (true) {
         subOctaveToggle.Debounce();
         envTriggerButton.Debounce();
         patch.SetLed(not subOctaveToggle.Pressed());

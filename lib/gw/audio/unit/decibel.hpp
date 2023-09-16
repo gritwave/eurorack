@@ -5,8 +5,7 @@
 
 #include <cmath>
 
-namespace gw
-{
+namespace gw {
 
 template<etl::floating_point Float>
 constexpr auto DefaultMinusInfinitydB = static_cast<Float>(-100);

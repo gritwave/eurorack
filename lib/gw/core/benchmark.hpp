@@ -2,8 +2,7 @@
 
 #include <gw/core/config.hpp>
 
-namespace gw
-{
+namespace gw {
 
 template<typename T>
 inline TA_ALWAYS_INLINE auto doNotOptimize(T& value) -> void

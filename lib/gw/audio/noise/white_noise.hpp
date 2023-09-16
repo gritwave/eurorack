@@ -3,8 +3,7 @@
 #include <etl/concepts.hpp>
 #include <etl/random.hpp>
 
-namespace gw
-{
+namespace gw {
 
 template<etl::floating_point SampleType, typename URNG = etl::xoshiro128plusplus>
 struct WhiteNoise
@@ -26,8 +25,7 @@ private:
 
 template<etl::floating_point SampleType, typename URNG>
 WhiteNoise<SampleType, URNG>::WhiteNoise(SeedType seed) noexcept : _rng{seed}
-{
-}
+{}
 
 template<etl::floating_point SampleType, typename URNG>
 auto WhiteNoise<SampleType, URNG>::setGain(SampleType gain) noexcept -> void

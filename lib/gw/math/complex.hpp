@@ -4,15 +4,13 @@
 
 #include <etl/cstdint.hpp>
 
-namespace gw
-{
+namespace gw {
 
 struct complex_q15_t
 {
     constexpr complex_q15_t(etl::int16_t re = etl::int16_t(0), etl::int16_t im = etl::int16_t(0)) noexcept
         : _data{arm::pkhbt(re, im, 16)}
-    {
-    }
+    {}
 
     // constexpr auto operator=(etl::int16_t const& val) -> complex_q15_t& {
     //     real(val);
@@ -23,6 +21,7 @@ struct complex_q15_t
     {
         return static_cast<etl::int16_t>((_data & etl::uint32_t(0xFFFF0000UL)) >> 16);
     }
+
     [[nodiscard]] constexpr auto imag() const -> etl::int16_t
     {
         return static_cast<etl::int16_t>(_data & etl::uint32_t(0x0000FFFFUL));

@@ -6,8 +6,7 @@
 #include <etl/concepts.hpp>
 #include <etl/numbers.hpp>
 
-namespace gw
-{
+namespace gw {
 
 enum struct OscillatorShape
 {
@@ -77,25 +76,20 @@ template<etl::floating_point SampleType>
 auto Oscillator<SampleType>::operator()() noexcept -> SampleType
 {
     auto output = SampleType{};
-    switch (_shape)
-    {
-        case OscillatorShape::Sine:
-        {
+    switch (_shape) {
+        case OscillatorShape::Sine: {
             output = sine(_phase);
             break;
         }
-        case OscillatorShape::Triangle:
-        {
+        case OscillatorShape::Triangle: {
             output = triangle(_phase);
             break;
         }
-        case OscillatorShape::Square:
-        {
+        case OscillatorShape::Square: {
             output = pulse(_phase, _pulseWidth);
             break;
         }
-        default:
-        {
+        default: {
             break;
         }
     }
@@ -122,7 +116,9 @@ template<etl::floating_point SampleType>
 auto Oscillator<SampleType>::pulse(SampleType phase, SampleType width) noexcept -> SampleType
 {
     auto const w = etl::clamp(width, SampleType{0}, SampleType{1});
-    if (phase < w) { return SampleType{-1}; }
+    if (phase < w) {
+        return SampleType{-1};
+    }
     return SampleType{1};
 }
 

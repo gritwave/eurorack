@@ -2,8 +2,7 @@
 
 #include <etl/cmath.hpp>
 
-namespace gw
-{
+namespace gw {
 
 template<typename T>
 [[nodiscard]] auto noteToHertz(T note) noexcept -> T

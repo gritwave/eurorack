@@ -6,8 +6,7 @@
 #include <etl/numbers.hpp>
 #include <etl/numeric.hpp>
 
-namespace gw
-{
+namespace gw {
 enum struct DynamicSmoothingType
 {
     Efficient,
@@ -49,16 +48,13 @@ private:
 template<etl::floating_point SampleType, DynamicSmoothingType SmoothingType>
 auto DynamicSmoothing<SampleType, SmoothingType>::prepare(SampleType sampleRate) -> void
 {
-    if constexpr (SmoothingType == DynamicSmoothingType::Efficient)
-    {
+    if constexpr (SmoothingType == DynamicSmoothingType::Efficient) {
         auto const wc = _baseFrequency / sampleRate;
         auto const gc = etl::tan(static_cast<SampleType>(etl::numbers::pi) * wc);
 
         _state.g0    = SampleType(2) * gc / (SampleType(1) + gc);
         _state.sense = _sensitivity * SampleType(4);
-    }
-    else
-    {
+    } else {
         auto const wc = _baseFrequency / sampleRate;
         _state.wc     = wc;
     }
@@ -71,14 +67,11 @@ auto DynamicSmoothing<SampleType, SmoothingType>::process(SampleType input) -> S
     auto const low2z = _low2;
     auto const bandz = low1z - low2z;
 
-    if constexpr (SmoothingType == DynamicSmoothingType::Efficient)
-    {
+    if constexpr (SmoothingType == DynamicSmoothingType::Efficient) {
         auto const g = etl::min(_state.g0 + _state.sense + etl::abs(bandz), SampleType(1));
         _low1        = low1z + g * (input - low1z);
         _low2        = low2z + g * (_low1 - low2z);
-    }
-    else
-    {
+    } else {
         auto const x1 = SampleType(5.9948827);
         auto const x2 = SampleType(-11.969296);
         auto const x3 = SampleType(15.959062);
@@ -99,6 +92,8 @@ auto DynamicSmoothing<SampleType, SmoothingType>::reset() -> void
 {
     _low1 = SampleType(0);
     _low2 = SampleType(0);
-    if constexpr (SmoothingType == DynamicSmoothingType::Accurate) { _state.inz = SampleType(0); }
+    if constexpr (SmoothingType == DynamicSmoothingType::Accurate) {
+        _state.inz = SampleType(0);
+    }
 }
 }  // namespace gw

@@ -2,8 +2,7 @@
 
 #include <etl/random.hpp>
 
-namespace gw
-{
+namespace gw {
 
 template<typename URNG>
 struct RectangleDither

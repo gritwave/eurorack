@@ -2,8 +2,7 @@
 
 #include <etl/random.hpp>
 
-namespace gw
-{
+namespace gw {
 
 /// \brief Dummy dithering class. Performs no dithering.
 template<typename URNG>

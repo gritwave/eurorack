@@ -4,8 +4,7 @@
 #include <etl/concepts.hpp>
 #include <etl/numbers.hpp>
 
-namespace gw
-{
+namespace gw {
 
 enum struct CrossFadeCurve
 {
@@ -65,34 +64,28 @@ auto CrossFade<SampleType>::update() -> void
     static constexpr auto const logMax = static_cast<SampleType>(etl::log(1.0));
     static constexpr auto const halfPi = static_cast<SampleType>(etl::numbers::pi * 0.5);
 
-    switch (_parameter.curve)
-    {
-        case CrossFadeCurve::Linear:
-        {
+    switch (_parameter.curve) {
+        case CrossFadeCurve::Linear: {
             _gainR = _parameter.mix;
             _gainL = SampleType{1} - _gainR;
             return;
         }
-        case CrossFadeCurve::ConstantPower:
-        {
+        case CrossFadeCurve::ConstantPower: {
             _gainR = etl::sin(_parameter.mix * halfPi);
             _gainL = etl::sin((SampleType{1} - _parameter.mix) * halfPi);
             return;
         }
-        case CrossFadeCurve::Logarithmic:
-        {
+        case CrossFadeCurve::Logarithmic: {
             _gainR = etl::exp(_parameter.mix * (logMax - logMin) + logMin);
             _gainL = SampleType{1} - _gainR;
             return;
         }
-        case CrossFadeCurve::Exponentail:
-        {
+        case CrossFadeCurve::Exponentail: {
             _gainR = _parameter.mix * _parameter.mix;
             _gainL = SampleType{1} - _gainR;
             return;
         }
-        default:
-        {
+        default: {
             _gainR = SampleType{0.5};
             _gainL = SampleType{0.5};
             return;

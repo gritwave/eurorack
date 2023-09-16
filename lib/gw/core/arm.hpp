@@ -8,13 +8,12 @@
 
 #define TA_Q31_MAX ((::etl::int64_t)(0x7FFFFFFFL))
 #define TA_Q15_MAX ((::etl::int32_t)(0x7FFF))
-#define TA_Q7_MAX ((::etl::int32_t)(0x7F))
+#define TA_Q7_MAX  ((::etl::int32_t)(0x7F))
 #define TA_Q31_MIN (-(::etl::int64_t)(0x80000000L))
 #define TA_Q15_MIN (-(::etl::int32_t)(0x8000))
-#define TA_Q7_MIN (-(::etl::int32_t)(0x80))
+#define TA_Q7_MIN  (-(::etl::int32_t)(0x80))
 
-namespace gw::arm
-{
+namespace gw::arm {
 
 TA_ALWAYS_INLINE inline auto qadd16(etl::uint32_t op1, etl::uint32_t op2) -> etl::uint32_t
 {

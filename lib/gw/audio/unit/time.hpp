@@ -2,8 +2,7 @@
 
 #include <etl/chrono.hpp>
 
-namespace gw
-{
+namespace gw {
 
 template<typename T>
 using Microseconds = etl::chrono::duration<T, etl::micro>;

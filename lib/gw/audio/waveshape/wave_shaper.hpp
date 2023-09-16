@@ -2,8 +2,7 @@
 
 #include <etl/concepts.hpp>
 
-namespace gw
-{
+namespace gw {
 
 template<etl::floating_point SampleType, typename Function = SampleType (*)(SampleType)>
 struct WaveShaper

@@ -3,8 +3,7 @@
 #include <etl/algorithm.hpp>
 #include <etl/concepts.hpp>
 
-namespace gw
-{
+namespace gw {
 
 template<etl::floating_point Float>
 [[nodiscard]] constexpr auto mapToRange(Float in, Float min, Float max) noexcept -> Float

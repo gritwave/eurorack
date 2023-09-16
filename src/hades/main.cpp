@@ -2,8 +2,7 @@
 
 #include <daisy_patch_sm.h>
 
-namespace hades
-{
+namespace hades {
 
 static constexpr auto BLOCK_SIZE  = 16U;
 static constexpr auto SAMPLE_RATE = 96'000.0F;
@@ -20,7 +19,7 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
     auto const leftOut  = etl::span<float>{etl::addressof(OUT_L[0]), BLOCK_SIZE};
     auto const rightOut = etl::span<float>{etl::addressof(OUT_R[0]), BLOCK_SIZE};
     auto const context  = gw::Hades::Buffers{
-         .input  = {leftIn, rightIn},
+         .input  = { leftIn,  rightIn},
          .output = {leftOut, rightOut},
     };
 
