@@ -38,7 +38,6 @@ jobs:
         run: ctest --test-dir build -C ${{ matrix.build_type }} --output-on-failure
 
       - name: Coverage report
-        if: contains(matrix.name, 'Coverage')
         shell: bash
         run: >
           gcovr
@@ -52,7 +51,6 @@ jobs:
 
       - name: Upload coverage report
         uses: codecov/codecov-action@v3
-        if: contains(matrix.name, 'Coverage')
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./build/coverage.xml
