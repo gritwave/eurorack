@@ -9,20 +9,18 @@ concurrency:
 jobs:
   package:
     name: Package
-    runs-on: ubuntu-latest
-    container: fedora:38
+    runs-on: ubuntu-22.04
     steps:
-      - name: Install dependencies
-        run: |
-          sudo dnf update -y
-          sudo dnf install -y git nodejs arm-none-eabi-binutils-cs arm-none-eabi-gcc-cs arm-none-eabi-gcc-cs-c++ arm-none-eabi-newlib ninja-build cmake
-          arm-none-eabi-g++ --version
-
       - name: Check out code
         uses: actions/checkout@v3
         with:
           submodules: recursive
           lfs: true
+
+      - name: Install dependencies
+        run: |
+          sudo apt install gcc-arm-none-eabi ninja-build cmake
+          arm-none-eabi-g++ --version
 
       - name: Build firmware
         run: |
