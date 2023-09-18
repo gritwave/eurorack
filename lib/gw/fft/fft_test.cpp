@@ -17,11 +17,11 @@ auto test_twiddles() -> bool
     return true;
 }
 
-template<etl::floating_point Float, etl::size_t Size>
+template<typename Plan>
 auto test_static_fft_plan() -> bool
 {
-    using Complex = etl::complex<Float>;
-    using Plan    = gw::fft::static_fft_plan<Complex, Size>;
+    using Complex = typename Plan::value_type;
+    using Float   = typename Complex::value_type;
 
     auto plan  = Plan{};
     auto x_buf = etl::array<Complex, Plan::size()>{};
@@ -43,13 +43,21 @@ auto test_static_fft_plan() -> bool
     return true;
 }
 
+template<etl::floating_point Float, etl::size_t Size>
+auto test_plan() -> bool
+{
+    test_static_fft_plan<gw::fft::static_fft_plan<etl::complex<Float>, Size>>();
+    test_static_fft_plan<gw::fft::static_fft_plan_v2<etl::complex<Float>, Size>>();
+    return true;
+}
+
 template<etl::size_t Size>
 static auto test_size() -> bool
 {
     assert((test_twiddles<float, Size>()));
     assert((test_twiddles<double, Size>()));
-    assert((test_static_fft_plan<float, Size>()));
-    assert((test_static_fft_plan<double, Size>()));
+    assert((test_plan<float, Size>()));
+    assert((test_plan<double, Size>()));
     return true;
 }
 

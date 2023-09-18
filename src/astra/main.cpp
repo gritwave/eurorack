@@ -106,7 +106,7 @@ struct static_c2c_roundtrip
 
     auto operator()() -> void
     {
-        auto x = etl::mdspan<etl::complex<Float>, etl::extents<etl::size_t, N>>{_buf.data()};
+        auto x = etl::mdspan{_buf.data(), etl::extents<etl::size_t, N>{}};
         _plan(x, gw::fft::direction::forward);
         _plan(x, gw::fft::direction::backward);
         etl::linalg::scale(Float(1) / Float(N), x);
@@ -116,7 +116,7 @@ struct static_c2c_roundtrip
     }
 
 private:
-    gw::fft::static_fft_plan<etl::complex<Float>, N> _plan{};
+    gw::fft::static_fft_plan_v2<etl::complex<Float>, N> _plan{};
     etl::array<etl::complex<Float>, N> _buf{[] {
         auto rng = etl::xoshiro128plusplus{42};
         return make_noise<etl::complex<Float>, N>(rng);
@@ -161,10 +161,15 @@ auto main() -> int
     // etl::timeit<64>("c2c_roundtrip<float, 256, v3>     - ", c2c_roundtrip<float, 256, gw::fft::c2c_dit2_v3>{});
     // etl::timeit<64>("c2c_roundtrip<float, 512, v3>     - ", c2c_roundtrip<float, 512, gw::fft::c2c_dit2_v3>{});
     // etl::timeit<64>("c2c_roundtrip<float, 1024, v3>    - ", c2c_roundtrip<float, 1024, gw::fft::c2c_dit2_v3>{});
-    etl::timeit<64>("c2c_roundtrip<float, 2048, v3>    - ", c2c_roundtrip<float, 2048, gw::fft::c2c_dit2_v3>{});
-    etl::timeit<64>("c2c_roundtrip<float, 4096, v3>    - ", c2c_roundtrip<float, 4096, gw::fft::c2c_dit2_v3>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 2048, v3>    - ", c2c_roundtrip<float, 2048, gw::fft::c2c_dit2_v3>{});
+    // etl::timeit<64>("c2c_roundtrip<float, 4096, v3>    - ", c2c_roundtrip<float, 4096, gw::fft::c2c_dit2_v3>{});
     astra::mcu.PrintLine("");
 
+    // etl::timeit<64>("static_c2c_roundtrip<float, 64>   - ", static_c2c_roundtrip<float, 64>{});
+    etl::timeit<64>("static_c2c_roundtrip<float, 128>  - ", static_c2c_roundtrip<float, 128>{});
+    etl::timeit<64>("static_c2c_roundtrip<float, 256>  - ", static_c2c_roundtrip<float, 256>{});
+    etl::timeit<64>("static_c2c_roundtrip<float, 512>  - ", static_c2c_roundtrip<float, 512>{});
+    etl::timeit<64>("static_c2c_roundtrip<float, 1024> - ", static_c2c_roundtrip<float, 1024>{});
     etl::timeit<64>("static_c2c_roundtrip<float, 2048> - ", static_c2c_roundtrip<float, 2048>{});
     etl::timeit<64>("static_c2c_roundtrip<float, 4096> - ", static_c2c_roundtrip<float, 4096>{});
     astra::mcu.PrintLine("");

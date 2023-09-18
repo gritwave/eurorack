@@ -153,7 +153,7 @@ namespace detail {
 template<typename Complex, int Order, int Stage>
 struct static_c2c_dit2_stage
 {
-    auto operator()(etl::linalg::inout_vector auto x, etl::linalg::in_vector auto twiddles) -> void
+    auto operator()(etl::linalg::inout_vector auto x, etl::linalg::in_vector auto w) -> void
         requires(Stage == 0)
     {
         static constexpr auto const size         = 1 << Order;
@@ -169,10 +169,10 @@ struct static_c2c_dit2_stage
             x(i1)           = temp;
         }
 
-        static_c2c_dit2_stage<Complex, Order, 1>{}(x, twiddles);
+        static_c2c_dit2_stage<Complex, Order, 1>{}(x, w);
     }
 
-    auto operator()(etl::linalg::inout_vector auto x, etl::linalg::in_vector auto twiddles) -> void
+    auto operator()(etl::linalg::inout_vector auto x, etl::linalg::in_vector auto w) -> void
         requires(Stage != 0 and Stage < Order)
     {
         static constexpr auto const size         = 1 << Order;
@@ -182,7 +182,7 @@ struct static_c2c_dit2_stage
 
         for (auto k{0}; k < size; k += stride) {
             for (auto pair{0}; pair < stage_length; ++pair) {
-                auto const tw = twiddles(pair * tw_stride);
+                auto const tw = w(pair * tw_stride);
 
                 auto const i1 = k + pair;
                 auto const i2 = k + pair + stage_length;
@@ -193,13 +193,56 @@ struct static_c2c_dit2_stage
             }
         }
 
-        static_c2c_dit2_stage<Complex, Order, Stage + 1>{}(x, twiddles);
+        static_c2c_dit2_stage<Complex, Order, Stage + 1>{}(x, w);
     }
 
-    auto operator()(etl::linalg::inout_vector auto /*x*/, etl::linalg::in_vector auto /*twiddles*/) -> void
+    auto operator()(etl::linalg::inout_vector auto /*x*/, etl::linalg::in_vector auto /*w*/) -> void
         requires(Stage == Order)
     {}
 };
+
+template<int Stage, etl::linalg::inout_vector InOutVec, etl::linalg::in_vector InVec>
+    requires(Stage == 0)
+[[gnu::noinline]] auto static_dit2_stage_v2(InOutVec x, InVec w, int order) -> void
+{
+    static constexpr auto const stage_length = 1;  // ipow<2>(0)
+    static constexpr auto const stride       = 2;  // ipow<2>(0 + 1)
+
+    auto const size = 1 << order;
+
+    for (auto k{0}; k < static_cast<int>(size); k += stride) {
+        auto const i1 = k;
+        auto const i2 = k + stage_length;
+
+        auto const temp = x(i1) + x(i2);
+        x(i2)           = x(i1) - x(i2);
+        x(i1)           = temp;
+    }
+}
+
+template<int Stage, etl::linalg::inout_vector InOutVec, etl::linalg::in_vector InVec>
+    requires(Stage != 0)
+[[gnu::noinline]] auto static_dit2_stage_v2(InOutVec x, InVec w, int order) -> void
+{
+    static constexpr auto const stage_length = ipow<2>(Stage);
+    static constexpr auto const stride       = ipow<2>(Stage + 1);
+
+    auto const size      = 1 << order;
+    auto const tw_stride = ipow<2>(order - Stage - 1);
+
+    for (auto k{0}; k < size; k += stride) {
+        for (auto pair{0}; pair < stage_length; ++pair) {
+            auto const tw = w(pair * tw_stride);
+
+            auto const i1 = k + pair;
+            auto const i2 = k + pair + stage_length;
+
+            auto const temp = x(i1) + tw * x(i2);
+            x(i2)           = x(i1) - tw * x(i2);
+            x(i1)           = temp;
+        }
+    }
+}
 
 }  // namespace detail
 
@@ -231,6 +274,47 @@ struct static_fft_plan
             detail::static_c2c_dit2_stage<Complex, order(), 0>{}(x, w);
         } else {
             detail::static_c2c_dit2_stage<Complex, order(), 0>{}(x, etl::linalg::conjugated(w));
+        }
+    }
+
+private:
+    direction _default_direction;
+    static_bitrevorder_plan<size()> _reorder;
+    etl::array<Complex, size() / 2> _w;
+};
+
+template<typename Complex, etl::size_t Size>
+struct static_fft_plan_v2
+{
+    using value_type = Complex;
+    using size_type  = etl::size_t;
+
+    explicit static_fft_plan_v2(direction default_direction = direction::forward) noexcept
+        : _default_direction{default_direction}
+        , _reorder{}
+        , _w{make_twiddles_r2<typename Complex::value_type, size()>(default_direction)}
+    {}
+
+    [[nodiscard]] static constexpr auto size() noexcept -> etl::size_t { return Size; }
+
+    [[nodiscard]] static constexpr auto order() noexcept -> etl::size_t { return ilog2(Size); }
+
+    template<etl::linalg::inout_vector InOutVec>
+        requires etl::same_as<typename InOutVec::value_type, Complex>
+    auto operator()(InOutVec x, direction dir) noexcept -> void
+    {
+        auto run_stages = [x]<etl::size_t... Stage>(etl::index_sequence<Stage...>, etl::linalg::in_vector auto w) {
+            (detail::static_dit2_stage_v2<Stage>(x, w, order()), ...);
+        };
+
+        _reorder(x);
+
+        auto const w = etl::mdspan<Complex, etl::extents<etl::size_t, size()>>{_w.data()};
+
+        if (dir == _default_direction) {
+            run_stages(etl::make_index_sequence<order()>(), w);
+        } else {
+            run_stages(etl::make_index_sequence<order()>(), etl::linalg::conjugated(w));
         }
     }
 
