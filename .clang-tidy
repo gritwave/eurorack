@@ -3,9 +3,7 @@ Checks: >
   boost-*,
 
   bugprone-*,
-  -bugprone-macro-parentheses,
   -bugprone-exception-escape,
-  -bugprone-signed-char-misuse,
 
   cert-*,
   -cert-err58-cpp,
@@ -18,7 +16,6 @@ Checks: >
 
   cppcoreguidelines-*,
   -cppcoreguidelines-avoid-non-const-global-variables,
-  -cppcoreguidelines-macro-usage,
   -cppcoreguidelines-pro-bounds-constant-array-index,
   -cppcoreguidelines-pro-bounds-pointer-arithmetic,
   -cppcoreguidelines-pro-type-reinterpret-cast,

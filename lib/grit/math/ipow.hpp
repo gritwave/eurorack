@@ -15,11 +15,12 @@ template<etl::integral Int>
 }
 
 template<auto Base>
+    requires(etl::integral<decltype(Base)> and Base > 0)
 [[nodiscard]] constexpr auto ipow(decltype(Base) exponent) noexcept -> decltype(Base)
 {
     using Int = decltype(Base);
     if constexpr (Base == Int{2}) {
-        return static_cast<Int>(Int{1} << exponent);
+        return static_cast<Int>(1U << static_cast<unsigned>(exponent));
     } else {
         return ipow(Base, exponent);
     }
