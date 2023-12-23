@@ -1,6 +1,6 @@
 function(add_baremetal_executable _target _linker_script)
     add_executable(${_target})
-    
+
     set_target_properties(${_target} PROPERTIES
         SUFFIX
             ".elf"

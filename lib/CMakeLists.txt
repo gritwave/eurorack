@@ -15,7 +15,7 @@ target_link_libraries(gw_eurorack_tests PRIVATE gw::eurorack)
 target_sources(gw_eurorack_tests
     PRIVATE
         main_test.cpp
-        
+
         gw/audio/delay/static_delay_line_test.cpp
         gw/audio/dither/no_dither_test.cpp
         gw/audio/dither/rectangle_dither_test.cpp
