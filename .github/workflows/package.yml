@@ -21,7 +21,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt install ninja-build cmake wget
+          sudo apt install ninja-build wget
 
       - name: Install GCC
         run: |

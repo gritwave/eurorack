@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.23...3.27)
 
 file(STRINGS VERSION CURRENT_VERSION)
 project(patch-init-firmware VERSION ${CURRENT_VERSION} LANGUAGES C CXX)
@@ -34,4 +34,27 @@ if(CMAKE_CROSSCOMPILING)
     add_subdirectory(src/benchmark)
     add_subdirectory(src/hades)
     add_subdirectory(src/kyma)
+endif()
+
+if(NOT CMAKE_CROSSCOMPILING)
+    add_executable(gw-eurorack-tests)
+    add_test(NAME gw-eurorack-tests COMMAND gw-eurorack-tests)
+    target_link_libraries(gw-eurorack-tests PRIVATE gw::eurorack)
+    target_compile_options(gw-eurorack-tests PRIVATE "-Wall" "-Wextra" "-Wpedantic")
+    target_sources(gw-eurorack-tests
+        PRIVATE
+            "lib/main_test.cpp"
+
+            "lib/gw/audio/delay/static_delay_line_test.cpp"
+            "lib/gw/audio/dither/no_dither_test.cpp"
+            "lib/gw/audio/dither/rectangle_dither_test.cpp"
+            "lib/gw/audio/dither/triangle_dither_test.cpp"
+            "lib/gw/audio/envelope/envelope_follower_test.cpp"
+            "lib/gw/audio/music/note_test.cpp"
+            "lib/gw/audio/noise/white_noise_test.cpp"
+            "lib/gw/audio/unit/decibel_test.cpp"
+            "lib/gw/fft/fft_test.cpp"
+            "lib/gw/math/ilog2_test.cpp"
+            "lib/gw/math/ipow_test.cpp"
+    )
 endif()

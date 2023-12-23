@@ -203,7 +203,7 @@ struct static_c2c_dit2_stage
 
 template<int Stage, etl::linalg::inout_vector InOutVec, etl::linalg::in_vector InVec>
     requires(Stage == 0)
-[[gnu::noinline]] auto static_dit2_stage_v2(InOutVec x, InVec w, int order) -> void
+[[gnu::noinline]] auto static_dit2_stage_v2(InOutVec x, InVec /*w*/, int order) -> void
 {
     static constexpr auto const stage_length = 1;  // ipow<2>(0)
     static constexpr auto const stride       = 2;  // ipow<2>(0 + 1)

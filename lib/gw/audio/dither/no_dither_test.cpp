@@ -11,7 +11,8 @@ template<typename URNG>
     auto dither = gw::NoDither<URNG>{std::random_device{}()};
     for (auto i{0}; i < 100; ++i) {
         auto const val = dither(1.0F);
-        assert(0.5 <= val <= 1.5);
+        assert(val >= 0.5);
+        assert(val <= 1.5);
         assert(gw::approx(val, 1.0F));
     }
 
