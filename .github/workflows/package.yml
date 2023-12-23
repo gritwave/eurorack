@@ -1,10 +1,12 @@
 name: Package
 
-on: push
+on:
+  push:
+    tags:
+      - v*
 
-concurrency:
-  group: ${{ github.ref }}-${{ github.workflow }}
-  cancel-in-progress: true
+permissions:
+  contents: write
 
 jobs:
   package:
@@ -53,7 +55,6 @@ jobs:
   release:
     name: Release
     needs: package
-    if: contains(github.ref, 'tags/v')
     runs-on: ubuntu-22.04
     steps:
       - name: Check out code
