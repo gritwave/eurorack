@@ -23,6 +23,7 @@ set(LINKER_SCRIPT ${LIBDAISY_DIR}/core/STM32H750IB_flash.lds)
 
 enable_testing()
 include(CTest)
+include("cmake/add_baremetal_executable.cmake")
 
 add_subdirectory(3rd_party/tetl/include)
 add_subdirectory(lib)

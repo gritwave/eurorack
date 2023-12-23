@@ -21,6 +21,13 @@ git tag v0.1.0
 git push --tags
 ```
 
+### Compiler Explorer
+
+```sh
+g++ -O3 -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -ffast-math
+clang++ -O3 --target=arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -ffast-math
+```
+
 ### Resources
 
 - [Pink Noise](https://www.firstpr.com.au/dsp/pink-noise)
