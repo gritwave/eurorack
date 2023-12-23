@@ -18,8 +18,8 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
     auto const gainLeftKnob  = patch.GetAdcValue(daisy::patch_sm::CV_1);
     auto const gainRightKnob = patch.GetAdcValue(daisy::patch_sm::CV_2);
 
-    auto const gainLeft  = gw::fromDecibels(gw::mapToRange(gainLeftKnob, -48.0F, 6.0F));
-    auto const gainRight = gw::fromDecibels(gw::mapToRange(gainRightKnob, -48.0F, 6.0F));
+    auto const gainLeft  = gw::fromDecibels(gw::mapToRange(gainLeftKnob, -30.0F, 6.0F));
+    auto const gainRight = gw::fromDecibels(gw::mapToRange(gainRightKnob, -30.0F, 6.0F));
 
     for (size_t i = 0; i < size; ++i) {
         auto const inLeft  = IN_L[i];
