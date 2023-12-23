@@ -23,14 +23,14 @@ jobs:
 
       - name: Install GCC
         run: |
-          wget https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu/12.3.rel1/binrel/arm-gnu-toolchain-12.3.rel1-x86_64-arm-none-eabi.tar.xz
-          tar -xvf arm-gnu-toolchain-12.3.rel1-x86_64-arm-none-eabi.tar.xz
-          export PATH="$PATH:$GITHUB_WORKSPACE/arm-gnu-toolchain-12.3.rel1-x86_64-arm-none-eabi/bin"
+          wget https://developer.arm.com/-/media/Files/downloads/gnu/13.2.rel1/binrel/arm-gnu-toolchain-13.2.rel1-x86_64-arm-none-eabi.tar.xz
+          tar -xvf arm-gnu-toolchain-13.2.rel1-x86_64-arm-none-eabi.tar.xz
+          export PATH="$PATH:$GITHUB_WORKSPACE/arm-gnu-toolchain-13.2.rel1-x86_64-arm-none-eabi/bin"
           arm-none-eabi-g++ --version
 
       - name: Build firmware
         run: |
-          export PATH="$PATH:$GITHUB_WORKSPACE/arm-gnu-toolchain-12.3.rel1-x86_64-arm-none-eabi/bin"
+          export PATH="$PATH:$GITHUB_WORKSPACE/arm-gnu-toolchain-13.2.rel1-x86_64-arm-none-eabi/bin"
           cmake --preset arm-gnu
           cmake --build --preset release
 
