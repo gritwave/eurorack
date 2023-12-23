@@ -29,14 +29,14 @@ auto test_static_fft_plan() -> bool
     x(0)       = etl::complex{Float(1), Float(0)};
 
     plan(x, grit::fft::direction::forward);
-    for (auto val : x_buf) {
+    for (auto const& val : x_buf) {
         assert(grit::approx(val, etl::complex{Float(1)}));
     }
 
     plan(x, grit::fft::direction::backward);
     assert(grit::approx(x(0), etl::complex{Float(1) * Float(Plan::size())}));
 
-    for (auto val : etl::span{x_buf}.last(Plan::size() - 1)) {
+    for (auto const& val : etl::span{x_buf}.last(Plan::size() - 1)) {
         assert(grit::approx(val, etl::complex{Float(0)}));
     }
 

@@ -254,7 +254,6 @@ struct static_fft_plan
 
     explicit static_fft_plan(direction default_direction = direction::forward) noexcept
         : _default_direction{default_direction}
-        , _reorder{}
         , _w{make_twiddles_r2<typename Complex::value_type, size()>(default_direction)}
     {}
 
@@ -279,7 +278,7 @@ struct static_fft_plan
 
 private:
     direction _default_direction;
-    static_bitrevorder_plan<size()> _reorder;
+    static_bitrevorder_plan<size()> _reorder{};
     etl::array<Complex, size() / 2> _w;
 };
 
@@ -291,7 +290,6 @@ struct static_fft_plan_v2
 
     explicit static_fft_plan_v2(direction default_direction = direction::forward) noexcept
         : _default_direction{default_direction}
-        , _reorder{}
         , _w{make_twiddles_r2<typename Complex::value_type, size()>(default_direction)}
     {}
 
@@ -320,7 +318,7 @@ struct static_fft_plan_v2
 
 private:
     direction _default_direction;
-    static_bitrevorder_plan<size()> _reorder;
+    static_bitrevorder_plan<size()> _reorder{};
     etl::array<Complex, size() / 2> _w;
 };
 
