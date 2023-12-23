@@ -1,18 +1,18 @@
-#include <gw/audio/delay/static_delay_line.hpp>
-#include <gw/audio/envelope/adsr.hpp>
-#include <gw/audio/music/note.hpp>
-#include <gw/audio/oscillator/variable_shape_oscillator.hpp>
-#include <gw/audio/oscillator/wavetable_oscillator.hpp>
-#include <gw/audio/unit/decibel.hpp>
-#include <gw/math/dynamic_smoothing.hpp>
-#include <gw/math/range.hpp>
+#include <grit/audio/delay/static_delay_line.hpp>
+#include <grit/audio/envelope/adsr.hpp>
+#include <grit/audio/music/note.hpp>
+#include <grit/audio/oscillator/variable_shape_oscillator.hpp>
+#include <grit/audio/oscillator/wavetable_oscillator.hpp>
+#include <grit/audio/unit/decibel.hpp>
+#include <grit/math/dynamic_smoothing.hpp>
+#include <grit/math/range.hpp>
 
 #include <daisy_patch_sm.h>
 
 namespace kyma {
 static constexpr auto BLOCK_SIZE     = 16U;
 static constexpr auto SAMPLE_RATE    = 96'000.0F;
-static constexpr auto WAVETABLE_SINE = gw::makeSineWavetable<float, 2048>();
+static constexpr auto WAVETABLE_SINE = grit::makeSineWavetable<float, 2048>();
 static constexpr auto SineWavetable  = etl::mdspan{
     WAVETABLE_SINE.data(),
     etl::extents<etl::size_t, WAVETABLE_SINE.size()>{},
@@ -23,15 +23,15 @@ auto envTriggerButton = daisy::Switch{};
 auto patch            = daisy::patch_sm::DaisyPatchSM{};
 auto& envelopeGate    = patch.gate_in_1;
 
-auto adsr          = gw::ADSR{};
-auto oscillator    = gw::WavetableOscillator<float, WAVETABLE_SINE.size()>{SineWavetable};
-auto subOscillator = gw::WavetableOscillator<float, WAVETABLE_SINE.size()>{SineWavetable};
+auto adsr          = grit::ADSR{};
+auto oscillator    = grit::WavetableOscillator<float, WAVETABLE_SINE.size()>{SineWavetable};
+auto subOscillator = grit::WavetableOscillator<float, WAVETABLE_SINE.size()>{SineWavetable};
 
-// auto smoothE = gw::DynamicSmoothing<float, gw::DynamicSmoothingType::Efficient>{};
-// auto smoothA = gw::DynamicSmoothing<float, gw::DynamicSmoothingType::Accurate>{};
-// auto delayN  = gw::StaticDelayLine<float, 32, gw::BufferInterpolation::None>{};
-// auto delayL  = gw::StaticDelayLine<float, 32, gw::BufferInterpolation::Linear>{};
-// auto delayH  = gw::StaticDelayLine<float, 32, gw::BufferInterpolation::Hermite>{};
+// auto smoothE = grit::DynamicSmoothing<float, grit::DynamicSmoothingType::Efficient>{};
+// auto smoothA = grit::DynamicSmoothing<float, grit::DynamicSmoothingType::Accurate>{};
+// auto delayN  = grit::StaticDelayLine<float, 32, grit::BufferInterpolation::None>{};
+// auto delayL  = grit::StaticDelayLine<float, 32, grit::BufferInterpolation::Linear>{};
+// auto delayH  = grit::StaticDelayLine<float, 32, grit::BufferInterpolation::Hermite>{};
 
 auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::OutputBuffer out, size_t size) -> void
 {
@@ -47,18 +47,18 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
     auto const subGainCV  = patch.GetAdcValue(daisy::patch_sm::CV_7);
     auto const subMorphCV = patch.GetAdcValue(daisy::patch_sm::CV_8);
 
-    auto const pitch          = gw::mapToRange(pitchKnob, 36.0F, 96.0F);
-    auto const voltsPerOctave = gw::mapToRange(vOctCV, 0.0F, 60.0F);
+    auto const pitch          = grit::mapToRange(pitchKnob, 36.0F, 96.0F);
+    auto const voltsPerOctave = grit::mapToRange(vOctCV, 0.0F, 60.0F);
     auto const note           = etl::clamp(pitch + voltsPerOctave, 0.0F, 127.0F);
     auto const morph          = etl::clamp(morphKnob + morphCV, 0.0F, 1.0F);
 
     auto const subOffset     = subOctaveToggle.Pressed() ? 12.0F : 24.0F;
     auto const subNoteNumber = etl::clamp(note - subOffset, 0.0F, 127.0F);
     auto const subMorph      = etl::clamp(subMorphCV, 0.0F, 1.0F);
-    auto const subGain       = gw::mapToRange(subGainCV, 0.0F, 1.0F);
+    auto const subGain       = grit::mapToRange(subGainCV, 0.0F, 1.0F);
 
-    auto const attack  = gw::mapToRange(attackKnob, 0.0F, 0.750F);
-    auto const release = gw::mapToRange(releaseKnob, 0.0F, 2.5F);
+    auto const attack  = grit::mapToRange(attackKnob, 0.0F, 0.750F);
+    auto const release = grit::mapToRange(releaseKnob, 0.0F, 2.5F);
 
     // oscillator.setWavetable(SineWavetable);
     // subOscillator.setWavetable(SineWavetable);
@@ -66,8 +66,8 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
     // subOscillator.setShapeMorph(subMorph);
     etl::ignore_unused(subMorph, morph);
 
-    oscillator.setFrequency(gw::noteToHertz(note));
-    subOscillator.setFrequency(gw::noteToHertz(subNoteNumber));
+    oscillator.setFrequency(grit::noteToHertz(note));
+    subOscillator.setFrequency(grit::noteToHertz(subNoteNumber));
 
     adsr.setAttack(attack * SAMPLE_RATE);
     adsr.setRelease(release * SAMPLE_RATE);
