@@ -8,7 +8,7 @@
 
 namespace grit {
 
-enum struct OscillatorShape
+enum struct oscillator_shape
 {
     Sine,
     Triangle,
@@ -16,16 +16,16 @@ enum struct OscillatorShape
 };
 
 template<etl::floating_point SampleType>
-struct Oscillator
+struct oscillator
 {
-    Oscillator() = default;
+    oscillator() = default;
 
-    auto setShape(OscillatorShape shape) noexcept -> void;
-    auto setPhase(SampleType phase) noexcept -> void;
-    auto setFrequency(SampleType frequency) noexcept -> void;
-    auto setSampleRate(SampleType sampleRate) noexcept -> void;
+    auto set_shape(oscillator_shape shape) noexcept -> void;
+    auto set_phase(SampleType phase) noexcept -> void;
+    auto set_frequency(SampleType frequency) noexcept -> void;
+    auto set_sample_rate(SampleType sample_rate) noexcept -> void;
 
-    auto addPhaseOffset(SampleType offset) noexcept -> void;
+    auto add_phase_offset(SampleType offset) noexcept -> void;
 
     [[nodiscard]] auto operator()() noexcept -> SampleType;
 
@@ -34,59 +34,59 @@ private:
     [[nodiscard]] static auto triangle(SampleType phase) noexcept -> SampleType;
     [[nodiscard]] static auto pulse(SampleType phase, SampleType width) noexcept -> SampleType;
 
-    OscillatorShape _shape{OscillatorShape::Sine};
-    SampleType _sampleRate{0};
+    oscillator_shape _shape{oscillator_shape::Sine};
+    SampleType _sample_rate{0};
     SampleType _phase{0};
-    SampleType _phaseIncrement{0};
-    SampleType _pulseWidth{0.5};
+    SampleType _phase_increment{0};
+    SampleType _pulse_width{0.5};
 };
 
 template<etl::floating_point SampleType>
-auto Oscillator<SampleType>::setShape(OscillatorShape shape) noexcept -> void
+auto oscillator<SampleType>::set_shape(oscillator_shape shape) noexcept -> void
 {
     _shape = shape;
 }
 
 template<etl::floating_point SampleType>
-auto Oscillator<SampleType>::setPhase(SampleType phase) noexcept -> void
+auto oscillator<SampleType>::set_phase(SampleType phase) noexcept -> void
 {
     _phase = phase;
 }
 
 template<etl::floating_point SampleType>
-auto Oscillator<SampleType>::setFrequency(SampleType frequency) noexcept -> void
+auto oscillator<SampleType>::set_frequency(SampleType frequency) noexcept -> void
 {
-    _phaseIncrement = 1.0F / (_sampleRate / frequency);
+    _phase_increment = 1.0F / (_sample_rate / frequency);
 }
 
 template<etl::floating_point SampleType>
-auto Oscillator<SampleType>::setSampleRate(SampleType sampleRate) noexcept -> void
+auto oscillator<SampleType>::set_sample_rate(SampleType sample_rate) noexcept -> void
 {
-    _sampleRate = sampleRate;
+    _sample_rate = sample_rate;
 }
 
 template<etl::floating_point SampleType>
-auto Oscillator<SampleType>::addPhaseOffset(SampleType offset) noexcept -> void
+auto oscillator<SampleType>::add_phase_offset(SampleType offset) noexcept -> void
 {
     _phase += offset;
     _phase -= etl::floor(_phase);
 }
 
 template<etl::floating_point SampleType>
-auto Oscillator<SampleType>::operator()() noexcept -> SampleType
+auto oscillator<SampleType>::operator()() noexcept -> SampleType
 {
     auto output = SampleType{};
     switch (_shape) {
-        case OscillatorShape::Sine: {
+        case oscillator_shape::Sine: {
             output = sine(_phase);
             break;
         }
-        case OscillatorShape::Triangle: {
+        case oscillator_shape::Triangle: {
             output = triangle(_phase);
             break;
         }
-        case OscillatorShape::Square: {
-            output = pulse(_phase, _pulseWidth);
+        case oscillator_shape::Square: {
+            output = pulse(_phase, _pulse_width);
             break;
         }
         default: {
@@ -94,26 +94,26 @@ auto Oscillator<SampleType>::operator()() noexcept -> SampleType
         }
     }
 
-    addPhaseOffset(_phaseIncrement);
+    add_phase_offset(_phase_increment);
     return output;
 }
 
 template<etl::floating_point SampleType>
-auto Oscillator<SampleType>::sine(SampleType phase) noexcept -> SampleType
+auto oscillator<SampleType>::sine(SampleType phase) noexcept -> SampleType
 {
-    static constexpr auto twoPi = static_cast<SampleType>(etl::numbers::pi) * SampleType{2};
-    return etl::sin(phase * twoPi);
+    static constexpr auto two_pi = static_cast<SampleType>(etl::numbers::pi) * SampleType{2};
+    return etl::sin(phase * two_pi);
 }
 
 template<etl::floating_point SampleType>
-auto Oscillator<SampleType>::triangle(SampleType phase) noexcept -> SampleType
+auto oscillator<SampleType>::triangle(SampleType phase) noexcept -> SampleType
 {
     auto const x = phase <= SampleType{0.5} ? phase : SampleType{1} - phase;
     return (x - SampleType{0.25}) * SampleType{4};
 }
 
 template<etl::floating_point SampleType>
-auto Oscillator<SampleType>::pulse(SampleType phase, SampleType width) noexcept -> SampleType
+auto oscillator<SampleType>::pulse(SampleType phase, SampleType width) noexcept -> SampleType
 {
     auto const w = etl::clamp(width, SampleType{0}, SampleType{1});
     if (phase < w) {

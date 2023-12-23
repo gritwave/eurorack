@@ -9,75 +9,75 @@
 namespace grit {
 
 template<etl::floating_point SampleType>
-struct VariableShapeOscillator
+struct variable_shape_oscillator
 {
-    VariableShapeOscillator() = default;
+    variable_shape_oscillator() = default;
 
-    auto setShapes(OscillatorShape a, OscillatorShape b) noexcept -> void;
-    auto setShapeMorph(SampleType morph) noexcept -> void;
+    auto set_shapes(oscillator_shape a, oscillator_shape b) noexcept -> void;
+    auto set_shape_morph(SampleType morph) noexcept -> void;
 
-    auto setPhase(SampleType phase) noexcept -> void;
-    auto setFrequency(SampleType frequency) noexcept -> void;
-    auto setSampleRate(SampleType sampleRate) noexcept -> void;
+    auto set_phase(SampleType phase) noexcept -> void;
+    auto set_frequency(SampleType frequency) noexcept -> void;
+    auto set_sample_rate(SampleType sample_rate) noexcept -> void;
 
-    auto addPhaseOffset(SampleType offset) noexcept -> void;
+    auto add_phase_offset(SampleType offset) noexcept -> void;
 
     [[nodiscard]] auto operator()() noexcept -> SampleType;
 
 private:
-    Oscillator<SampleType> _oscA{};
-    Oscillator<SampleType> _oscB{};
-    CrossFade<SampleType> _crossFade;
+    oscillator<SampleType> _osc_a{};
+    oscillator<SampleType> _osc_b{};
+    cross_fade<SampleType> _cross_fade;
 };
 
 template<etl::floating_point SampleType>
-auto VariableShapeOscillator<SampleType>::setShapes(OscillatorShape a, OscillatorShape b) noexcept -> void
+auto variable_shape_oscillator<SampleType>::set_shapes(oscillator_shape a, oscillator_shape b) noexcept -> void
 {
-    _oscA.setShape(a);
-    _oscB.setShape(b);
+    _osc_a.setShape(a);
+    _osc_b.setShape(b);
 }
 
 template<etl::floating_point SampleType>
-auto VariableShapeOscillator<SampleType>::setShapeMorph(SampleType morph) noexcept -> void
+auto variable_shape_oscillator<SampleType>::set_shape_morph(SampleType morph) noexcept -> void
 {
-    _crossFade.setParameter({
+    _cross_fade.set_parameter({
         .mix   = etl::clamp(morph, SampleType{0}, SampleType{1}),
-        .curve = CrossFadeCurve::ConstantPower,
+        .curve = cross_fade_curve::ConstantPower,
     });
 }
 
 template<etl::floating_point SampleType>
-auto VariableShapeOscillator<SampleType>::setPhase(SampleType phase) noexcept -> void
+auto variable_shape_oscillator<SampleType>::set_phase(SampleType phase) noexcept -> void
 {
-    _oscA.setPhase(phase);
-    _oscB.setPhase(phase);
+    _osc_a.setPhase(phase);
+    _osc_b.setPhase(phase);
 }
 
 template<etl::floating_point SampleType>
-auto VariableShapeOscillator<SampleType>::setFrequency(SampleType frequency) noexcept -> void
+auto variable_shape_oscillator<SampleType>::set_frequency(SampleType frequency) noexcept -> void
 {
-    _oscA.setFrequency(frequency);
-    _oscB.setFrequency(frequency);
+    _osc_a.setFrequency(frequency);
+    _osc_b.setFrequency(frequency);
 }
 
 template<etl::floating_point SampleType>
-auto VariableShapeOscillator<SampleType>::setSampleRate(SampleType sampleRate) noexcept -> void
+auto variable_shape_oscillator<SampleType>::set_sample_rate(SampleType sample_rate) noexcept -> void
 {
-    _oscA.setSampleRate(sampleRate);
-    _oscB.setSampleRate(sampleRate);
+    _osc_a.setSampleRate(sample_rate);
+    _osc_b.setSampleRate(sample_rate);
 }
 
 template<etl::floating_point SampleType>
-auto VariableShapeOscillator<SampleType>::addPhaseOffset(SampleType offset) noexcept -> void
+auto variable_shape_oscillator<SampleType>::add_phase_offset(SampleType offset) noexcept -> void
 {
-    _oscA.addPhaseOffset(offset);
-    _oscB.addPhaseOffset(offset);
+    _osc_a.addPhaseOffset(offset);
+    _osc_b.addPhaseOffset(offset);
 }
 
 template<etl::floating_point SampleType>
-auto VariableShapeOscillator<SampleType>::operator()() noexcept -> SampleType
+auto variable_shape_oscillator<SampleType>::operator()() noexcept -> SampleType
 {
-    return _crossFade.process(_oscA(), _oscB());
+    return _cross_fade.process(_osc_a(), _osc_b());
 }
 
 }  // namespace grit

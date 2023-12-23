@@ -5,69 +5,70 @@
 #include <etl/concepts.hpp>
 #include <etl/numbers.hpp>
 #include <etl/numeric.hpp>
+#include <etl/type_traits.hpp>
 
 namespace grit {
-enum struct DynamicSmoothingType
+enum struct dynamic_smoothing_type
 {
     Efficient,
     Accurate,
 };
 
 /// \brief https://cytomic.com/files/dsp/DynamicSmoothing.pdf
-template<etl::floating_point SampleType, DynamicSmoothingType SmoothingType = DynamicSmoothingType::Accurate>
-struct DynamicSmoothing
+template<etl::floating_point SampleType, dynamic_smoothing_type SmoothingType = dynamic_smoothing_type::Accurate>
+struct dynamic_smoothing
 {
-    DynamicSmoothing() = default;
+    dynamic_smoothing() = default;
 
-    auto prepare(SampleType sampleRate) -> void;
+    auto prepare(SampleType sample_rate) -> void;
     auto process(SampleType input) -> SampleType;
     auto reset() -> void;
 
 private:
-    struct Efficient
+    struct efficient
     {
         SampleType g0{};
         SampleType sense{};
     };
 
-    struct Accurate
+    struct accurate
     {
         SampleType wc{};
         SampleType inz{};
     };
 
-    using State = etl::conditional_t<SmoothingType == DynamicSmoothingType::Efficient, Efficient, Accurate>;
+    using State = etl::conditional_t<SmoothingType == dynamic_smoothing_type::Efficient, efficient, accurate>;
 
-    SampleType _baseFrequency{2.0};
+    SampleType _base_frequency{2.0};
     SampleType _sensitivity{0.5};
     SampleType _low1{};
     SampleType _low2{};
     State _state{};
 };
 
-template<etl::floating_point SampleType, DynamicSmoothingType SmoothingType>
-auto DynamicSmoothing<SampleType, SmoothingType>::prepare(SampleType sampleRate) -> void
+template<etl::floating_point SampleType, dynamic_smoothing_type SmoothingType>
+auto dynamic_smoothing<SampleType, SmoothingType>::prepare(SampleType sample_rate) -> void
 {
-    if constexpr (SmoothingType == DynamicSmoothingType::Efficient) {
-        auto const wc = _baseFrequency / sampleRate;
+    if constexpr (SmoothingType == dynamic_smoothing_type::Efficient) {
+        auto const wc = _base_frequency / sample_rate;
         auto const gc = etl::tan(static_cast<SampleType>(etl::numbers::pi) * wc);
 
         _state.g0    = SampleType(2) * gc / (SampleType(1) + gc);
         _state.sense = _sensitivity * SampleType(4);
     } else {
-        auto const wc = _baseFrequency / sampleRate;
+        auto const wc = _base_frequency / sample_rate;
         _state.wc     = wc;
     }
 }
 
-template<etl::floating_point SampleType, DynamicSmoothingType SmoothingType>
-auto DynamicSmoothing<SampleType, SmoothingType>::process(SampleType input) -> SampleType
+template<etl::floating_point SampleType, dynamic_smoothing_type SmoothingType>
+auto dynamic_smoothing<SampleType, SmoothingType>::process(SampleType input) -> SampleType
 {
     auto const low1z = _low1;
     auto const low2z = _low2;
     auto const bandz = low1z - low2z;
 
-    if constexpr (SmoothingType == DynamicSmoothingType::Efficient) {
+    if constexpr (SmoothingType == dynamic_smoothing_type::Efficient) {
         auto const g = etl::min(_state.g0 + _state.sense + etl::abs(bandz), SampleType(1));
         _low1        = low1z + g * (input - low1z);
         _low2        = low2z + g * (_low1 - low2z);
@@ -87,12 +88,12 @@ auto DynamicSmoothing<SampleType, SmoothingType>::process(SampleType input) -> S
     return _low2;
 }
 
-template<etl::floating_point SampleType, DynamicSmoothingType SmoothingType>
-auto DynamicSmoothing<SampleType, SmoothingType>::reset() -> void
+template<etl::floating_point SampleType, dynamic_smoothing_type SmoothingType>
+auto dynamic_smoothing<SampleType, SmoothingType>::reset() -> void
 {
     _low1 = SampleType(0);
     _low2 = SampleType(0);
-    if constexpr (SmoothingType == DynamicSmoothingType::Accurate) {
+    if constexpr (SmoothingType == dynamic_smoothing_type::Accurate) {
         _state.inz = SampleType(0);
     }
 }

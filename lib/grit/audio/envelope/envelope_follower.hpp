@@ -9,73 +9,73 @@
 namespace grit {
 
 template<etl::floating_point SampleType>
-struct EnvelopeFollower
+struct envelope_follower
 {
-    struct Parameter
+    struct parameter
     {
-        Milliseconds<SampleType> attack{50};
-        Milliseconds<SampleType> release{50};
+        milliseconds<SampleType> attack{50};
+        milliseconds<SampleType> release{50};
     };
 
-    EnvelopeFollower() = default;
+    envelope_follower() = default;
 
-    auto setParameter(Parameter const& parameter) noexcept -> void;
+    auto set_parameter(parameter const& parameter) noexcept -> void;
 
     auto reset() noexcept -> void;
-    auto prepare(SampleType sampleRate) noexcept -> void;
-    [[nodiscard]] auto processSample(SampleType in) noexcept -> SampleType;
+    auto prepare(SampleType sample_rate) noexcept -> void;
+    [[nodiscard]] auto process_sample(SampleType in) noexcept -> SampleType;
 
 private:
     auto update() noexcept -> void;
 
-    Parameter _parameter{};
-    SampleType _sampleRate{};
-    SampleType _attackCoef{};
-    SampleType _releaseCoef{};
+    parameter _parameter{};
+    SampleType _sample_rate{};
+    SampleType _attack_coef{};
+    SampleType _release_coef{};
     SampleType _envelope{};
 };
 
 template<etl::floating_point SampleType>
-auto EnvelopeFollower<SampleType>::setParameter(Parameter const& parameter) noexcept -> void
+auto envelope_follower<SampleType>::set_parameter(parameter const& parameter) noexcept -> void
 {
     _parameter = parameter;
     update();
 }
 
 template<etl::floating_point SampleType>
-auto EnvelopeFollower<SampleType>::prepare(SampleType sampleRate) noexcept -> void
+auto envelope_follower<SampleType>::prepare(SampleType sample_rate) noexcept -> void
 {
-    _sampleRate = sampleRate;
+    _sample_rate = sample_rate;
     update();
     reset();
 }
 
 template<etl::floating_point SampleType>
-auto EnvelopeFollower<SampleType>::processSample(SampleType in) noexcept -> SampleType
+auto envelope_follower<SampleType>::process_sample(SampleType in) noexcept -> SampleType
 {
     auto const env  = etl::abs(in);
-    auto const coef = env > _envelope ? _attackCoef : _releaseCoef;
+    auto const coef = env > _envelope ? _attack_coef : _release_coef;
 
     _envelope = coef * (_envelope - env) + env;
     return _envelope;
 }
 
 template<etl::floating_point SampleType>
-auto EnvelopeFollower<SampleType>::reset() noexcept -> void
+auto envelope_follower<SampleType>::reset() noexcept -> void
 {
     _envelope = SampleType(0);
 }
 
 template<etl::floating_point SampleType>
-auto EnvelopeFollower<SampleType>::update() noexcept -> void
+auto envelope_follower<SampleType>::update() noexcept -> void
 {
     static constexpr auto const log001 = etl::log(SampleType(0.01));
 
     auto const attack  = _parameter.attack.count();
     auto const release = _parameter.release.count();
 
-    _attackCoef  = etl::exp(log001 / (attack * _sampleRate * SampleType(0.001)));
-    _releaseCoef = etl::exp(log001 / (release * _sampleRate * SampleType(0.001)));
+    _attack_coef  = etl::exp(log001 / (attack * _sample_rate * SampleType(0.001)));
+    _release_coef = etl::exp(log001 / (release * _sample_rate * SampleType(0.001)));
 }
 
 }  // namespace grit

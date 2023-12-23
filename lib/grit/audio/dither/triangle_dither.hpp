@@ -5,11 +5,11 @@
 namespace grit {
 
 template<typename URNG>
-struct TriangleDither
+struct triangle_dither
 {
     using seed_type = typename URNG::result_type;
 
-    explicit constexpr TriangleDither(seed_type seed) noexcept : _urng{seed} {}
+    explicit constexpr triangle_dither(seed_type seed) noexcept : _urng{seed} {}
 
     [[nodiscard]] constexpr auto operator()(float v) noexcept -> float
     {

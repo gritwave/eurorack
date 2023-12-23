@@ -6,17 +6,17 @@
 namespace grit {
 
 template<etl::floating_point SampleType, typename URNG = etl::xoshiro128plusplus>
-struct WhiteNoise
+struct white_noise
 {
     using SeedType = typename URNG::result_type;
 
-    WhiteNoise() = default;
-    explicit WhiteNoise(SeedType seed) noexcept;
+    white_noise() = default;
+    explicit white_noise(SeedType seed) noexcept;
 
-    auto setGain(SampleType gain) noexcept -> void;
-    [[nodiscard]] auto getGain() const noexcept -> SampleType;
+    auto set_gain(SampleType gain) noexcept -> void;
+    [[nodiscard]] auto get_gain() const noexcept -> SampleType;
 
-    [[nodiscard]] auto processSample() noexcept -> SampleType;
+    [[nodiscard]] auto process_sample() noexcept -> SampleType;
 
 private:
     URNG _rng{};
@@ -24,23 +24,23 @@ private:
 };
 
 template<etl::floating_point SampleType, typename URNG>
-WhiteNoise<SampleType, URNG>::WhiteNoise(SeedType seed) noexcept : _rng{seed}
+white_noise<SampleType, URNG>::white_noise(SeedType seed) noexcept : _rng{seed}
 {}
 
 template<etl::floating_point SampleType, typename URNG>
-auto WhiteNoise<SampleType, URNG>::setGain(SampleType gain) noexcept -> void
+auto white_noise<SampleType, URNG>::set_gain(SampleType gain) noexcept -> void
 {
     _gain = gain;
 }
 
 template<etl::floating_point SampleType, typename URNG>
-auto WhiteNoise<SampleType, URNG>::getGain() const noexcept -> SampleType
+auto white_noise<SampleType, URNG>::get_gain() const noexcept -> SampleType
 {
     return _gain;
 }
 
 template<etl::floating_point SampleType, typename URNG>
-auto WhiteNoise<SampleType, URNG>::processSample() noexcept -> SampleType
+auto white_noise<SampleType, URNG>::process_sample() noexcept -> SampleType
 {
     auto dist = etl::uniform_real_distribution<SampleType>{SampleType(-1), SampleType(1)};
     return dist(_rng) * _gain;

@@ -6,40 +6,40 @@
 
 namespace grit {
 
-struct BufferInterpolation
+struct buffer_interpolation
 {
-    struct None
+    struct none
     {
         template<etl::linalg::in_vector Vec, typename SampleType = typename Vec::value_type>
-        [[nodiscard]] constexpr auto operator()(Vec buffer, etl::size_t readPos, SampleType fracPos) -> SampleType
+        [[nodiscard]] constexpr auto operator()(Vec buffer, etl::size_t read_pos, SampleType frac_pos) -> SampleType
         {
-            etl::ignore_unused(fracPos);
-            return buffer(readPos % buffer.size());
+            etl::ignore_unused(frac_pos);
+            return buffer(read_pos % buffer.size());
         }
     };
 
-    struct Linear
+    struct linear
     {
         template<etl::linalg::in_vector Vec, typename SampleType = typename Vec::value_type>
-        [[nodiscard]] constexpr auto operator()(Vec buffer, etl::size_t readPos, SampleType fracPos) -> SampleType
+        [[nodiscard]] constexpr auto operator()(Vec buffer, etl::size_t read_pos, SampleType frac_pos) -> SampleType
         {
-            auto const x0 = buffer(readPos % buffer.size());
-            auto const x1 = buffer((readPos + 1) % buffer.size());
-            return fast_lerp(x0, x1, fracPos);
+            auto const x0 = buffer(read_pos % buffer.size());
+            auto const x1 = buffer((read_pos + 1) % buffer.size());
+            return fast_lerp(x0, x1, frac_pos);
         }
     };
 
-    struct Hermite
+    struct hermite
     {
         template<etl::linalg::in_vector Vec, typename SampleType = typename Vec::value_type>
-        [[nodiscard]] constexpr auto operator()(Vec buffer, etl::size_t readPos, SampleType fracPos) -> SampleType
+        [[nodiscard]] constexpr auto operator()(Vec buffer, etl::size_t read_pos, SampleType frac_pos) -> SampleType
         {
-            auto const pos = readPos + buffer.size();
+            auto const pos = read_pos + buffer.size();
             auto const xm1 = buffer((pos - 1) % buffer.size());
             auto const x0  = buffer(pos % buffer.size());
             auto const x1  = buffer((pos + 1) % buffer.size());
             auto const x2  = buffer((pos + 2) % buffer.size());
-            return hermite_interpolation(xm1, x0, x1, x2, fracPos);
+            return hermite_interpolation(xm1, x0, x1, x2, frac_pos);
         }
     };
 };

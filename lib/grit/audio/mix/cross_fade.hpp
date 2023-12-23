@@ -6,7 +6,7 @@
 
 namespace grit {
 
-enum struct CrossFadeCurve
+enum struct cross_fade_curve
 {
     Linear,
     ConstantPower,
@@ -15,79 +15,79 @@ enum struct CrossFadeCurve
 };
 
 template<etl::floating_point SampleType>
-struct CrossFade
+struct cross_fade
 {
-    struct Parameter
+    struct parameter
     {
         SampleType mix{0.5};
-        CrossFadeCurve curve{CrossFadeCurve::Linear};
+        cross_fade_curve curve{cross_fade_curve::Linear};
     };
 
-    CrossFade() = default;
+    cross_fade() = default;
 
-    auto setParameter(Parameter parameter) -> void;
-    [[nodiscard]] auto getParameter() const -> Parameter;
+    auto set_parameter(parameter parameter) -> void;
+    [[nodiscard]] auto get_parameter() const -> parameter;
 
     auto process(SampleType left, SampleType right) -> SampleType;
 
 private:
     auto update() -> void;
 
-    Parameter _parameter{};
-    SampleType _gainL{0.5};
-    SampleType _gainR{0.5};
+    parameter _parameter{};
+    SampleType _gain_l{0.5};
+    SampleType _gain_r{0.5};
 };
 
 template<etl::floating_point SampleType>
-auto CrossFade<SampleType>::setParameter(Parameter parameter) -> void
+auto cross_fade<SampleType>::set_parameter(parameter parameter) -> void
 {
     _parameter = parameter;
     update();
 }
 
 template<etl::floating_point SampleType>
-auto CrossFade<SampleType>::getParameter() const -> Parameter
+auto cross_fade<SampleType>::get_parameter() const -> parameter
 {
     return _parameter;
 }
 
 template<etl::floating_point SampleType>
-auto CrossFade<SampleType>::process(SampleType left, SampleType right) -> SampleType
+auto cross_fade<SampleType>::process(SampleType left, SampleType right) -> SampleType
 {
-    return (left * _gainL) + (right * _gainR);
+    return (left * _gain_l) + (right * _gain_r);
 }
 
 template<etl::floating_point SampleType>
-auto CrossFade<SampleType>::update() -> void
+auto cross_fade<SampleType>::update() -> void
 {
-    static constexpr auto const logMin = static_cast<SampleType>(etl::log(0.000001));
-    static constexpr auto const logMax = static_cast<SampleType>(etl::log(1.0));
-    static constexpr auto const halfPi = static_cast<SampleType>(etl::numbers::pi * 0.5);
+    static constexpr auto const log_min = static_cast<SampleType>(etl::log(0.000001));
+    static constexpr auto const log_max = static_cast<SampleType>(etl::log(1.0));
+    static constexpr auto const half_pi = static_cast<SampleType>(etl::numbers::pi * 0.5);
 
     switch (_parameter.curve) {
-        case CrossFadeCurve::Linear: {
-            _gainR = _parameter.mix;
-            _gainL = SampleType{1} - _gainR;
+        case cross_fade_curve::Linear: {
+            _gain_r = _parameter.mix;
+            _gain_l = SampleType{1} - _gain_r;
             return;
         }
-        case CrossFadeCurve::ConstantPower: {
-            _gainR = etl::sin(_parameter.mix * halfPi);
-            _gainL = etl::sin((SampleType{1} - _parameter.mix) * halfPi);
+        case cross_fade_curve::ConstantPower: {
+            _gain_r = etl::sin(_parameter.mix * half_pi);
+            _gain_l = etl::sin((SampleType{1} - _parameter.mix) * half_pi);
             return;
         }
-        case CrossFadeCurve::Logarithmic: {
-            _gainR = etl::exp(_parameter.mix * (logMax - logMin) + logMin);
-            _gainL = SampleType{1} - _gainR;
+        case cross_fade_curve::Logarithmic: {
+            _gain_r = etl::exp(_parameter.mix * (log_max - log_min) + log_min);
+            _gain_l = SampleType{1} - _gain_r;
             return;
         }
-        case CrossFadeCurve::Exponentail: {
-            _gainR = _parameter.mix * _parameter.mix;
-            _gainL = SampleType{1} - _gainR;
+        case cross_fade_curve::Exponentail: {
+            _gain_r = _parameter.mix * _parameter.mix;
+            _gain_l = SampleType{1} - _gain_r;
             return;
         }
         default: {
-            _gainR = SampleType{0.5};
-            _gainL = SampleType{0.5};
+            _gain_r = SampleType{0.5};
+            _gain_l = SampleType{0.5};
             return;
         }
     }

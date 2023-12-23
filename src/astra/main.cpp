@@ -6,30 +6,30 @@
 namespace {
 namespace astra {
 
-static constexpr auto BLOCK_SIZE  = 16U;
-static constexpr auto SAMPLE_RATE = 96'000.0F;
+constexpr auto block_size  = 16U;
+constexpr auto sample_rate = 96'000.0F;
 
 auto patch = daisy::patch_sm::DaisyPatchSM{};
 
-auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::OutputBuffer out, size_t size) -> void
+auto audio_callback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::OutputBuffer out, size_t size) -> void
 {
     patch.ProcessAllControls();
 
-    auto const gainLeftKnob  = patch.GetAdcValue(daisy::patch_sm::CV_1);
-    auto const gainRightKnob = patch.GetAdcValue(daisy::patch_sm::CV_2);
+    auto const gain_left_knob  = patch.GetAdcValue(daisy::patch_sm::CV_1);
+    auto const gain_right_knob = patch.GetAdcValue(daisy::patch_sm::CV_2);
 
-    auto const gainLeft  = grit::fromDecibels(grit::mapToRange(gainLeftKnob, -30.0F, 6.0F));
-    auto const gainRight = grit::fromDecibels(grit::mapToRange(gainRightKnob, -30.0F, 6.0F));
+    auto const gain_left  = grit::from_decibels(grit::map_to_range(gain_left_knob, -30.0F, 6.0F));
+    auto const gain_right = grit::from_decibels(grit::map_to_range(gain_right_knob, -30.0F, 6.0F));
 
     for (size_t i = 0; i < size; ++i) {
-        auto const inLeft  = IN_L[i];
-        auto const inRight = IN_R[i];
+        auto const in_left  = IN_L[i];
+        auto const in_right = IN_R[i];
 
-        auto const leftGained  = inLeft * gainLeft;
-        auto const rightGained = inRight * gainRight;
+        auto const left_gained  = in_left * gain_left;
+        auto const right_gained = in_right * gain_right;
 
-        OUT_L[i] = leftGained + rightGained;
-        OUT_R[i] = leftGained + rightGained;
+        OUT_L[i] = left_gained + right_gained;
+        OUT_R[i] = left_gained + right_gained;
     }
 }
 
@@ -42,9 +42,9 @@ auto main() -> int
     using namespace astra;
 
     patch.Init();
-    patch.SetAudioSampleRate(SAMPLE_RATE);
-    patch.SetAudioBlockSize(BLOCK_SIZE);
-    patch.StartAudio(audioCallback);
+    patch.SetAudioSampleRate(sample_rate);
+    patch.SetAudioBlockSize(block_size);
+    patch.StartAudio(audio_callback);
 
     while (true) {}
 }

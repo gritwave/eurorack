@@ -9,16 +9,16 @@
 template<etl::floating_point Float, typename Interpolator>
 [[nodiscard]] static auto test() noexcept -> bool
 {
-    auto delay = grit::StaticDelayLine<Float, 64, Interpolator>{};
+    auto delay = grit::static_delay_line<Float, 64, Interpolator>{};
 
-    delay.setDelay(Float(1.0));
-    assert(grit::approx(delay.popSample(), Float(0.0)));
-    delay.pushSample(Float(1.0));
-    assert(grit::approx(delay.popSample(), Float(1.0)));
+    delay.set_delay(Float(1.0));
+    assert(grit::approx(delay.pop_sample(), Float(0.0)));
+    delay.push_sample(Float(1.0));
+    assert(grit::approx(delay.pop_sample(), Float(1.0)));
 
-    delay.pushSample(Float(1.0));
+    delay.push_sample(Float(1.0));
     delay.reset();
-    assert(grit::approx(delay.popSample(), Float(0.0)));
+    assert(grit::approx(delay.pop_sample(), Float(0.0)));
 
     return true;
 }
@@ -26,9 +26,9 @@ template<etl::floating_point Float, typename Interpolator>
 template<etl::floating_point Float>
 [[nodiscard]] static auto test_interpolators() noexcept -> bool
 {
-    assert((test<Float, grit::BufferInterpolation::None>()));
-    assert((test<Float, grit::BufferInterpolation::Linear>()));
-    assert((test<Float, grit::BufferInterpolation::Hermite>()));
+    assert((test<Float, grit::buffer_interpolation::none>()));
+    assert((test<Float, grit::buffer_interpolation::linear>()));
+    assert((test<Float, grit::buffer_interpolation::hermite>()));
     return true;
 }
 

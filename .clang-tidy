@@ -32,7 +32,7 @@ Checks: >
   performance-*,
 
   readability-*,
-  -readability-identifier-naming,
+  readability-identifier-naming,
   -readability-function-cognitive-complexity,
   -readability-identifier-length,
 

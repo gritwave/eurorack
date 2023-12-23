@@ -34,9 +34,9 @@ auto timeit(char const* name, Benchmark bench)
     bench();
 
     for (auto i{0U}; i < N; ++i) {
-        auto const start = astra::mcu.system.GetUs();
+        auto const start = daisy::System::GetUs();
         bench();
-        auto const stop = astra::mcu.system.GetUs();
+        auto const stop = daisy::System::GetUs();
 
         runs[i] = etl::chrono::duration_cast<microseconds_t>(etl::chrono::microseconds{stop - start}).count();
     }
@@ -45,7 +45,7 @@ auto timeit(char const* name, Benchmark bench)
     auto const dsize   = double(bench.size());
     auto const mflops  = static_cast<int>(std::lround(5.0 * dsize * std::log2(dsize) / average)) * 2;
 
-    astra::mcu.PrintLine(
+    daisy::patch_sm::DaisyPatchSM::PrintLine(
         "%30s Runs: %4d - Average: %4d us - Min: %4d us - Max: %4d us - MFLOPS: %4d us\n",
         name,
         N,
@@ -85,8 +85,8 @@ struct c2c_roundtrip
         kernel(x, etl::linalg::conjugated(w));
         etl::linalg::scale(Float(1) / Float(N), x);
 
-        grit::doNotOptimize(_buf.front());
-        grit::doNotOptimize(_buf.back());
+        grit::do_not_optimize(_buf.front());
+        grit::do_not_optimize(_buf.back());
     }
 
 private:
@@ -111,8 +111,8 @@ struct static_c2c_roundtrip
         _plan(x, grit::fft::direction::backward);
         etl::linalg::scale(Float(1) / Float(N), x);
 
-        grit::doNotOptimize(_buf.front());
-        grit::doNotOptimize(_buf.back());
+        grit::do_not_optimize(_buf.front());
+        grit::do_not_optimize(_buf.back());
     }
 
 private:
@@ -129,8 +129,8 @@ auto main() -> int
 
     astra::mcu.Init();
 
-    astra::mcu.StartLog(true);
-    astra::mcu.PrintLine("Daisy Patch SM started. Test Beginning");
+    daisy::patch_sm::DaisyPatchSM::StartLog(true);
+    daisy::patch_sm::DaisyPatchSM::PrintLine("Daisy Patch SM started. Test Beginning");
 
     // etl::timeit<64>("c2c_roundtrip<float, 16, v1>      - ", c2c_roundtrip<float, 16, grit::fft::c2c_dit2_v1>{});
     // etl::timeit<64>("c2c_roundtrip<float, 32, v1>      - ", c2c_roundtrip<float, 32, grit::fft::c2c_dit2_v1>{});
@@ -163,7 +163,7 @@ auto main() -> int
     // etl::timeit<64>("c2c_roundtrip<float, 1024, v3>    - ", c2c_roundtrip<float, 1024, grit::fft::c2c_dit2_v3>{});
     // etl::timeit<64>("c2c_roundtrip<float, 2048, v3>    - ", c2c_roundtrip<float, 2048, grit::fft::c2c_dit2_v3>{});
     // etl::timeit<64>("c2c_roundtrip<float, 4096, v3>    - ", c2c_roundtrip<float, 4096, grit::fft::c2c_dit2_v3>{});
-    astra::mcu.PrintLine("");
+    daisy::patch_sm::DaisyPatchSM::PrintLine("");
 
     // etl::timeit<64>("static_c2c_roundtrip<float, 64>   - ", static_c2c_roundtrip<float, 64>{});
     etl::timeit<64>("static_c2c_roundtrip<float, 128>  - ", static_c2c_roundtrip<float, 128>{});
@@ -172,7 +172,7 @@ auto main() -> int
     etl::timeit<64>("static_c2c_roundtrip<float, 1024> - ", static_c2c_roundtrip<float, 1024>{});
     etl::timeit<64>("static_c2c_roundtrip<float, 2048> - ", static_c2c_roundtrip<float, 2048>{});
     etl::timeit<64>("static_c2c_roundtrip<float, 4096> - ", static_c2c_roundtrip<float, 4096>{});
-    astra::mcu.PrintLine("");
+    daisy::patch_sm::DaisyPatchSM::PrintLine("");
 
     while (true) {}
 }

@@ -7,7 +7,7 @@
 template<typename URNG>
 [[nodiscard]] static auto test() noexcept -> bool
 {
-    auto dither = grit::RectangleDither<URNG>{std::random_device{}()};
+    auto dither = grit::rectangle_dither<URNG>{std::random_device{}()};
     for (auto i{0}; i < 100; ++i) {
         auto const val = dither(1.0F);
         assert(val >= 0.5);

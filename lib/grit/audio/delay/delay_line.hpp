@@ -9,57 +9,58 @@
 
 namespace grit {
 
-template<etl::floating_point SampleType, typename Interpolation = BufferInterpolation::Hermite>
-struct DelayLine
+template<etl::floating_point SampleType, typename Interpolation = buffer_interpolation::hermite>
+struct delay_line
 {
-    explicit DelayLine(etl::mdspan<SampleType, etl::dextents<etl::size_t, 1>> buffer) noexcept;
+    explicit delay_line(etl::mdspan<SampleType, etl::dextents<etl::size_t, 1>> buffer) noexcept;
 
-    auto setDelay(SampleType delayInSamples) -> void;
+    auto set_delay(SampleType delay_in_samples) -> void;
 
-    auto pushSample(SampleType sample) -> void;
-    auto popSample() -> SampleType;
+    auto push_sample(SampleType sample) -> void;
+    auto pop_sample() -> SampleType;
 
     auto reset() -> void;
 
 private:
     SampleType _frac{0};
     etl::size_t _delay{0};
-    etl::size_t _writePos{0};
+    etl::size_t _write_pos{0};
     etl::mdspan<SampleType, etl::dextents<etl::size_t, 1>> _buffer;
     [[no_unique_address]] Interpolation _interpolator{};
 };
 
 template<etl::floating_point SampleType, typename Interpolation>
-DelayLine<SampleType, Interpolation>::DelayLine(etl::mdspan<SampleType, etl::dextents<etl::size_t, 1>> buffer) noexcept
+delay_line<SampleType, Interpolation>::delay_line(etl::mdspan<SampleType, etl::dextents<etl::size_t, 1>> buffer
+) noexcept
     : _buffer{buffer}
 {}
 
 template<etl::floating_point SampleType, typename Interpolation>
-auto DelayLine<SampleType, Interpolation>::setDelay(SampleType delayInSamples) -> void
+auto delay_line<SampleType, Interpolation>::set_delay(SampleType delay_in_samples) -> void
 {
-    auto const delay = static_cast<etl::size_t>(delayInSamples);
-    _frac            = delayInSamples - static_cast<SampleType>(delay);
+    auto const delay = static_cast<etl::size_t>(delay_in_samples);
+    _frac            = delay_in_samples - static_cast<SampleType>(delay);
     _delay           = etl::clamp<etl::size_t>(delay, 0, _buffer.extent(0) - 1);
 }
 
 template<etl::floating_point SampleType, typename Interpolation>
-auto DelayLine<SampleType, Interpolation>::pushSample(SampleType sample) -> void
+auto delay_line<SampleType, Interpolation>::push_sample(SampleType sample) -> void
 {
-    _buffer(_writePos) = sample;
-    _writePos          = (_writePos - 1 + _buffer.extent(0)) % _buffer.extent(0);
+    _buffer(_write_pos) = sample;
+    _write_pos          = (_write_pos - 1 + _buffer.extent(0)) % _buffer.extent(0);
 }
 
 template<etl::floating_point SampleType, typename Interpolation>
-auto DelayLine<SampleType, Interpolation>::popSample() -> SampleType
+auto delay_line<SampleType, Interpolation>::pop_sample() -> SampleType
 {
-    auto const readPos = _writePos + _delay;
-    return _interpolator(_buffer, readPos, _frac);
+    auto const read_pos = _write_pos + _delay;
+    return _interpolator(_buffer, read_pos, _frac);
 }
 
 template<etl::floating_point SampleType, typename Interpolation>
-auto DelayLine<SampleType, Interpolation>::reset() -> void
+auto delay_line<SampleType, Interpolation>::reset() -> void
 {
-    _writePos = 0;
+    _write_pos = 0;
     for (auto i{0}; etl::cmp_less(i, _buffer.extent(0)); ++i) {
         _buffer(i) = SampleType(0);
     }

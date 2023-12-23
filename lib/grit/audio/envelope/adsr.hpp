@@ -6,24 +6,24 @@ namespace grit {
 
 // https://github.com/fdeste/ADSR
 // http://www.earlevel.com/main/2013/06/03/envelope-generators-adsr-code
-struct ADSR
+struct adsr
 {
-    ADSR() noexcept;
+    adsr() noexcept;
 
-    auto setAttack(float rate) noexcept -> void;
-    auto setDecay(float rate) noexcept -> void;
-    auto setSustain(float level) noexcept -> void;
-    auto setRelease(float rate) noexcept -> void;
+    auto set_attack(float rate) noexcept -> void;
+    auto set_decay(float rate) noexcept -> void;
+    auto set_sustain(float level) noexcept -> void;
+    auto set_release(float rate) noexcept -> void;
 
-    auto setTargetRatioA(float ratio) noexcept -> void;
-    auto setTargetRatioDR(float ratio) noexcept -> void;
+    auto set_target_ratio_a(float ratio) noexcept -> void;
+    auto set_target_ratio_dr(float ratio) noexcept -> void;
 
     auto reset() noexcept -> void;
-    auto gate(bool isOn) noexcept -> void;
-    [[nodiscard]] auto processSample() noexcept -> float;
+    auto gate(bool is_on) noexcept -> void;
+    [[nodiscard]] auto process_sample() noexcept -> float;
 
 private:
-    enum State
+    enum state
     {
         Idle,
         Attack,
@@ -32,133 +32,135 @@ private:
         Release
     };
 
-    static float calcCoef(float rate, float targetRatio)
+    static auto calc_coef(float rate, float target_ratio) -> float
     {
-        return etl::exp(-etl::log((1.0F + targetRatio) / targetRatio) / rate);
+        return etl::exp(-etl::log((1.0F + target_ratio) / target_ratio) / rate);
     }
 
-    State _state{State::Idle};
+    state _state{state::Idle};
     float _output{};
 
-    float _attackRate{};
-    float _attackCoef{};
-    float _attackBase{};
+    float _attack_rate{};
+    float _attack_coef{};
+    float _attack_base{};
 
-    float _decayRate{};
-    float _decayCoef{};
-    float _decayBase{};
+    float _decay_rate{};
+    float _decay_coef{};
+    float _decay_base{};
 
-    float _sustainLevel{};
+    float _sustain_level{};
 
-    float _releaseRate{};
-    float _releaseCoef{};
-    float _releaseBase{};
+    float _release_rate{};
+    float _release_coef{};
+    float _release_base{};
 
-    float _targetRatioA{};
-    float _targetRatioDR{};
+    float _target_ratio_a{};
+    float _target_ratio_dr{};
 };
 
-inline ADSR::ADSR() noexcept
+inline adsr::adsr() noexcept
 {
     reset();
 
-    setAttack(0.0F);
-    setDecay(0.0F);
-    setRelease(0.0F);
-    setSustain(1.0F);
-    setTargetRatioA(0.3F);
-    setTargetRatioDR(0.0001F);
+    set_attack(0.0F);
+    set_decay(0.0F);
+    set_release(0.0F);
+    set_sustain(1.0F);
+    set_target_ratio_a(0.3F);
+    set_target_ratio_dr(0.0001F);
 }
 
-inline auto ADSR::setAttack(float rate) noexcept -> void
+inline auto adsr::set_attack(float rate) noexcept -> void
 {
-    _attackRate = rate;
-    _attackCoef = calcCoef(rate, _targetRatioA);
-    _attackBase = (1.0F + _targetRatioA) * (1.0F - _attackCoef);
+    _attack_rate = rate;
+    _attack_coef = calc_coef(rate, _target_ratio_a);
+    _attack_base = (1.0F + _target_ratio_a) * (1.0F - _attack_coef);
 }
 
-inline auto ADSR::setDecay(float rate) noexcept -> void
+inline auto adsr::set_decay(float rate) noexcept -> void
 {
-    _decayRate = rate;
-    _decayCoef = calcCoef(rate, _targetRatioDR);
-    _decayBase = (_sustainLevel - _targetRatioDR) * (1.0F - _decayCoef);
+    _decay_rate = rate;
+    _decay_coef = calc_coef(rate, _target_ratio_dr);
+    _decay_base = (_sustain_level - _target_ratio_dr) * (1.0F - _decay_coef);
 }
 
-inline auto ADSR::setSustain(float level) noexcept -> void
+inline auto adsr::set_sustain(float level) noexcept -> void
 {
-    _sustainLevel = level;
-    _decayBase    = (_sustainLevel - _targetRatioDR) * (1.0F - _decayCoef);
+    _sustain_level = level;
+    _decay_base    = (_sustain_level - _target_ratio_dr) * (1.0F - _decay_coef);
 }
 
-inline auto ADSR::setRelease(float rate) noexcept -> void
+inline auto adsr::set_release(float rate) noexcept -> void
 {
-    _releaseRate = rate;
-    _releaseCoef = calcCoef(rate, _targetRatioDR);
-    _releaseBase = -_targetRatioDR * (1.0F - _releaseCoef);
+    _release_rate = rate;
+    _release_coef = calc_coef(rate, _target_ratio_dr);
+    _release_base = -_target_ratio_dr * (1.0F - _release_coef);
 }
 
-inline auto ADSR::setTargetRatioA(float ratio) noexcept -> void
+inline auto adsr::set_target_ratio_a(float ratio) noexcept -> void
 {
-    if (ratio < 0.000000001)
+    if (ratio < 0.000000001) {
         ratio = 0.000000001;  // -180 dB
-    _targetRatioA = ratio;
-    _attackBase   = (1.0 + _targetRatioA) * (1.0 - _attackCoef);
+    }
+    _target_ratio_a = ratio;
+    _attack_base    = (1.0 + _target_ratio_a) * (1.0 - _attack_coef);
 }
 
-inline auto ADSR::setTargetRatioDR(float ratio) noexcept -> void
+inline auto adsr::set_target_ratio_dr(float ratio) noexcept -> void
 {
-    if (ratio < 0.000000001)
+    if (ratio < 0.000000001) {
         ratio = 0.000000001;  // -180 dB
-    _targetRatioDR = ratio;
-    _decayBase     = (_sustainLevel - _targetRatioDR) * (1.0 - _decayCoef);
-    _releaseBase   = -_targetRatioDR * (1.0 - _releaseCoef);
+    }
+    _target_ratio_dr = ratio;
+    _decay_base      = (_sustain_level - _target_ratio_dr) * (1.0 - _decay_coef);
+    _release_base    = -_target_ratio_dr * (1.0 - _release_coef);
 }
 
-inline auto ADSR::gate(bool isOn) noexcept -> void
+inline auto adsr::gate(bool is_on) noexcept -> void
 {
-    if (isOn) {
-        _state = State::Attack;
-    } else if (_state != State::Idle) {
-        _state = State::Release;
+    if (is_on) {
+        _state = state::Attack;
+    } else if (_state != state::Idle) {
+        _state = state::Release;
     }
 }
 
-inline auto ADSR::reset() noexcept -> void
+inline auto adsr::reset() noexcept -> void
 {
-    _state  = State::Idle;
+    _state  = state::Idle;
     _output = 0.0;
 }
 
-inline auto ADSR::processSample() noexcept -> float
+inline auto adsr::process_sample() noexcept -> float
 {
     switch (_state) {
-        case State::Idle: {
+        case state::Idle: {
             break;
         }
-        case State::Attack: {
-            _output = _attackBase + _output * _attackCoef;
+        case state::Attack: {
+            _output = _attack_base + _output * _attack_coef;
             if (_output >= 1.0) {
                 _output = 1.0;
-                _state  = State::Decay;
+                _state  = state::Decay;
             }
             break;
         }
-        case State::Decay: {
-            _output = _decayBase + _output * _decayCoef;
-            if (_output <= _sustainLevel) {
-                _output = _sustainLevel;
-                _state  = State::Sustain;
+        case state::Decay: {
+            _output = _decay_base + _output * _decay_coef;
+            if (_output <= _sustain_level) {
+                _output = _sustain_level;
+                _state  = state::Sustain;
             }
             break;
         }
-        case State::Sustain: {
+        case state::Sustain: {
             break;
         }
-        case State::Release: {
-            _output = _releaseBase + _output * _releaseCoef;
+        case state::Release: {
+            _output = _release_base + _output * _release_coef;
             if (_output <= 0.0) {
                 _output = 0.0;
-                _state  = State::Idle;
+                _state  = state::Idle;
             }
             break;
         }

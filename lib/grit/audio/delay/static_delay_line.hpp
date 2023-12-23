@@ -8,47 +8,47 @@
 
 namespace grit {
 
-template<etl::floating_point SampleType, etl::size_t MaxDelay, typename Interpolation = BufferInterpolation::Hermite>
-struct StaticDelayLine
+template<etl::floating_point SampleType, etl::size_t MaxDelay, typename Interpolation = buffer_interpolation::hermite>
+struct static_delay_line
 {
-    StaticDelayLine() = default;
+    static_delay_line() = default;
 
-    auto setDelay(SampleType delayInSamples) -> void;
+    auto set_delay(SampleType delay_in_samples) -> void;
 
-    auto pushSample(SampleType sample) -> void;
-    auto popSample() -> SampleType;
+    auto push_sample(SampleType sample) -> void;
+    auto pop_sample() -> SampleType;
 
     auto reset() -> void;
 
 private:
     etl::array<SampleType, MaxDelay> _buffer{};
-    DelayLine<SampleType, Interpolation> _delayLine{
+    delay_line<SampleType, Interpolation> _delay_line{
         etl::mdspan{_buffer.data(), etl::dextents<etl::size_t, 1>{MaxDelay}}
     };
 };
 
 template<etl::floating_point SampleType, etl::size_t MaxDelay, typename Interpolation>
-auto StaticDelayLine<SampleType, MaxDelay, Interpolation>::setDelay(SampleType delayInSamples) -> void
+auto static_delay_line<SampleType, MaxDelay, Interpolation>::set_delay(SampleType delay_in_samples) -> void
 {
-    _delayLine.setDelay(delayInSamples);
+    _delay_line.set_delay(delay_in_samples);
 }
 
 template<etl::floating_point SampleType, etl::size_t MaxDelay, typename Interpolation>
-auto StaticDelayLine<SampleType, MaxDelay, Interpolation>::pushSample(SampleType sample) -> void
+auto static_delay_line<SampleType, MaxDelay, Interpolation>::push_sample(SampleType sample) -> void
 {
-    _delayLine.pushSample(sample);
+    _delay_line.push_sample(sample);
 }
 
 template<etl::floating_point SampleType, etl::size_t MaxDelay, typename Interpolation>
-auto StaticDelayLine<SampleType, MaxDelay, Interpolation>::popSample() -> SampleType
+auto static_delay_line<SampleType, MaxDelay, Interpolation>::pop_sample() -> SampleType
 {
-    return _delayLine.popSample();
+    return _delay_line.pop_sample();
 }
 
 template<etl::floating_point SampleType, etl::size_t MaxDelay, typename Interpolation>
-auto StaticDelayLine<SampleType, MaxDelay, Interpolation>::reset() -> void
+auto static_delay_line<SampleType, MaxDelay, Interpolation>::reset() -> void
 {
-    _delayLine.reset();
+    _delay_line.reset();
 }
 
 }  // namespace grit

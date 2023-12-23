@@ -13,116 +13,116 @@
 namespace grit {
 
 template<etl::floating_point SampleType>
-struct Compressor
+struct compressor
 {
-    struct Parameter
+    struct parameter
     {
         SampleType threshold{0};
         SampleType ratio{1};
         SampleType knee{0};
 
-        Milliseconds<SampleType> attack{0};
-        Milliseconds<SampleType> release{0};
+        milliseconds<SampleType> attack{0};
+        milliseconds<SampleType> release{0};
 
         SampleType makeUp{0};
         SampleType wet{0};
     };
 
-    Compressor() = default;
+    compressor() = default;
 
-    auto setParameter(Parameter const& parameter) noexcept -> void;
+    auto set_parameter(parameter const& parameter) noexcept -> void;
 
     auto reset() noexcept -> void;
     auto prepare(SampleType sampleRate) noexcept -> void;
-    [[nodiscard]] auto processSample(SampleType signal, SampleType sideChain) noexcept -> SampleType;
+    [[nodiscard]] auto process_sample(SampleType signal, SampleType sideChain) noexcept -> SampleType;
 
-    [[nodiscard]] auto getGainReduction() const noexcept -> SampleType;
+    [[nodiscard]] auto get_gain_reduction() const noexcept -> SampleType;
 
 private:
-    [[nodiscard]] auto calculateTimeAlpha(Seconds<SampleType> value) const noexcept -> SampleType;
+    [[nodiscard]] auto calculate_time_alpha(seconds<SampleType> value) const noexcept -> SampleType;
 
-    Parameter _parameter{};
-    SampleType _sampleRate{};
-    SampleType _ylPrev{};
+    parameter _parameter{};
+    SampleType _sample_rate{};
+    SampleType _yl_prev{};
     SampleType _reduction{1};
 };
 
 template<etl::floating_point SampleType>
-auto Compressor<SampleType>::setParameter(Parameter const& parameter) noexcept -> void
+auto compressor<SampleType>::set_parameter(parameter const& parameter) noexcept -> void
 {
     _parameter = parameter;
 }
 
 template<etl::floating_point SampleType>
-auto Compressor<SampleType>::prepare(SampleType sampleRate) noexcept -> void
+auto compressor<SampleType>::prepare(SampleType sampleRate) noexcept -> void
 {
-    _sampleRate = sampleRate;
+    _sample_rate = sampleRate;
     reset();
 }
 
 template<etl::floating_point SampleType>
-auto Compressor<SampleType>::processSample(SampleType signal, SampleType sideChain) noexcept -> SampleType
+auto compressor<SampleType>::process_sample(SampleType signal, SampleType sideChain) noexcept -> SampleType
 {
     auto const threshold = _parameter.threshold;
     auto const ratio     = _parameter.ratio;
     auto const knee      = _parameter.knee;
-    auto const alphaA    = calculateTimeAlpha(_parameter.attack);
-    auto const alphaR    = calculateTimeAlpha(_parameter.release);
+    auto const alpha_a   = calculate_time_alpha(_parameter.attack);
+    auto const alpha_r   = calculate_time_alpha(_parameter.release);
 
     auto const in  = sideChain * sideChain;
     auto const env = in <= static_cast<SampleType>(1e-6) ? -SampleType(60) : SampleType(10) * std::log10(in);
 
-    auto const halfKneeRange  = -(knee * (-SampleType(60) - threshold) / SampleType(4));
-    auto const fullKneeRange  = halfKneeRange + halfKneeRange / ratio;
-    auto const kneedThreshold = threshold - halfKneeRange;
-    auto const ceilThreshold  = threshold + halfKneeRange / ratio;
-    auto const limit          = etl::clamp(env, kneedThreshold, ceilThreshold);
-    auto const factor         = -((limit - kneedThreshold) / fullKneeRange) + SampleType(1);
-    auto const ratioQuotient  = knee > 0 ? ratio * factor + SampleType(1) * (-factor + SampleType(1)) : SampleType(1);
+    auto const half_knee_range = -(knee * (-SampleType(60) - threshold) / SampleType(4));
+    auto const full_knee_range = half_knee_range + half_knee_range / ratio;
+    auto const kneed_threshold = threshold - half_knee_range;
+    auto const ceil_threshold  = threshold + half_knee_range / ratio;
+    auto const limit           = etl::clamp(env, kneed_threshold, ceil_threshold);
+    auto const factor          = -((limit - kneed_threshold) / full_knee_range) + SampleType(1);
+    auto const ratio_quotient  = knee > 0 ? ratio * factor + SampleType(1) * (-factor + SampleType(1)) : SampleType(1);
 
     auto yg = SampleType(0);
-    if (env < kneedThreshold) {
+    if (env < kneed_threshold) {
         yg = env;
     } else {
-        yg = kneedThreshold + (env - kneedThreshold) / (ratio / ratioQuotient);
+        yg = kneed_threshold + (env - kneed_threshold) / (ratio / ratio_quotient);
     }
 
     auto yl       = SampleType(0);
     auto const xl = env - yg;
-    if (xl > _ylPrev) {
-        yl = alphaA * _ylPrev + (SampleType(1) - alphaA) * xl;
+    if (xl > _yl_prev) {
+        yl = alpha_a * _yl_prev + (SampleType(1) - alpha_a) * xl;
     } else {
-        yl = alphaR * _ylPrev + (SampleType(1) - alphaR) * xl;
+        yl = alpha_r * _yl_prev + (SampleType(1) - alpha_r) * xl;
     }
 
-    auto const controlCompressor = etl::pow(SampleType(10), (SampleType(1) - yl) * SampleType(0.05));
+    auto const control_compressor = etl::pow(SampleType(10), (SampleType(1) - yl) * SampleType(0.05));
 
-    _reduction = controlCompressor;
-    _ylPrev    = yl;
+    _reduction = control_compressor;
+    _yl_prev   = yl;
 
     auto const wet    = _parameter.wet;
     auto const makeup = _parameter.makeUp;
 
-    auto const wetSample = signal * controlCompressor * makeup;
-    auto const drySample = signal;
+    auto const wet_sample = signal * control_compressor * makeup;
+    auto const dry_sample = signal;
 
-    return wetSample * wet + drySample * (1.0F - wet);
+    return wet_sample * wet + dry_sample * (1.0F - wet);
 }
 
 template<etl::floating_point SampleType>
-auto Compressor<SampleType>::getGainReduction() const noexcept -> SampleType
+auto compressor<SampleType>::get_gain_reduction() const noexcept -> SampleType
 {
     return _reduction;
 }
 
 template<etl::floating_point SampleType>
-auto Compressor<SampleType>::reset() noexcept -> void
+auto compressor<SampleType>::reset() noexcept -> void
 {
-    _ylPrev = SampleType(0);
+    _yl_prev = SampleType(0);
 }
 
 template<etl::floating_point SampleType>
-auto Compressor<SampleType>::calculateTimeAlpha(Seconds<SampleType> value) const noexcept -> SampleType
+auto compressor<SampleType>::calculate_time_alpha(seconds<SampleType> value) const noexcept -> SampleType
 {
     static constexpr auto const euler = static_cast<SampleType>(etl::numbers::e);
 
@@ -130,7 +130,7 @@ auto Compressor<SampleType>::calculateTimeAlpha(Seconds<SampleType> value) const
     if (sec == SampleType(0)) {
         return SampleType(0);
     }
-    return etl::pow(SampleType(1) / euler, SampleType(1) / static_cast<SampleType>(_sampleRate) / sec);
+    return etl::pow(SampleType(1) / euler, SampleType(1) / static_cast<SampleType>(_sample_rate) / sec);
 }
 
 }  // namespace grit
