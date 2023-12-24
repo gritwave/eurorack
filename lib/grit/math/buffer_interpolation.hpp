@@ -10,8 +10,8 @@ struct buffer_interpolation
 {
     struct none
     {
-        template<etl::linalg::in_vector Vec, typename SampleType = typename Vec::value_type>
-        [[nodiscard]] constexpr auto operator()(Vec buffer, etl::size_t read_pos, SampleType frac_pos) -> SampleType
+        template<etl::linalg::in_vector Vec, typename Float = typename Vec::value_type>
+        [[nodiscard]] constexpr auto operator()(Vec buffer, etl::size_t read_pos, Float frac_pos) -> Float
         {
             etl::ignore_unused(frac_pos);
             return buffer(read_pos % buffer.size());
@@ -20,8 +20,8 @@ struct buffer_interpolation
 
     struct linear
     {
-        template<etl::linalg::in_vector Vec, typename SampleType = typename Vec::value_type>
-        [[nodiscard]] constexpr auto operator()(Vec buffer, etl::size_t read_pos, SampleType frac_pos) -> SampleType
+        template<etl::linalg::in_vector Vec, typename Float = typename Vec::value_type>
+        [[nodiscard]] constexpr auto operator()(Vec buffer, etl::size_t read_pos, Float frac_pos) -> Float
         {
             auto const x0 = buffer(read_pos % buffer.size());
             auto const x1 = buffer((read_pos + 1) % buffer.size());
@@ -31,8 +31,8 @@ struct buffer_interpolation
 
     struct hermite
     {
-        template<etl::linalg::in_vector Vec, typename SampleType = typename Vec::value_type>
-        [[nodiscard]] constexpr auto operator()(Vec buffer, etl::size_t read_pos, SampleType frac_pos) -> SampleType
+        template<etl::linalg::in_vector Vec, typename Float = typename Vec::value_type>
+        [[nodiscard]] constexpr auto operator()(Vec buffer, etl::size_t read_pos, Float frac_pos) -> Float
         {
             auto const pos = read_pos + buffer.size();
             auto const xm1 = buffer((pos - 1) % buffer.size());

@@ -4,14 +4,14 @@
 
 namespace grit {
 
-template<etl::floating_point SampleType, typename Function = SampleType (*)(SampleType)>
+template<etl::floating_point Float, typename Function = Float (*)(Float)>
 struct wave_shaper
 {
     explicit wave_shaper(Function function) : _function{function} {}
 
     auto set_function(Function function) -> void { _function = function; }
 
-    [[nodiscard]] auto process_sample(SampleType input) const noexcept -> SampleType { return _function(input); }
+    [[nodiscard]] auto process_sample(Float input) const noexcept -> Float { return _function(input); }
 
 private:
     Function _function;
