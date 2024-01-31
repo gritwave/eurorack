@@ -6,8 +6,8 @@
 template<etl::floating_point Float, etl::size_t Size>
 auto testTwiddles() -> bool
 {
-    auto const wf = grit::fft::makeTwiddlesR2<Float, Size>(grit::fft::direction::forward);
-    auto const wb = grit::fft::makeTwiddlesR2<Float, Size>(grit::fft::direction::backward);
+    auto const wf = grit::fft::makeTwiddles<Float, Size>(grit::fft::direction::forward);
+    auto const wb = grit::fft::makeTwiddles<Float, Size>(grit::fft::direction::backward);
     assert(wf.size() == wb.size());
 
     for (auto i{0U}; i < wf.size(); ++i) {
@@ -18,7 +18,7 @@ auto testTwiddles() -> bool
 }
 
 template<typename Plan>
-auto testStaticFftPlan() -> bool
+auto testComplexPlan() -> bool
 {
     using Complex = typename Plan::value_type;
     using Float   = typename Complex::value_type;
@@ -46,8 +46,8 @@ auto testStaticFftPlan() -> bool
 template<etl::floating_point Float, etl::size_t Size>
 auto testPlan() -> bool
 {
-    testStaticFftPlan<grit::fft::StaticFftPlan<etl::complex<Float>, Size>>();
-    testStaticFftPlan<grit::fft::StaticFftPlanV2<etl::complex<Float>, Size>>();
+    testComplexPlan<grit::fft::ComplexPlan<etl::complex<Float>, Size>>();
+    testComplexPlan<grit::fft::ComplexPlanV2<etl::complex<Float>, Size>>();
     return true;
 }
 

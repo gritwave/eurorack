@@ -4,23 +4,23 @@
 
 namespace hades {
 
-static constexpr auto block_size  = 16U;
-static constexpr auto sample_rate = 96'000.0F;
+static constexpr auto blockSize  = 16U;
+static constexpr auto sampleRate = 96'000.0F;
 
 auto patch = daisy::patch_sm::DaisyPatchSM{};
 auto hades = grit::Hades{};
 
-auto audio_callback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::OutputBuffer out, size_t /*size*/) -> void
+auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::OutputBuffer out, size_t /*size*/) -> void
 {
     patch.ProcessAllControls();
 
-    auto const left_in   = etl::span<float const>{etl::addressof(IN_L[0]), block_size};
-    auto const right_in  = etl::span<float const>{etl::addressof(IN_R[0]), block_size};
-    auto const left_out  = etl::span<float>{etl::addressof(OUT_L[0]), block_size};
-    auto const right_out = etl::span<float>{etl::addressof(OUT_R[0]), block_size};
-    auto const context   = grit::Hades::Buffers{
-          .input  = { left_in,  right_in},
-          .output = {left_out, right_out},
+    auto const leftIn   = etl::span<float const>{etl::addressof(IN_L[0]), blockSize};
+    auto const rightIn  = etl::span<float const>{etl::addressof(IN_R[0]), blockSize};
+    auto const leftOut  = etl::span<float>{etl::addressof(OUT_L[0]), blockSize};
+    auto const rightOut = etl::span<float>{etl::addressof(OUT_R[0]), blockSize};
+    auto const context  = grit::Hades::Buffers{
+         .input  = { leftIn,  rightIn},
+         .output = {leftOut, rightOut},
     };
 
     auto const inputs = grit::Hades::ControlInputs{
@@ -48,9 +48,9 @@ auto audio_callback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outp
 auto main() -> int
 {
     hades::patch.Init();
-    hades::patch.SetAudioSampleRate(hades::sample_rate);
-    hades::patch.SetAudioBlockSize(hades::block_size);
-    hades::hades.prepare(hades::sample_rate, hades::block_size);
-    hades::patch.StartAudio(hades::audio_callback);
+    hades::patch.SetAudioSampleRate(hades::sampleRate);
+    hades::patch.SetAudioBlockSize(hades::blockSize);
+    hades::hades.prepare(hades::sampleRate, hades::blockSize);
+    hades::patch.StartAudio(hades::audioCallback);
     while (true) {}
 }

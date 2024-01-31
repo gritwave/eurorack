@@ -6,7 +6,7 @@
 
 namespace grit {
 
-enum struct cross_fade_curve
+enum struct crossFadeCurve
 {
     Linear,
     ConstantPower,
@@ -15,79 +15,79 @@ enum struct cross_fade_curve
 };
 
 template<etl::floating_point Float>
-struct cross_fade
+struct CrossFade
 {
-    struct parameter
+    struct Parameter
     {
         Float mix{0.5};
-        cross_fade_curve curve{cross_fade_curve::Linear};
+        crossFadeCurve curve{crossFadeCurve::Linear};
     };
 
-    cross_fade() = default;
+    CrossFade() = default;
 
-    auto set_parameter(parameter parameter) -> void;
-    [[nodiscard]] auto get_parameter() const -> parameter;
+    auto setParameter(Parameter parameter) -> void;
+    [[nodiscard]] auto getParameter() const -> Parameter;
 
     auto process(Float left, Float right) -> Float;
 
 private:
     auto update() -> void;
 
-    parameter _parameter{};
-    Float _gain_l{0.5};
-    Float _gain_r{0.5};
+    Parameter _parameter{};
+    Float _gainL{0.5};
+    Float _gainR{0.5};
 };
 
 template<etl::floating_point Float>
-auto cross_fade<Float>::set_parameter(parameter parameter) -> void
+auto CrossFade<Float>::setParameter(Parameter parameter) -> void
 {
     _parameter = parameter;
     update();
 }
 
 template<etl::floating_point Float>
-auto cross_fade<Float>::get_parameter() const -> parameter
+auto CrossFade<Float>::getParameter() const -> Parameter
 {
     return _parameter;
 }
 
 template<etl::floating_point Float>
-auto cross_fade<Float>::process(Float left, Float right) -> Float
+auto CrossFade<Float>::process(Float left, Float right) -> Float
 {
-    return (left * _gain_l) + (right * _gain_r);
+    return (left * _gainL) + (right * _gainR);
 }
 
 template<etl::floating_point Float>
-auto cross_fade<Float>::update() -> void
+auto CrossFade<Float>::update() -> void
 {
-    static constexpr auto const log_min = static_cast<Float>(etl::log(0.000001));
-    static constexpr auto const log_max = static_cast<Float>(etl::log(1.0));
-    static constexpr auto const half_pi = static_cast<Float>(etl::numbers::pi * 0.5);
+    static constexpr auto const logMin = static_cast<Float>(etl::log(0.000001));
+    static constexpr auto const logMax = static_cast<Float>(etl::log(1.0));
+    static constexpr auto const halfPi = static_cast<Float>(etl::numbers::pi * 0.5);
 
     switch (_parameter.curve) {
-        case cross_fade_curve::Linear: {
-            _gain_r = _parameter.mix;
-            _gain_l = Float{1} - _gain_r;
+        case crossFadeCurve::Linear: {
+            _gainR = _parameter.mix;
+            _gainL = Float{1} - _gainR;
             return;
         }
-        case cross_fade_curve::ConstantPower: {
-            _gain_r = etl::sin(_parameter.mix * half_pi);
-            _gain_l = etl::sin((Float{1} - _parameter.mix) * half_pi);
+        case crossFadeCurve::ConstantPower: {
+            _gainR = etl::sin(_parameter.mix * halfPi);
+            _gainL = etl::sin((Float{1} - _parameter.mix) * halfPi);
             return;
         }
-        case cross_fade_curve::Logarithmic: {
-            _gain_r = etl::exp(_parameter.mix * (log_max - log_min) + log_min);
-            _gain_l = Float{1} - _gain_r;
+        case crossFadeCurve::Logarithmic: {
+            _gainR = etl::exp(_parameter.mix * (logMax - logMin) + logMin);
+            _gainL = Float{1} - _gainR;
             return;
         }
-        case cross_fade_curve::Exponentail: {
-            _gain_r = _parameter.mix * _parameter.mix;
-            _gain_l = Float{1} - _gain_r;
+        case crossFadeCurve::Exponentail: {
+            _gainR = _parameter.mix * _parameter.mix;
+            _gainL = Float{1} - _gainR;
             return;
         }
         default: {
-            _gain_r = Float{0.5};
-            _gain_l = Float{0.5};
+            _gainR = Float{0.5};
+            _gainL = Float{0.5};
             return;
         }
     }

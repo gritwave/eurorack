@@ -58,7 +58,7 @@ auto timeit(char const* name, Benchmark bench)
 }  // namespace etl
 
 template<typename Complex, unsigned N>
-[[nodiscard]] auto make_noise(auto& rng) -> etl::array<Complex, N>
+[[nodiscard]] auto makeNoise(auto& rng) -> etl::array<Complex, N>
 {
     using Float = Complex::value_type;
     auto buf    = etl::array<Complex, N>{};
@@ -69,9 +69,9 @@ template<typename Complex, unsigned N>
 };
 
 template<typename Float, int N, typename Kernel>
-struct c2c_roundtrip
+struct C2cRoundtrip
 {
-    c2c_roundtrip() = default;
+    C2cRoundtrip() = default;
 
     static constexpr auto size() { return N; }
 
@@ -90,17 +90,17 @@ struct c2c_roundtrip
     }
 
 private:
-    etl::array<etl::complex<Float>, N / 2> _tw{grit::fft::makeTwiddlesR2<Float, N>()};
+    etl::array<etl::complex<Float>, N / 2> _tw{grit::fft::makeTwiddles<Float, N>()};
     etl::array<etl::complex<Float>, N> _buf{[] {
         auto rng = etl::xoshiro128plusplus{42};
-        return make_noise<etl::complex<Float>, N>(rng);
+        return makeNoise<etl::complex<Float>, N>(rng);
     }()};
 };
 
 template<typename Float, int N>
-struct static_c2c_roundtrip
+struct StaticC2cRoundtrip
 {
-    static_c2c_roundtrip() = default;
+    StaticC2cRoundtrip() = default;
 
     static constexpr auto size() { return N; }
 
@@ -116,10 +116,10 @@ struct static_c2c_roundtrip
     }
 
 private:
-    grit::fft::StaticFftPlanV2<etl::complex<Float>, N> _plan{};
+    grit::fft::ComplexPlanV2<etl::complex<Float>, N> _plan{};
     etl::array<etl::complex<Float>, N> _buf{[] {
         auto rng = etl::xoshiro128plusplus{42};
-        return make_noise<etl::complex<Float>, N>(rng);
+        return makeNoise<etl::complex<Float>, N>(rng);
     }()};
 };
 
@@ -165,13 +165,13 @@ auto main() -> int
     // etl::timeit<64>("c2c_roundtrip<float, 4096, v3>    - ", c2c_roundtrip<float, 4096, grit::fft::c2c_dit2_v3>{});
     daisy::patch_sm::DaisyPatchSM::PrintLine("");
 
-    // etl::timeit<64>("static_c2c_roundtrip<float, 64>   - ", static_c2c_roundtrip<float, 64>{});
-    etl::timeit<64>("static_c2c_roundtrip<float, 128>  - ", static_c2c_roundtrip<float, 128>{});
-    etl::timeit<64>("static_c2c_roundtrip<float, 256>  - ", static_c2c_roundtrip<float, 256>{});
-    etl::timeit<64>("static_c2c_roundtrip<float, 512>  - ", static_c2c_roundtrip<float, 512>{});
-    etl::timeit<64>("static_c2c_roundtrip<float, 1024> - ", static_c2c_roundtrip<float, 1024>{});
-    etl::timeit<64>("static_c2c_roundtrip<float, 2048> - ", static_c2c_roundtrip<float, 2048>{});
-    etl::timeit<64>("static_c2c_roundtrip<float, 4096> - ", static_c2c_roundtrip<float, 4096>{});
+    // etl::timeit<64>("static_c2c_roundtrip<float, 64>   - ", StaticC2cRoundtrip<float, 64>{});
+    etl::timeit<64>("static_c2c_roundtrip<float, 128>  - ", StaticC2cRoundtrip<float, 128>{});
+    etl::timeit<64>("static_c2c_roundtrip<float, 256>  - ", StaticC2cRoundtrip<float, 256>{});
+    etl::timeit<64>("static_c2c_roundtrip<float, 512>  - ", StaticC2cRoundtrip<float, 512>{});
+    etl::timeit<64>("static_c2c_roundtrip<float, 1024> - ", StaticC2cRoundtrip<float, 1024>{});
+    etl::timeit<64>("static_c2c_roundtrip<float, 2048> - ", StaticC2cRoundtrip<float, 2048>{});
+    etl::timeit<64>("static_c2c_roundtrip<float, 4096> - ", StaticC2cRoundtrip<float, 4096>{});
     daisy::patch_sm::DaisyPatchSM::PrintLine("");
 
     while (true) {}

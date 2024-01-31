@@ -20,7 +20,7 @@
 namespace grit::fft {
 
 template<typename Float, unsigned Size>
-auto makeTwiddlesR2(direction dir = direction::forward) -> etl::array<etl::complex<Float>, Size / 2>
+auto makeTwiddles(direction dir = direction::forward) -> etl::array<etl::complex<Float>, Size / 2>
 {
     auto const sign = dir == direction::forward ? Float(-1) : Float(1);
     auto table      = etl::array<etl::complex<Float>, Size / 2>{};
@@ -151,7 +151,7 @@ struct C2cDit2V3
 
 namespace detail {
 template<typename Complex, int Order, int Stage>
-struct StaticC2cDit2Stage
+struct ComplexDit2Stage
 {
     auto operator()(etl::linalg::inout_vector auto x, etl::linalg::in_vector auto w) -> void
         requires(Stage == 0)
@@ -169,7 +169,7 @@ struct StaticC2cDit2Stage
             x(i1)           = temp;
         }
 
-        StaticC2cDit2Stage<Complex, Order, 1>{}(x, w);
+        ComplexDit2Stage<Complex, Order, 1>{}(x, w);
     }
 
     auto operator()(etl::linalg::inout_vector auto x, etl::linalg::in_vector auto w) -> void
@@ -193,7 +193,7 @@ struct StaticC2cDit2Stage
             }
         }
 
-        StaticC2cDit2Stage<Complex, Order, Stage + 1>{}(x, w);
+        ComplexDit2Stage<Complex, Order, Stage + 1>{}(x, w);
     }
 
     auto operator()(etl::linalg::inout_vector auto /*x*/, etl::linalg::in_vector auto /*w*/) -> void
@@ -247,14 +247,14 @@ template<int Stage, etl::linalg::inout_vector InOutVec, etl::linalg::in_vector I
 }  // namespace detail
 
 template<typename Complex, etl::size_t Size>
-struct StaticFftPlan
+struct ComplexPlan
 {
     using value_type = Complex;
     using size_type  = etl::size_t;
 
-    explicit StaticFftPlan(direction defaultDirection = direction::forward)
+    explicit ComplexPlan(direction defaultDirection = direction::forward)
         : _defaultDirection{defaultDirection}
-        , _w{makeTwiddlesR2<typename Complex::value_type, size()>(defaultDirection)}
+        , _w{makeTwiddles<typename Complex::value_type, size()>(defaultDirection)}
     {}
 
     [[nodiscard]] static constexpr auto size() -> etl::size_t { return Size; }
@@ -270,9 +270,9 @@ struct StaticFftPlan
         auto const w = etl::mdspan<Complex, etl::extents<etl::size_t, size()>>{_w.data()};
 
         if (dir == _defaultDirection) {
-            detail::StaticC2cDit2Stage<Complex, order(), 0>{}(x, w);
+            detail::ComplexDit2Stage<Complex, order(), 0>{}(x, w);
         } else {
-            detail::StaticC2cDit2Stage<Complex, order(), 0>{}(x, etl::linalg::conjugated(w));
+            detail::ComplexDit2Stage<Complex, order(), 0>{}(x, etl::linalg::conjugated(w));
         }
     }
 
@@ -283,14 +283,14 @@ private:
 };
 
 template<typename Complex, etl::size_t Size>
-struct StaticFftPlanV2
+struct ComplexPlanV2
 {
     using value_type = Complex;
     using size_type  = etl::size_t;
 
-    explicit StaticFftPlanV2(direction defaultDirection = direction::forward)
+    explicit ComplexPlanV2(direction defaultDirection = direction::forward)
         : _defaultDirection{defaultDirection}
-        , _w{makeTwiddlesR2<typename Complex::value_type, size()>(defaultDirection)}
+        , _w{makeTwiddles<typename Complex::value_type, size()>(defaultDirection)}
     {}
 
     [[nodiscard]] static constexpr auto size() -> etl::size_t { return Size; }

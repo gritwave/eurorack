@@ -39,8 +39,8 @@ struct Hades
 
     struct Buffers
     {
-        etl::array<etl::span<float const>, 2> input;
-        etl::array<etl::span<float>, 2> output;
+        etl::array<etl::span<float const>, 2> input{};
+        etl::array<etl::span<float>, 2> output{};
     };
 
     Hades() = default;
@@ -74,17 +74,17 @@ private:
         EnvelopeFollower<float> _envelopeFollower{};
         WhiteNoise<float> _noise{};
         WaveShaper<float> _waveShaper{etl::tanh};
-        Compressor<float> _compressor;
+        Compressor<float> _compressor{};
     };
 
-    DynamicSmoothing<float> _textureKnob;
-    DynamicSmoothing<float> _morphKnob;
-    DynamicSmoothing<float> _ampKnob;
-    DynamicSmoothing<float> _compressorKnob;
-    DynamicSmoothing<float> _morphCv;
-    DynamicSmoothing<float> _sideChainCv;
-    DynamicSmoothing<float> _attackCv;
-    DynamicSmoothing<float> _releaseCv;
+    DynamicSmoothing<float> _textureKnob{};
+    DynamicSmoothing<float> _morphKnob{};
+    DynamicSmoothing<float> _ampKnob{};
+    DynamicSmoothing<float> _compressorKnob{};
+    DynamicSmoothing<float> _morphCv{};
+    DynamicSmoothing<float> _sideChainCv{};
+    DynamicSmoothing<float> _attackCv{};
+    DynamicSmoothing<float> _releaseCv{};
 
     etl::array<Channel, 2> _channels{};
 };

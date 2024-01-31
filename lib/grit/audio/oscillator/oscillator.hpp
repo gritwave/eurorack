@@ -8,7 +8,7 @@
 
 namespace grit {
 
-enum struct oscillator_shape
+enum struct OscillatorShape
 {
     Sine,
     Triangle,
@@ -16,16 +16,16 @@ enum struct oscillator_shape
 };
 
 template<etl::floating_point Float>
-struct oscillator
+struct Oscillator
 {
-    oscillator() = default;
+    Oscillator() = default;
 
-    auto set_shape(oscillator_shape shape) -> void;
-    auto set_phase(Float phase) -> void;
-    auto set_frequency(Float frequency) -> void;
-    auto set_sample_rate(Float sample_rate) -> void;
+    auto setShape(OscillatorShape shape) -> void;
+    auto setPhase(Float phase) -> void;
+    auto setFrequency(Float frequency) -> void;
+    auto setSampleRate(Float sampleRate) -> void;
 
-    auto add_phase_offset(Float offset) -> void;
+    auto addPhaseOffset(Float offset) -> void;
 
     [[nodiscard]] auto operator()() -> Float;
 
@@ -34,59 +34,59 @@ private:
     [[nodiscard]] static auto triangle(Float phase) -> Float;
     [[nodiscard]] static auto pulse(Float phase, Float width) -> Float;
 
-    oscillator_shape _shape{oscillator_shape::Sine};
-    Float _sample_rate{0};
+    OscillatorShape _shape{OscillatorShape::Sine};
+    Float _sampleRate{0};
     Float _phase{0};
-    Float _phase_increment{0};
-    Float _pulse_width{0.5};
+    Float _phaseIncrement{0};
+    Float _pulseWidth{0.5};
 };
 
 template<etl::floating_point Float>
-auto oscillator<Float>::set_shape(oscillator_shape shape) -> void
+auto Oscillator<Float>::setShape(OscillatorShape shape) -> void
 {
     _shape = shape;
 }
 
 template<etl::floating_point Float>
-auto oscillator<Float>::set_phase(Float phase) -> void
+auto Oscillator<Float>::setPhase(Float phase) -> void
 {
     _phase = phase;
 }
 
 template<etl::floating_point Float>
-auto oscillator<Float>::set_frequency(Float frequency) -> void
+auto Oscillator<Float>::setFrequency(Float frequency) -> void
 {
-    _phase_increment = 1.0F / (_sample_rate / frequency);
+    _phaseIncrement = 1.0F / (_sampleRate / frequency);
 }
 
 template<etl::floating_point Float>
-auto oscillator<Float>::set_sample_rate(Float sample_rate) -> void
+auto Oscillator<Float>::setSampleRate(Float sampleRate) -> void
 {
-    _sample_rate = sample_rate;
+    _sampleRate = sampleRate;
 }
 
 template<etl::floating_point Float>
-auto oscillator<Float>::add_phase_offset(Float offset) -> void
+auto Oscillator<Float>::addPhaseOffset(Float offset) -> void
 {
     _phase += offset;
     _phase -= etl::floor(_phase);
 }
 
 template<etl::floating_point Float>
-auto oscillator<Float>::operator()() -> Float
+auto Oscillator<Float>::operator()() -> Float
 {
     auto output = Float{};
     switch (_shape) {
-        case oscillator_shape::Sine: {
+        case OscillatorShape::Sine: {
             output = sine(_phase);
             break;
         }
-        case oscillator_shape::Triangle: {
+        case OscillatorShape::Triangle: {
             output = triangle(_phase);
             break;
         }
-        case oscillator_shape::Square: {
-            output = pulse(_phase, _pulse_width);
+        case OscillatorShape::Square: {
+            output = pulse(_phase, _pulseWidth);
             break;
         }
         default: {
@@ -94,26 +94,26 @@ auto oscillator<Float>::operator()() -> Float
         }
     }
 
-    add_phase_offset(_phase_increment);
+    addPhaseOffset(_phaseIncrement);
     return output;
 }
 
 template<etl::floating_point Float>
-auto oscillator<Float>::sine(Float phase) -> Float
+auto Oscillator<Float>::sine(Float phase) -> Float
 {
-    static constexpr auto two_pi = static_cast<Float>(etl::numbers::pi) * Float{2};
-    return etl::sin(phase * two_pi);
+    static constexpr auto twoPi = static_cast<Float>(etl::numbers::pi) * Float{2};
+    return etl::sin(phase * twoPi);
 }
 
 template<etl::floating_point Float>
-auto oscillator<Float>::triangle(Float phase) -> Float
+auto Oscillator<Float>::triangle(Float phase) -> Float
 {
     auto const x = phase <= Float{0.5} ? phase : Float{1} - phase;
     return (x - Float{0.25}) * Float{4};
 }
 
 template<etl::floating_point Float>
-auto oscillator<Float>::pulse(Float phase, Float width) -> Float
+auto Oscillator<Float>::pulse(Float phase, Float width) -> Float
 {
     auto const w = etl::clamp(width, Float{0}, Float{1});
     if (phase < w) {
