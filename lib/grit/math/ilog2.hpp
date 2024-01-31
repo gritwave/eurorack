@@ -5,7 +5,7 @@
 namespace grit {
 
 template<etl::integral Int>
-[[nodiscard]] constexpr auto ilog2(Int x) noexcept -> Int
+[[nodiscard]] constexpr auto ilog2(Int x) -> Int
 {
     auto result = Int{0};
     for (; x > Int(1); x >>= Int(1)) {

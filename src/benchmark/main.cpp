@@ -73,7 +73,7 @@ struct c2c_roundtrip
 {
     c2c_roundtrip() = default;
 
-    static constexpr auto size() noexcept { return N; }
+    static constexpr auto size() { return N; }
 
     auto operator()() -> void
     {
@@ -102,7 +102,7 @@ struct static_c2c_roundtrip
 {
     static_c2c_roundtrip() = default;
 
-    static constexpr auto size() noexcept { return N; }
+    static constexpr auto size() { return N; }
 
     auto operator()() -> void
     {

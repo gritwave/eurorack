@@ -30,16 +30,16 @@ struct Compressor
 
     Compressor() = default;
 
-    auto setParameter(Parameter const& parameter) noexcept -> void;
+    auto setParameter(Parameter const& parameter) -> void;
 
-    auto reset() noexcept -> void;
-    auto prepare(Float sampleRate) noexcept -> void;
-    [[nodiscard]] auto processSample(Float signal, Float sideChain) noexcept -> Float;
+    auto reset() -> void;
+    auto prepare(Float sampleRate) -> void;
+    [[nodiscard]] auto processSample(Float signal, Float sideChain) -> Float;
 
-    [[nodiscard]] auto getGainReduction() const noexcept -> Float;
+    [[nodiscard]] auto getGainReduction() const -> Float;
 
 private:
-    [[nodiscard]] auto calculateTimeAlpha(seconds<Float> value) const noexcept -> Float;
+    [[nodiscard]] auto calculateTimeAlpha(seconds<Float> value) const -> Float;
 
     Parameter _parameter{};
     Float _sampleRate{};
@@ -48,20 +48,20 @@ private:
 };
 
 template<etl::floating_point Float>
-auto Compressor<Float>::setParameter(Parameter const& parameter) noexcept -> void
+auto Compressor<Float>::setParameter(Parameter const& parameter) -> void
 {
     _parameter = parameter;
 }
 
 template<etl::floating_point Float>
-auto Compressor<Float>::prepare(Float sampleRate) noexcept -> void
+auto Compressor<Float>::prepare(Float sampleRate) -> void
 {
     _sampleRate = sampleRate;
     reset();
 }
 
 template<etl::floating_point Float>
-auto Compressor<Float>::processSample(Float signal, Float sideChain) noexcept -> Float
+auto Compressor<Float>::processSample(Float signal, Float sideChain) -> Float
 {
     auto const threshold = _parameter.threshold;
     auto const ratio     = _parameter.ratio;
@@ -110,19 +110,19 @@ auto Compressor<Float>::processSample(Float signal, Float sideChain) noexcept ->
 }
 
 template<etl::floating_point Float>
-auto Compressor<Float>::getGainReduction() const noexcept -> Float
+auto Compressor<Float>::getGainReduction() const -> Float
 {
     return _reduction;
 }
 
 template<etl::floating_point Float>
-auto Compressor<Float>::reset() noexcept -> void
+auto Compressor<Float>::reset() -> void
 {
     _ylPrev = Float(0);
 }
 
 template<etl::floating_point Float>
-auto Compressor<Float>::calculateTimeAlpha(seconds<Float> value) const noexcept -> Float
+auto Compressor<Float>::calculateTimeAlpha(seconds<Float> value) const -> Float
 {
     static constexpr auto const euler = static_cast<Float>(etl::numbers::e);
 

@@ -9,9 +9,9 @@ struct TriangleDither
 {
     using seed_type = typename URNG::result_type;
 
-    explicit constexpr TriangleDither(seed_type seed) noexcept : _urng{seed} {}
+    explicit constexpr TriangleDither(seed_type seed) : _urng{seed} {}
 
-    [[nodiscard]] constexpr auto operator()(float v) noexcept -> float
+    [[nodiscard]] constexpr auto operator()(float v) -> float
     {
         auto const r      = _dist(_urng);
         auto const result = v + r - _last;

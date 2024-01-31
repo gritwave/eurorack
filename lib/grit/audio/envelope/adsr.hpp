@@ -8,19 +8,19 @@ namespace grit {
 // http://www.earlevel.com/main/2013/06/03/envelope-generators-adsr-code
 struct adsr
 {
-    adsr() noexcept;
+    adsr();
 
-    auto set_attack(float rate) noexcept -> void;
-    auto set_decay(float rate) noexcept -> void;
-    auto set_sustain(float level) noexcept -> void;
-    auto set_release(float rate) noexcept -> void;
+    auto set_attack(float rate) -> void;
+    auto set_decay(float rate) -> void;
+    auto set_sustain(float level) -> void;
+    auto set_release(float rate) -> void;
 
-    auto set_target_ratio_a(float ratio) noexcept -> void;
-    auto set_target_ratio_dr(float ratio) noexcept -> void;
+    auto set_target_ratio_a(float ratio) -> void;
+    auto set_target_ratio_dr(float ratio) -> void;
 
-    auto reset() noexcept -> void;
-    auto gate(bool is_on) noexcept -> void;
-    [[nodiscard]] auto process_sample() noexcept -> float;
+    auto reset() -> void;
+    auto gate(bool is_on) -> void;
+    [[nodiscard]] auto process_sample() -> float;
 
 private:
     enum state
@@ -58,7 +58,7 @@ private:
     float _target_ratio_dr{};
 };
 
-inline adsr::adsr() noexcept
+inline adsr::adsr()
 {
     reset();
 
@@ -70,34 +70,34 @@ inline adsr::adsr() noexcept
     set_target_ratio_dr(0.0001F);
 }
 
-inline auto adsr::set_attack(float rate) noexcept -> void
+inline auto adsr::set_attack(float rate) -> void
 {
     _attack_rate = rate;
     _attack_coef = calc_coef(rate, _target_ratio_a);
     _attack_base = (1.0F + _target_ratio_a) * (1.0F - _attack_coef);
 }
 
-inline auto adsr::set_decay(float rate) noexcept -> void
+inline auto adsr::set_decay(float rate) -> void
 {
     _decay_rate = rate;
     _decay_coef = calc_coef(rate, _target_ratio_dr);
     _decay_base = (_sustain_level - _target_ratio_dr) * (1.0F - _decay_coef);
 }
 
-inline auto adsr::set_sustain(float level) noexcept -> void
+inline auto adsr::set_sustain(float level) -> void
 {
     _sustain_level = level;
     _decay_base    = (_sustain_level - _target_ratio_dr) * (1.0F - _decay_coef);
 }
 
-inline auto adsr::set_release(float rate) noexcept -> void
+inline auto adsr::set_release(float rate) -> void
 {
     _release_rate = rate;
     _release_coef = calc_coef(rate, _target_ratio_dr);
     _release_base = -_target_ratio_dr * (1.0F - _release_coef);
 }
 
-inline auto adsr::set_target_ratio_a(float ratio) noexcept -> void
+inline auto adsr::set_target_ratio_a(float ratio) -> void
 {
     if (ratio < 0.000000001) {
         ratio = 0.000000001;  // -180 dB
@@ -106,7 +106,7 @@ inline auto adsr::set_target_ratio_a(float ratio) noexcept -> void
     _attack_base    = (1.0 + _target_ratio_a) * (1.0 - _attack_coef);
 }
 
-inline auto adsr::set_target_ratio_dr(float ratio) noexcept -> void
+inline auto adsr::set_target_ratio_dr(float ratio) -> void
 {
     if (ratio < 0.000000001) {
         ratio = 0.000000001;  // -180 dB
@@ -116,7 +116,7 @@ inline auto adsr::set_target_ratio_dr(float ratio) noexcept -> void
     _release_base    = -_target_ratio_dr * (1.0 - _release_coef);
 }
 
-inline auto adsr::gate(bool is_on) noexcept -> void
+inline auto adsr::gate(bool is_on) -> void
 {
     if (is_on) {
         _state = state::Attack;
@@ -125,13 +125,13 @@ inline auto adsr::gate(bool is_on) noexcept -> void
     }
 }
 
-inline auto adsr::reset() noexcept -> void
+inline auto adsr::reset() -> void
 {
     _state  = state::Idle;
     _output = 0.0;
 }
 
-inline auto adsr::process_sample() noexcept -> float
+inline auto adsr::process_sample() -> float
 {
     switch (_state) {
         case state::Idle: {

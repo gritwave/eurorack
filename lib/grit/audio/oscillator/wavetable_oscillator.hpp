@@ -16,13 +16,13 @@ struct wavetable_oscillator
 {
     explicit wavetable_oscillator(etl::mdspan<Float const, etl::extents<etl::size_t, TableSize>> wavetable);
 
-    auto set_phase(Float phase) noexcept -> void;
-    auto set_frequency(Float frequency) noexcept -> void;
-    auto set_sample_rate(Float sampleRate) noexcept -> void;
+    auto set_phase(Float phase) -> void;
+    auto set_frequency(Float frequency) -> void;
+    auto set_sample_rate(Float sampleRate) -> void;
 
-    auto add_phase_offset(Float offset) noexcept -> void;
+    auto add_phase_offset(Float offset) -> void;
 
-    [[nodiscard]] auto operator()() noexcept -> Float;
+    [[nodiscard]] auto operator()() -> Float;
 
 private:
     Float _sample_rate{0};
@@ -32,7 +32,7 @@ private:
 };
 
 template<typename Float, size_t Size>
-[[nodiscard]] constexpr auto makeSineWavetable() noexcept -> etl::array<Float, Size>;
+[[nodiscard]] constexpr auto makeSineWavetable() -> etl::array<Float, Size>;
 
 template<etl::floating_point Float, etl::size_t TableSize>
 wavetable_oscillator<Float, TableSize>::wavetable_oscillator(
@@ -42,32 +42,32 @@ wavetable_oscillator<Float, TableSize>::wavetable_oscillator(
 {}
 
 template<etl::floating_point Float, etl::size_t TableSize>
-auto wavetable_oscillator<Float, TableSize>::set_phase(Float phase) noexcept -> void
+auto wavetable_oscillator<Float, TableSize>::set_phase(Float phase) -> void
 {
     _phase = phase;
 }
 
 template<etl::floating_point Float, etl::size_t TableSize>
-auto wavetable_oscillator<Float, TableSize>::set_frequency(Float frequency) noexcept -> void
+auto wavetable_oscillator<Float, TableSize>::set_frequency(Float frequency) -> void
 {
     _phase_increment = 1.0F / (_sample_rate / frequency);
 }
 
 template<etl::floating_point Float, etl::size_t TableSize>
-auto wavetable_oscillator<Float, TableSize>::set_sample_rate(Float sampleRate) noexcept -> void
+auto wavetable_oscillator<Float, TableSize>::set_sample_rate(Float sampleRate) -> void
 {
     _sample_rate = sampleRate;
 }
 
 template<etl::floating_point Float, etl::size_t TableSize>
-auto wavetable_oscillator<Float, TableSize>::add_phase_offset(Float offset) noexcept -> void
+auto wavetable_oscillator<Float, TableSize>::add_phase_offset(Float offset) -> void
 {
     _phase += offset;
     _phase -= etl::floor(_phase);
 }
 
 template<etl::floating_point Float, etl::size_t TableSize>
-auto wavetable_oscillator<Float, TableSize>::operator()() noexcept -> Float
+auto wavetable_oscillator<Float, TableSize>::operator()() -> Float
 {
     if (_wavetable.empty()) {
         return Float(0);
@@ -82,7 +82,7 @@ auto wavetable_oscillator<Float, TableSize>::operator()() noexcept -> Float
 }
 
 template<typename Float, size_t Size>
-constexpr auto makeSineWavetable() noexcept -> etl::array<Float, Size>
+constexpr auto makeSineWavetable() -> etl::array<Float, Size>
 {
     auto const delta = static_cast<Float>(etl::numbers::pi * 2.0) / static_cast<Float>(Size - 1U);
 

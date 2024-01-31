@@ -9,9 +9,9 @@ struct RectangleDither
 {
     using seed_type = typename URNG::result_type;
 
-    explicit constexpr RectangleDither(seed_type seed) noexcept : _urng{seed} {}
+    explicit constexpr RectangleDither(seed_type seed) : _urng{seed} {}
 
-    [[nodiscard]] constexpr auto operator()(float v) noexcept -> float { return v + _dist(_urng); }
+    [[nodiscard]] constexpr auto operator()(float v) -> float { return v + _dist(_urng); }
 
 private:
     URNG _urng;

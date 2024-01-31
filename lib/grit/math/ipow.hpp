@@ -5,7 +5,7 @@
 namespace grit {
 
 template<etl::integral Int>
-[[nodiscard]] constexpr auto ipow(Int base, Int exponent) noexcept -> Int
+[[nodiscard]] constexpr auto ipow(Int base, Int exponent) -> Int
 {
     Int result = 1;
     for (Int i = 0; i < exponent; i++) {
@@ -16,7 +16,7 @@ template<etl::integral Int>
 
 template<auto Base>
     requires(etl::integral<decltype(Base)> and Base > 0)
-[[nodiscard]] constexpr auto ipow(decltype(Base) exponent) noexcept -> decltype(Base)
+[[nodiscard]] constexpr auto ipow(decltype(Base) exponent) -> decltype(Base)
 {
     using Int = decltype(Base);
     if constexpr (Base == Int{2}) {

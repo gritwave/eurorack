@@ -6,7 +6,7 @@
 #include <random>
 
 template<typename URNG>
-[[nodiscard]] static auto test() noexcept -> bool
+[[nodiscard]] static auto test() -> bool
 {
     auto dither = grit::NoDither<URNG>{std::random_device{}()};
     for (auto i{0}; i < 100; ++i) {

@@ -252,18 +252,18 @@ struct StaticFftPlan
     using value_type = Complex;
     using size_type  = etl::size_t;
 
-    explicit StaticFftPlan(direction defaultDirection = direction::forward) noexcept
+    explicit StaticFftPlan(direction defaultDirection = direction::forward)
         : _defaultDirection{defaultDirection}
         , _w{makeTwiddlesR2<typename Complex::value_type, size()>(defaultDirection)}
     {}
 
-    [[nodiscard]] static constexpr auto size() noexcept -> etl::size_t { return Size; }
+    [[nodiscard]] static constexpr auto size() -> etl::size_t { return Size; }
 
-    [[nodiscard]] static constexpr auto order() noexcept -> etl::size_t { return ilog2(Size); }
+    [[nodiscard]] static constexpr auto order() -> etl::size_t { return ilog2(Size); }
 
     template<etl::linalg::inout_vector InOutVec>
         requires etl::same_as<typename InOutVec::value_type, Complex>
-    auto operator()(InOutVec x, direction dir) noexcept -> void
+    auto operator()(InOutVec x, direction dir) -> void
     {
         _reorder(x);
 
@@ -288,18 +288,18 @@ struct StaticFftPlanV2
     using value_type = Complex;
     using size_type  = etl::size_t;
 
-    explicit StaticFftPlanV2(direction defaultDirection = direction::forward) noexcept
+    explicit StaticFftPlanV2(direction defaultDirection = direction::forward)
         : _defaultDirection{defaultDirection}
         , _w{makeTwiddlesR2<typename Complex::value_type, size()>(defaultDirection)}
     {}
 
-    [[nodiscard]] static constexpr auto size() noexcept -> etl::size_t { return Size; }
+    [[nodiscard]] static constexpr auto size() -> etl::size_t { return Size; }
 
-    [[nodiscard]] static constexpr auto order() noexcept -> etl::size_t { return ilog2(Size); }
+    [[nodiscard]] static constexpr auto order() -> etl::size_t { return ilog2(Size); }
 
     template<etl::linalg::inout_vector InOutVec>
         requires etl::same_as<typename InOutVec::value_type, Complex>
-    auto operator()(InOutVec x, direction dir) noexcept -> void
+    auto operator()(InOutVec x, direction dir) -> void
     {
         auto runStages = [x]<etl::size_t... Stage>(etl::index_sequence<Stage...>, etl::linalg::in_vector auto w) {
             (detail::staticDit2StageV2<Stage>(x, w, order()), ...);

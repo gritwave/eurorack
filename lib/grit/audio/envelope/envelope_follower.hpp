@@ -19,14 +19,14 @@ struct EnvelopeFollower
 
     EnvelopeFollower() = default;
 
-    auto setParameter(Parameter const& parameter) noexcept -> void;
+    auto setParameter(Parameter const& parameter) -> void;
 
-    auto reset() noexcept -> void;
-    auto prepare(Float sampleRate) noexcept -> void;
-    [[nodiscard]] auto processSample(Float in) noexcept -> Float;
+    auto reset() -> void;
+    auto prepare(Float sampleRate) -> void;
+    [[nodiscard]] auto processSample(Float in) -> Float;
 
 private:
-    auto update() noexcept -> void;
+    auto update() -> void;
 
     Parameter _parameter{};
     Float _sampleRate{};
@@ -36,14 +36,14 @@ private:
 };
 
 template<etl::floating_point Float>
-auto EnvelopeFollower<Float>::setParameter(Parameter const& parameter) noexcept -> void
+auto EnvelopeFollower<Float>::setParameter(Parameter const& parameter) -> void
 {
     _parameter = parameter;
     update();
 }
 
 template<etl::floating_point Float>
-auto EnvelopeFollower<Float>::prepare(Float sampleRate) noexcept -> void
+auto EnvelopeFollower<Float>::prepare(Float sampleRate) -> void
 {
     _sampleRate = sampleRate;
     update();
@@ -51,7 +51,7 @@ auto EnvelopeFollower<Float>::prepare(Float sampleRate) noexcept -> void
 }
 
 template<etl::floating_point Float>
-auto EnvelopeFollower<Float>::processSample(Float in) noexcept -> Float
+auto EnvelopeFollower<Float>::processSample(Float in) -> Float
 {
     auto const env  = etl::abs(in);
     auto const coef = env > _envelope ? _attackCoef : _releaseCoef;
@@ -61,13 +61,13 @@ auto EnvelopeFollower<Float>::processSample(Float in) noexcept -> Float
 }
 
 template<etl::floating_point Float>
-auto EnvelopeFollower<Float>::reset() noexcept -> void
+auto EnvelopeFollower<Float>::reset() -> void
 {
     _envelope = Float(0);
 }
 
 template<etl::floating_point Float>
-auto EnvelopeFollower<Float>::update() noexcept -> void
+auto EnvelopeFollower<Float>::update() -> void
 {
     static constexpr auto const log001 = etl::log(Float(0.01));
 

@@ -4,7 +4,7 @@
 #include <grit/testing/assert.hpp>
 
 template<etl::floating_point Float>
-[[nodiscard]] static auto test() noexcept -> bool
+[[nodiscard]] static auto test() -> bool
 {
     auto follower = grit::EnvelopeFollower<Float>{};
     follower.prepare(Float(44'100));

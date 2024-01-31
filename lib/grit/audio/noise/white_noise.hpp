@@ -11,12 +11,12 @@ struct WhiteNoise
     using SeedType = typename URNG::result_type;
 
     WhiteNoise() = default;
-    explicit WhiteNoise(SeedType seed) noexcept;
+    explicit WhiteNoise(SeedType seed);
 
-    auto setGain(Float gain) noexcept -> void;
-    [[nodiscard]] auto getGain() const noexcept -> Float;
+    auto setGain(Float gain) -> void;
+    [[nodiscard]] auto getGain() const -> Float;
 
-    [[nodiscard]] auto processSample() noexcept -> Float;
+    [[nodiscard]] auto processSample() -> Float;
 
 private:
     URNG _rng{};
@@ -24,23 +24,23 @@ private:
 };
 
 template<etl::floating_point Float, typename URNG>
-WhiteNoise<Float, URNG>::WhiteNoise(SeedType seed) noexcept : _rng{seed}
+WhiteNoise<Float, URNG>::WhiteNoise(SeedType seed) : _rng{seed}
 {}
 
 template<etl::floating_point Float, typename URNG>
-auto WhiteNoise<Float, URNG>::setGain(Float gain) noexcept -> void
+auto WhiteNoise<Float, URNG>::setGain(Float gain) -> void
 {
     _gain = gain;
 }
 
 template<etl::floating_point Float, typename URNG>
-auto WhiteNoise<Float, URNG>::getGain() const noexcept -> Float
+auto WhiteNoise<Float, URNG>::getGain() const -> Float
 {
     return _gain;
 }
 
 template<etl::floating_point Float, typename URNG>
-auto WhiteNoise<Float, URNG>::processSample() noexcept -> Float
+auto WhiteNoise<Float, URNG>::processSample() -> Float
 {
     auto dist = etl::uniform_real_distribution<Float>{Float(-1), Float(1)};
     return dist(_rng) * _gain;

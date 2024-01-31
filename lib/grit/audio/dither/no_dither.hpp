@@ -10,9 +10,9 @@ struct NoDither
 {
     using seed_type = typename URNG::result_type;
 
-    explicit constexpr NoDither(seed_type /*unused*/) noexcept {}
+    explicit constexpr NoDither(seed_type /*unused*/) {}
 
-    [[nodiscard]] constexpr auto operator()(float v) noexcept -> float { return v; }
+    [[nodiscard]] constexpr auto operator()(float v) -> float { return v; }
 };
 
 }  // namespace grit

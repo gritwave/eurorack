@@ -12,7 +12,7 @@ namespace grit {
 template<etl::floating_point Float, typename Interpolation = BufferInterpolation::Hermite>
 struct DelayLine
 {
-    explicit DelayLine(etl::mdspan<Float, etl::dextents<etl::size_t, 1>> buffer) noexcept;
+    explicit DelayLine(etl::mdspan<Float, etl::dextents<etl::size_t, 1>> buffer);
 
     auto setDelay(Float delayInSamples) -> void;
 
@@ -30,8 +30,7 @@ private:
 };
 
 template<etl::floating_point Float, typename Interpolation>
-DelayLine<Float, Interpolation>::DelayLine(etl::mdspan<Float, etl::dextents<etl::size_t, 1>> buffer) noexcept
-    : _buffer{buffer}
+DelayLine<Float, Interpolation>::DelayLine(etl::mdspan<Float, etl::dextents<etl::size_t, 1>> buffer) : _buffer{buffer}
 {}
 
 template<etl::floating_point Float, typename Interpolation>

@@ -32,7 +32,7 @@ struct StaticBitrevorderPlan
 private:
     using index_type = etl::smallest_size_t<Size>;
 
-    [[nodiscard]] static constexpr auto make() noexcept -> etl::array<index_type, Size>
+    [[nodiscard]] static constexpr auto make() -> etl::array<index_type, Size>
     {
         auto const order = ilog2(Size);
         auto table       = etl::array<index_type, Size>{};

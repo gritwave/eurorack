@@ -7,7 +7,7 @@
 #include <etl/concepts.hpp>
 
 template<etl::floating_point Float, typename Interpolator>
-[[nodiscard]] static auto test() noexcept -> bool
+[[nodiscard]] static auto test() -> bool
 {
     auto delay = grit::StaticDelayLine<Float, 64, Interpolator>{};
 
@@ -24,7 +24,7 @@ template<etl::floating_point Float, typename Interpolator>
 }
 
 template<etl::floating_point Float>
-[[nodiscard]] static auto testInterpolators() noexcept -> bool
+[[nodiscard]] static auto testInterpolators() -> bool
 {
     assert((test<Float, grit::BufferInterpolation::None>()));
     assert((test<Float, grit::BufferInterpolation::Linear>()));

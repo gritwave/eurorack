@@ -11,7 +11,7 @@ struct WaveShaper
 
     auto setFunction(Function function) -> void { _function = function; }
 
-    [[nodiscard]] auto processSample(Float input) const noexcept -> Float { return _function(input); }
+    [[nodiscard]] auto processSample(Float input) const -> Float { return _function(input); }
 
 private:
     Function _function;

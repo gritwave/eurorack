@@ -5,7 +5,7 @@
 namespace grit {
 
 template<etl::floating_point Float>
-[[nodiscard]] constexpr auto hermiteInterpolation(Float xm1, Float x0, Float x1, Float x2, Float pos) noexcept -> Float
+[[nodiscard]] constexpr auto hermiteInterpolation(Float xm1, Float x0, Float x1, Float x2, Float pos) -> Float
 {
     auto const slope0 = (x1 - xm1) * static_cast<Float>(0.5);
     auto const slope1 = (x2 - x0) * static_cast<Float>(0.5);
