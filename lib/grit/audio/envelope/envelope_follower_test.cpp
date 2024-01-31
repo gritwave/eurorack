@@ -25,7 +25,7 @@ template<etl::floating_point Float>
     assert(x3 > Float(x1));
 
     follower.reset();
-    follower.setParameter({grit::milliseconds<Float>{12}});
+    follower.setParameter({grit::Milliseconds<Float>{12}});
     assert(grit::approx(follower.processSample(Float(0)), Float(0)));
 
     auto const y1 = follower.processSample(Float(0.25));

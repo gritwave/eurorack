@@ -13,8 +13,8 @@ struct EnvelopeFollower
 {
     struct Parameter
     {
-        milliseconds<Float> attack{50};
-        milliseconds<Float> release{50};
+        Milliseconds<Float> attack{50};
+        Milliseconds<Float> release{50};
     };
 
     EnvelopeFollower() = default;

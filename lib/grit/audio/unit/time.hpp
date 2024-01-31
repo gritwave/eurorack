@@ -5,12 +5,12 @@
 namespace grit {
 
 template<typename T>
-using microseconds = etl::chrono::duration<T, etl::micro>;
+using Microseconds = etl::chrono::duration<T, etl::micro>;
 
 template<typename T>
-using milliseconds = etl::chrono::duration<T, etl::milli>;
+using Milliseconds = etl::chrono::duration<T, etl::milli>;
 
 template<typename T>
-using seconds = etl::chrono::duration<T>;
+using Seconds = etl::chrono::duration<T>;
 
 }  // namespace grit

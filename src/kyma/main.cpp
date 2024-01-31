@@ -23,7 +23,7 @@ auto envTriggerButton = daisy::Switch{};
 auto patch            = daisy::patch_sm::DaisyPatchSM{};
 auto& envelopeGate    = patch.gate_in_1;
 
-auto adsr          = grit::Adsr{};
+auto adsr          = grit::ADSR{};
 auto oscillator    = grit::WavetableOscillator<float, wavetableSine.size()>{sineWavetable};
 auto subOscillator = grit::WavetableOscillator<float, wavetableSine.size()>{sineWavetable};
 

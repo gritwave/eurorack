@@ -100,16 +100,16 @@ inline auto Hades::Channel::prepare(float sampleRate) -> void
 inline auto Hades::Channel::processSample(float sample) -> float
 {
     _envelopeFollower.setParameter({
-        .attack  = milliseconds<float>{50},
-        .release = milliseconds<float>{50},
+        .attack  = Milliseconds<float>{50},
+        .release = Milliseconds<float>{50},
     });
 
     _compressor.setParameter({
         .threshold = fromDecibels(-12.0F),
         .ratio     = 10.F,
         .knee      = 1.0F,
-        .attack    = milliseconds<float>{50},
-        .release   = milliseconds<float>{50},
+        .attack    = Milliseconds<float>{50},
+        .release   = Milliseconds<float>{50},
         .makeUp    = 1.0F,
         .wet       = 1.0F,
     });

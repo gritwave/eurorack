@@ -2,7 +2,6 @@
 
 #include <grit/math/buffer_interpolation.hpp>
 
-#include <etl/algorithm.hpp>
 #include <etl/cmath.hpp>
 #include <etl/concepts.hpp>
 #include <etl/mdspan.hpp>

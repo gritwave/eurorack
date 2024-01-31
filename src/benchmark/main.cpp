@@ -25,7 +25,7 @@ namespace etl {
 template<int N, typename Benchmark>
 auto timeit(char const* name, Benchmark bench)
 {
-    using microseconds_t = etl::chrono::duration<float, etl::micro>;
+    using Microseconds = etl::chrono::duration<float, etl::micro>;
 
     auto runs = etl::array<float, N>{};
 
@@ -38,7 +38,7 @@ auto timeit(char const* name, Benchmark bench)
         bench();
         auto const stop = daisy::System::GetUs();
 
-        runs[i] = etl::chrono::duration_cast<microseconds_t>(etl::chrono::microseconds{stop - start}).count();
+        runs[i] = etl::chrono::duration_cast<Microseconds>(etl::chrono::microseconds{stop - start}).count();
     }
 
     auto const average = int(etl::reduce(runs.begin(), end(runs), 0.0F) / static_cast<float>(runs.size()));

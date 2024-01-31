@@ -6,9 +6,9 @@ namespace grit {
 
 // https://github.com/fdeste/ADSR
 // http://www.earlevel.com/main/2013/06/03/envelope-generators-adsr-code
-struct Adsr
+struct ADSR
 {
-    Adsr();
+    ADSR();
 
     auto setAttack(float rate) -> void;
     auto setDecay(float rate) -> void;
@@ -58,7 +58,7 @@ private:
     float _targetRatioDr{};
 };
 
-inline Adsr::Adsr()
+inline ADSR::ADSR()
 {
     reset();
 
@@ -70,34 +70,34 @@ inline Adsr::Adsr()
     setTargetRatioDr(0.0001F);
 }
 
-inline auto Adsr::setAttack(float rate) -> void
+inline auto ADSR::setAttack(float rate) -> void
 {
     _attackRate = rate;
     _attackCoef = calcCoef(rate, _targetRatioA);
     _attackBase = (1.0F + _targetRatioA) * (1.0F - _attackCoef);
 }
 
-inline auto Adsr::setDecay(float rate) -> void
+inline auto ADSR::setDecay(float rate) -> void
 {
     _decayRate = rate;
     _decayCoef = calcCoef(rate, _targetRatioDr);
     _decayBase = (_sustainLevel - _targetRatioDr) * (1.0F - _decayCoef);
 }
 
-inline auto Adsr::setSustain(float level) -> void
+inline auto ADSR::setSustain(float level) -> void
 {
     _sustainLevel = level;
     _decayBase    = (_sustainLevel - _targetRatioDr) * (1.0F - _decayCoef);
 }
 
-inline auto Adsr::setRelease(float rate) -> void
+inline auto ADSR::setRelease(float rate) -> void
 {
     _releaseRate = rate;
     _releaseCoef = calcCoef(rate, _targetRatioDr);
     _releaseBase = -_targetRatioDr * (1.0F - _releaseCoef);
 }
 
-inline auto Adsr::setTargetRatioA(float ratio) -> void
+inline auto ADSR::setTargetRatioA(float ratio) -> void
 {
     if (ratio < 0.000000001) {
         ratio = 0.000000001;  // -180 dB
@@ -106,7 +106,7 @@ inline auto Adsr::setTargetRatioA(float ratio) -> void
     _attackBase   = (1.0 + _targetRatioA) * (1.0 - _attackCoef);
 }
 
-inline auto Adsr::setTargetRatioDr(float ratio) -> void
+inline auto ADSR::setTargetRatioDr(float ratio) -> void
 {
     if (ratio < 0.000000001) {
         ratio = 0.000000001;  // -180 dB
@@ -116,7 +116,7 @@ inline auto Adsr::setTargetRatioDr(float ratio) -> void
     _releaseBase   = -_targetRatioDr * (1.0 - _releaseCoef);
 }
 
-inline auto Adsr::gate(bool isOn) -> void
+inline auto ADSR::gate(bool isOn) -> void
 {
     if (isOn) {
         _state = state::Attack;
@@ -125,13 +125,13 @@ inline auto Adsr::gate(bool isOn) -> void
     }
 }
 
-inline auto Adsr::reset() -> void
+inline auto ADSR::reset() -> void
 {
     _state  = state::Idle;
     _output = 0.0;
 }
 
-inline auto Adsr::processSample() -> float
+inline auto ADSR::processSample() -> float
 {
     switch (_state) {
         case state::Idle: {

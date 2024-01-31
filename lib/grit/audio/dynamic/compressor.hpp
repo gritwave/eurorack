@@ -21,8 +21,8 @@ struct Compressor
         Float ratio{1};
         Float knee{0};
 
-        milliseconds<Float> attack{0};
-        milliseconds<Float> release{0};
+        Milliseconds<Float> attack{0};
+        Milliseconds<Float> release{0};
 
         Float makeUp{0};
         Float wet{0};
@@ -39,7 +39,7 @@ struct Compressor
     [[nodiscard]] auto getGainReduction() const -> Float;
 
 private:
-    [[nodiscard]] auto calculateTimeAlpha(seconds<Float> value) const -> Float;
+    [[nodiscard]] auto calculateTimeAlpha(Seconds<Float> value) const -> Float;
 
     Parameter _parameter{};
     Float _sampleRate{};
@@ -122,7 +122,7 @@ auto Compressor<Float>::reset() -> void
 }
 
 template<etl::floating_point Float>
-auto Compressor<Float>::calculateTimeAlpha(seconds<Float> value) const -> Float
+auto Compressor<Float>::calculateTimeAlpha(Seconds<Float> value) const -> Float
 {
     static constexpr auto const euler = static_cast<Float>(etl::numbers::e);
 
