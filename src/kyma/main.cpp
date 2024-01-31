@@ -47,18 +47,18 @@ auto audio_callback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outp
     auto const sub_gain_cv  = patch.GetAdcValue(daisy::patch_sm::CV_7);
     auto const sub_morph_cv = patch.GetAdcValue(daisy::patch_sm::CV_8);
 
-    auto const pitch            = grit::map_to_range(pitch_knob, 36.0F, 96.0F);
-    auto const volts_per_octave = grit::map_to_range(v_oct_cv, 0.0F, 60.0F);
+    auto const pitch            = grit::mapToRange(pitch_knob, 36.0F, 96.0F);
+    auto const volts_per_octave = grit::mapToRange(v_oct_cv, 0.0F, 60.0F);
     auto const note             = etl::clamp(pitch + volts_per_octave, 0.0F, 127.0F);
     auto const morph            = etl::clamp(morph_knob + morph_cv, 0.0F, 1.0F);
 
     auto const sub_offset      = sub_octave_toggle.Pressed() ? 12.0F : 24.0F;
     auto const sub_note_number = etl::clamp(note - sub_offset, 0.0F, 127.0F);
     auto const sub_morph       = etl::clamp(sub_morph_cv, 0.0F, 1.0F);
-    auto const sub_gain        = grit::map_to_range(sub_gain_cv, 0.0F, 1.0F);
+    auto const sub_gain        = grit::mapToRange(sub_gain_cv, 0.0F, 1.0F);
 
-    auto const attack  = grit::map_to_range(attack_knob, 0.0F, 0.750F);
-    auto const release = grit::map_to_range(release_knob, 0.0F, 2.5F);
+    auto const attack  = grit::mapToRange(attack_knob, 0.0F, 0.750F);
+    auto const release = grit::mapToRange(release_knob, 0.0F, 2.5F);
 
     // oscillator.setWavetable(SineWavetable);
     // subOscillator.setWavetable(SineWavetable);
@@ -66,8 +66,8 @@ auto audio_callback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outp
     // subOscillator.setShapeMorph(subMorph);
     etl::ignore_unused(sub_morph, morph);
 
-    oscillator.set_frequency(grit::note_to_hertz(note));
-    sub_oscillator.set_frequency(grit::note_to_hertz(sub_note_number));
+    oscillator.set_frequency(grit::noteToHertz(note));
+    sub_oscillator.set_frequency(grit::noteToHertz(sub_note_number));
 
     adsr.set_attack(attack * sample_rate);
     adsr.set_release(release * sample_rate);

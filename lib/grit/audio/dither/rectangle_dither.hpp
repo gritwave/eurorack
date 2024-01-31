@@ -5,11 +5,11 @@
 namespace grit {
 
 template<typename URNG>
-struct rectangle_dither
+struct RectangleDither
 {
     using seed_type = typename URNG::result_type;
 
-    explicit constexpr rectangle_dither(seed_type seed) noexcept : _urng{seed} {}
+    explicit constexpr RectangleDither(seed_type seed) noexcept : _urng{seed} {}
 
     [[nodiscard]] constexpr auto operator()(float v) noexcept -> float { return v + _dist(_urng); }
 

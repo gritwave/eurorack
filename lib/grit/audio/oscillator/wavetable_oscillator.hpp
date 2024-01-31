@@ -78,7 +78,7 @@ auto wavetable_oscillator<Float, TableSize>::operator()() noexcept -> Float
     auto const sample_offset = scaled_phase - static_cast<Float>(sample_index);
     add_phase_offset(_phase_increment);
 
-    return buffer_interpolation::hermite{}(_wavetable, sample_index, sample_offset);
+    return BufferInterpolation::Hermite{}(_wavetable, sample_index, sample_offset);
 }
 
 template<typename Float, size_t Size>

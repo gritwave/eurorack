@@ -20,7 +20,7 @@
 namespace grit::fft {
 
 template<typename Float, unsigned Size>
-auto make_twiddles_r2(direction dir = direction::forward) -> etl::array<etl::complex<Float>, Size / 2>
+auto makeTwiddlesR2(direction dir = direction::forward) -> etl::array<etl::complex<Float>, Size / 2>
 {
     auto const sign = dir == direction::forward ? Float(-1) : Float(1);
     auto table      = etl::array<etl::complex<Float>, Size / 2>{};
@@ -31,9 +31,9 @@ auto make_twiddles_r2(direction dir = direction::forward) -> etl::array<etl::com
     return table;
 }
 
-struct c2c_dit2_v1
+struct C2cDit2V1
 {
-    c2c_dit2_v1() = default;
+    C2cDit2V1() = default;
 
     template<typename Vec>
         requires(Vec::rank() == 1)
@@ -44,16 +44,16 @@ struct c2c_dit2_v1
 
         for (auto stage = 0; stage < order; ++stage) {
 
-            auto const stage_length = ipow<2>(stage);
-            auto const stride       = ipow<2>(stage + 1);
-            auto const tw_stride    = ipow<2>(order - stage - 1);
+            auto const stageLength = ipow<2>(stage);
+            auto const stride      = ipow<2>(stage + 1);
+            auto const twStride    = ipow<2>(order - stage - 1);
 
             for (auto k = 0; etl::cmp_less(k, len); k += stride) {
-                for (auto pair = 0; pair < stage_length; ++pair) {
-                    auto const tw = w(pair * tw_stride);
+                for (auto pair = 0; pair < stageLength; ++pair) {
+                    auto const tw = w(pair * twStride);
 
                     auto const i1 = k + pair;
-                    auto const i2 = k + pair + stage_length;
+                    auto const i2 = k + pair + stageLength;
 
                     auto const temp = x(i1) + tw * x(i2);
                     x(i2)           = x(i1) - tw * x(i2);
@@ -64,9 +64,9 @@ struct c2c_dit2_v1
     }
 };
 
-struct c2c_dit2_v2
+struct C2cDit2V2
 {
-    c2c_dit2_v2() = default;
+    C2cDit2V2() = default;
 
     template<typename Vec>
         requires(Vec::rank() == 1)
@@ -74,18 +74,18 @@ struct c2c_dit2_v2
     {
         auto const len = x.extent(0);
 
-        auto stage_size = 2U;
-        while (stage_size <= len) {
-            auto const half_stage = stage_size / 2;
-            auto const k_step     = len / stage_size;
+        auto stageSize = 2U;
+        while (stageSize <= len) {
+            auto const halfStage = stageSize / 2;
+            auto const kStep     = len / stageSize;
 
-            for (auto i{0U}; i < len; i += stage_size) {
-                for (auto k{i}; k < i + half_stage; ++k) {
+            for (auto i{0U}; i < len; i += stageSize) {
+                for (auto k{i}; k < i + halfStage; ++k) {
                     auto const index = k - i;
-                    auto const tw    = w(index * k_step);
+                    auto const tw    = w(index * kStep);
 
                     auto const idx1 = k;
-                    auto const idx2 = k + half_stage;
+                    auto const idx2 = k + halfStage;
 
                     auto const even = x(idx1);
                     auto const odd  = x(idx2);
@@ -96,14 +96,14 @@ struct c2c_dit2_v2
                 }
             }
 
-            stage_size *= 2;
+            stageSize *= 2;
         }
     }
 };
 
-struct c2c_dit2_v3
+struct C2cDit2V3
 {
-    c2c_dit2_v3() = default;
+    C2cDit2V3() = default;
 
     template<typename Vec>
         requires(Vec::rank() == 1)
@@ -114,12 +114,12 @@ struct c2c_dit2_v3
 
         {
             // stage 0
-            static constexpr auto const stage_length = 1;  // ipow<2>(0)
-            static constexpr auto const stride       = 2;  // ipow<2>(0 + 1)
+            static constexpr auto const stageLength = 1;  // ipow<2>(0)
+            static constexpr auto const stride      = 2;  // ipow<2>(0 + 1)
 
             for (auto k{0}; k < static_cast<int>(len); k += stride) {
                 auto const i1 = k;
-                auto const i2 = k + stage_length;
+                auto const i2 = k + stageLength;
 
                 auto const temp = x(i1) + x(i2);
                 x(i2)           = x(i1) - x(i2);
@@ -129,16 +129,16 @@ struct c2c_dit2_v3
 
         for (auto stage = 1; stage < order; ++stage) {
 
-            auto const stage_length = ipow<2>(stage);
-            auto const stride       = ipow<2>(stage + 1);
-            auto const tw_stride    = ipow<2>(order - stage - 1);
+            auto const stageLength = ipow<2>(stage);
+            auto const stride      = ipow<2>(stage + 1);
+            auto const twStride    = ipow<2>(order - stage - 1);
 
             for (auto k = 0; etl::cmp_less(k, len); k += stride) {
-                for (auto pair = 0; pair < stage_length; ++pair) {
-                    auto const tw = w(pair * tw_stride);
+                for (auto pair = 0; pair < stageLength; ++pair) {
+                    auto const tw = w(pair * twStride);
 
                     auto const i1 = k + pair;
-                    auto const i2 = k + pair + stage_length;
+                    auto const i2 = k + pair + stageLength;
 
                     auto const temp = x(i1) + tw * x(i2);
                     x(i2)           = x(i1) - tw * x(i2);
@@ -151,41 +151,41 @@ struct c2c_dit2_v3
 
 namespace detail {
 template<typename Complex, int Order, int Stage>
-struct static_c2c_dit2_stage
+struct StaticC2cDit2Stage
 {
     auto operator()(etl::linalg::inout_vector auto x, etl::linalg::in_vector auto w) -> void
         requires(Stage == 0)
     {
-        static constexpr auto const size         = 1 << Order;
-        static constexpr auto const stage_length = 1;  // ipow<2>(0)
-        static constexpr auto const stride       = 2;  // ipow<2>(0 + 1)
+        static constexpr auto const size        = 1 << Order;
+        static constexpr auto const stageLength = 1;  // ipow<2>(0)
+        static constexpr auto const stride      = 2;  // ipow<2>(0 + 1)
 
         for (auto k{0}; k < static_cast<int>(size); k += stride) {
             auto const i1 = k;
-            auto const i2 = k + stage_length;
+            auto const i2 = k + stageLength;
 
             auto const temp = x(i1) + x(i2);
             x(i2)           = x(i1) - x(i2);
             x(i1)           = temp;
         }
 
-        static_c2c_dit2_stage<Complex, Order, 1>{}(x, w);
+        StaticC2cDit2Stage<Complex, Order, 1>{}(x, w);
     }
 
     auto operator()(etl::linalg::inout_vector auto x, etl::linalg::in_vector auto w) -> void
         requires(Stage != 0 and Stage < Order)
     {
-        static constexpr auto const size         = 1 << Order;
-        static constexpr auto const stage_length = ipow<2>(Stage);
-        static constexpr auto const stride       = ipow<2>(Stage + 1);
-        static constexpr auto const tw_stride    = ipow<2>(Order - Stage - 1);
+        static constexpr auto const size        = 1 << Order;
+        static constexpr auto const stageLength = ipow<2>(Stage);
+        static constexpr auto const stride      = ipow<2>(Stage + 1);
+        static constexpr auto const twStride    = ipow<2>(Order - Stage - 1);
 
         for (auto k{0}; k < size; k += stride) {
-            for (auto pair{0}; pair < stage_length; ++pair) {
-                auto const tw = w(pair * tw_stride);
+            for (auto pair{0}; pair < stageLength; ++pair) {
+                auto const tw = w(pair * twStride);
 
                 auto const i1 = k + pair;
-                auto const i2 = k + pair + stage_length;
+                auto const i2 = k + pair + stageLength;
 
                 auto const temp = x(i1) + tw * x(i2);
                 x(i2)           = x(i1) - tw * x(i2);
@@ -193,7 +193,7 @@ struct static_c2c_dit2_stage
             }
         }
 
-        static_c2c_dit2_stage<Complex, Order, Stage + 1>{}(x, w);
+        StaticC2cDit2Stage<Complex, Order, Stage + 1>{}(x, w);
     }
 
     auto operator()(etl::linalg::inout_vector auto /*x*/, etl::linalg::in_vector auto /*w*/) -> void
@@ -203,16 +203,16 @@ struct static_c2c_dit2_stage
 
 template<int Stage, etl::linalg::inout_vector InOutVec, etl::linalg::in_vector InVec>
     requires(Stage == 0)
-[[gnu::noinline]] auto static_dit2_stage_v2(InOutVec x, InVec /*w*/, int order) -> void
+[[gnu::noinline]] auto staticDit2StageV2(InOutVec x, InVec /*w*/, int order) -> void
 {
-    static constexpr auto const stage_length = 1;  // ipow<2>(0)
-    static constexpr auto const stride       = 2;  // ipow<2>(0 + 1)
+    static constexpr auto const stageLength = 1;  // ipow<2>(0)
+    static constexpr auto const stride      = 2;  // ipow<2>(0 + 1)
 
     auto const size = 1 << order;
 
     for (auto k{0}; k < static_cast<int>(size); k += stride) {
         auto const i1 = k;
-        auto const i2 = k + stage_length;
+        auto const i2 = k + stageLength;
 
         auto const temp = x(i1) + x(i2);
         x(i2)           = x(i1) - x(i2);
@@ -222,20 +222,20 @@ template<int Stage, etl::linalg::inout_vector InOutVec, etl::linalg::in_vector I
 
 template<int Stage, etl::linalg::inout_vector InOutVec, etl::linalg::in_vector InVec>
     requires(Stage != 0)
-[[gnu::noinline]] auto static_dit2_stage_v2(InOutVec x, InVec w, int order) -> void
+[[gnu::noinline]] auto staticDit2StageV2(InOutVec x, InVec w, int order) -> void
 {
-    static constexpr auto const stage_length = ipow<2>(Stage);
-    static constexpr auto const stride       = ipow<2>(Stage + 1);
+    static constexpr auto const stageLength = ipow<2>(Stage);
+    static constexpr auto const stride      = ipow<2>(Stage + 1);
 
-    auto const size      = 1 << order;
-    auto const tw_stride = ipow<2>(order - Stage - 1);
+    auto const size     = 1 << order;
+    auto const twStride = ipow<2>(order - Stage - 1);
 
     for (auto k{0}; k < size; k += stride) {
-        for (auto pair{0}; pair < stage_length; ++pair) {
-            auto const tw = w(pair * tw_stride);
+        for (auto pair{0}; pair < stageLength; ++pair) {
+            auto const tw = w(pair * twStride);
 
             auto const i1 = k + pair;
-            auto const i2 = k + pair + stage_length;
+            auto const i2 = k + pair + stageLength;
 
             auto const temp = x(i1) + tw * x(i2);
             x(i2)           = x(i1) - tw * x(i2);
@@ -247,14 +247,14 @@ template<int Stage, etl::linalg::inout_vector InOutVec, etl::linalg::in_vector I
 }  // namespace detail
 
 template<typename Complex, etl::size_t Size>
-struct static_fft_plan
+struct StaticFftPlan
 {
     using value_type = Complex;
     using size_type  = etl::size_t;
 
-    explicit static_fft_plan(direction default_direction = direction::forward) noexcept
-        : _default_direction{default_direction}
-        , _w{make_twiddles_r2<typename Complex::value_type, size()>(default_direction)}
+    explicit StaticFftPlan(direction defaultDirection = direction::forward) noexcept
+        : _defaultDirection{defaultDirection}
+        , _w{makeTwiddlesR2<typename Complex::value_type, size()>(defaultDirection)}
     {}
 
     [[nodiscard]] static constexpr auto size() noexcept -> etl::size_t { return Size; }
@@ -269,28 +269,28 @@ struct static_fft_plan
 
         auto const w = etl::mdspan<Complex, etl::extents<etl::size_t, size()>>{_w.data()};
 
-        if (dir == _default_direction) {
-            detail::static_c2c_dit2_stage<Complex, order(), 0>{}(x, w);
+        if (dir == _defaultDirection) {
+            detail::StaticC2cDit2Stage<Complex, order(), 0>{}(x, w);
         } else {
-            detail::static_c2c_dit2_stage<Complex, order(), 0>{}(x, etl::linalg::conjugated(w));
+            detail::StaticC2cDit2Stage<Complex, order(), 0>{}(x, etl::linalg::conjugated(w));
         }
     }
 
 private:
-    direction _default_direction;
-    static_bitrevorder_plan<size()> _reorder{};
+    direction _defaultDirection;
+    StaticBitrevorderPlan<size()> _reorder{};
     etl::array<Complex, size() / 2> _w;
 };
 
 template<typename Complex, etl::size_t Size>
-struct static_fft_plan_v2
+struct StaticFftPlanV2
 {
     using value_type = Complex;
     using size_type  = etl::size_t;
 
-    explicit static_fft_plan_v2(direction default_direction = direction::forward) noexcept
-        : _default_direction{default_direction}
-        , _w{make_twiddles_r2<typename Complex::value_type, size()>(default_direction)}
+    explicit StaticFftPlanV2(direction defaultDirection = direction::forward) noexcept
+        : _defaultDirection{defaultDirection}
+        , _w{makeTwiddlesR2<typename Complex::value_type, size()>(defaultDirection)}
     {}
 
     [[nodiscard]] static constexpr auto size() noexcept -> etl::size_t { return Size; }
@@ -301,24 +301,24 @@ struct static_fft_plan_v2
         requires etl::same_as<typename InOutVec::value_type, Complex>
     auto operator()(InOutVec x, direction dir) noexcept -> void
     {
-        auto run_stages = [x]<etl::size_t... Stage>(etl::index_sequence<Stage...>, etl::linalg::in_vector auto w) {
-            (detail::static_dit2_stage_v2<Stage>(x, w, order()), ...);
+        auto runStages = [x]<etl::size_t... Stage>(etl::index_sequence<Stage...>, etl::linalg::in_vector auto w) {
+            (detail::staticDit2StageV2<Stage>(x, w, order()), ...);
         };
 
         _reorder(x);
 
         auto const w = etl::mdspan<Complex, etl::extents<etl::size_t, size()>>{_w.data()};
 
-        if (dir == _default_direction) {
-            run_stages(etl::make_index_sequence<order()>(), w);
+        if (dir == _defaultDirection) {
+            runStages(etl::make_index_sequence<order()>(), w);
         } else {
-            run_stages(etl::make_index_sequence<order()>(), etl::linalg::conjugated(w));
+            runStages(etl::make_index_sequence<order()>(), etl::linalg::conjugated(w));
         }
     }
 
 private:
-    direction _default_direction;
-    static_bitrevorder_plan<size()> _reorder{};
+    direction _defaultDirection;
+    StaticBitrevorderPlan<size()> _reorder{};
     etl::array<Complex, size() / 2> _w;
 };
 

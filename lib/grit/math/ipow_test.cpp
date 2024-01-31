@@ -2,9 +2,9 @@
 
 #include <grit/testing/assert.hpp>
 
-auto test_ipow() -> bool;
+auto testIpow() -> bool;
 
-auto test_ipow() -> bool
+auto testIpow() -> bool
 {
     assert(grit::ipow(1, 0) == 1);  // NOLINT
     assert(grit::ipow(1, 1) == 1);  // NOLINT

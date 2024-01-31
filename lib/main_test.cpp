@@ -1,30 +1,36 @@
 #undef NDEBUG
 #include <cassert>
 
-extern auto test_decibel() -> bool;
-extern auto test_envelope_follower() -> bool;
-extern auto test_fft() -> bool;
-extern auto test_ilog2() -> bool;
-extern auto test_ipow() -> bool;
-extern auto test_no_dither() -> bool;
-extern auto test_note() -> bool;
-extern auto test_rectangle_dither() -> bool;
-extern auto test_static_delay_line() -> bool;
-extern auto test_triangle_dither() -> bool;
-extern auto test_white_noise() -> bool;
+#include <grit/core/benchmark.hpp>
+#include <grit/eurorack/hades.hpp>
+#include <grit/math/buffer_interpolation.hpp>
+#include <grit/math/fast_lerp.hpp>
+#include <grit/math/range.hpp>
+
+extern auto testDecibel() -> bool;
+extern auto testEnvelopeFollower() -> bool;
+extern auto testFft() -> bool;
+extern auto testIlog2() -> bool;
+extern auto testIpow() -> bool;
+extern auto testNoDither() -> bool;
+extern auto testNote() -> bool;
+extern auto testRectangleDither() -> bool;
+extern auto testStaticDelayLine() -> bool;
+extern auto testTriangleDither() -> bool;
+extern auto testWhiteNoise() -> bool;
 
 auto main() -> int
 {
-    assert(test_decibel());
-    assert(test_envelope_follower());
-    assert(test_fft());
-    assert(test_ilog2());
-    assert(test_ipow());
-    assert(test_no_dither());
-    assert(test_note());
-    assert(test_rectangle_dither());
-    assert(test_static_delay_line());
-    assert(test_triangle_dither());
-    assert(test_white_noise());
+    assert(testDecibel());
+    assert(testEnvelopeFollower());
+    assert(testFft());
+    assert(testIlog2());
+    assert(testIpow());
+    assert(testNoDither());
+    assert(testNote());
+    assert(testRectangleDither());
+    assert(testStaticDelayLine());
+    assert(testTriangleDither());
+    assert(testWhiteNoise());
     return 0;
 }

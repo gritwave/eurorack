@@ -6,7 +6,7 @@
 namespace grit {
 
 template<etl::floating_point Float>
-[[nodiscard]] auto note_to_hertz(Float note) noexcept -> Float
+[[nodiscard]] auto noteToHertz(Float note) noexcept -> Float
 {
     static constexpr auto x = Float(1) / Float(12);
     return etl::pow(Float(2), (note - Float(69)) * x) * Float(440);

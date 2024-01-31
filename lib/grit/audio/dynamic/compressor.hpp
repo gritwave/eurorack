@@ -13,9 +13,9 @@
 namespace grit {
 
 template<etl::floating_point Float>
-struct compressor
+struct Compressor
 {
-    struct parameter
+    struct Parameter
     {
         Float threshold{0};
         Float ratio{1};
@@ -28,101 +28,101 @@ struct compressor
         Float wet{0};
     };
 
-    compressor() = default;
+    Compressor() = default;
 
-    auto set_parameter(parameter const& parameter) noexcept -> void;
+    auto setParameter(Parameter const& parameter) noexcept -> void;
 
     auto reset() noexcept -> void;
     auto prepare(Float sampleRate) noexcept -> void;
-    [[nodiscard]] auto process_sample(Float signal, Float sideChain) noexcept -> Float;
+    [[nodiscard]] auto processSample(Float signal, Float sideChain) noexcept -> Float;
 
-    [[nodiscard]] auto get_gain_reduction() const noexcept -> Float;
+    [[nodiscard]] auto getGainReduction() const noexcept -> Float;
 
 private:
-    [[nodiscard]] auto calculate_time_alpha(seconds<Float> value) const noexcept -> Float;
+    [[nodiscard]] auto calculateTimeAlpha(seconds<Float> value) const noexcept -> Float;
 
-    parameter _parameter{};
-    Float _sample_rate{};
-    Float _yl_prev{};
+    Parameter _parameter{};
+    Float _sampleRate{};
+    Float _ylPrev{};
     Float _reduction{1};
 };
 
 template<etl::floating_point Float>
-auto compressor<Float>::set_parameter(parameter const& parameter) noexcept -> void
+auto Compressor<Float>::setParameter(Parameter const& parameter) noexcept -> void
 {
     _parameter = parameter;
 }
 
 template<etl::floating_point Float>
-auto compressor<Float>::prepare(Float sampleRate) noexcept -> void
+auto Compressor<Float>::prepare(Float sampleRate) noexcept -> void
 {
-    _sample_rate = sampleRate;
+    _sampleRate = sampleRate;
     reset();
 }
 
 template<etl::floating_point Float>
-auto compressor<Float>::process_sample(Float signal, Float sideChain) noexcept -> Float
+auto Compressor<Float>::processSample(Float signal, Float sideChain) noexcept -> Float
 {
     auto const threshold = _parameter.threshold;
     auto const ratio     = _parameter.ratio;
     auto const knee      = _parameter.knee;
-    auto const alpha_a   = calculate_time_alpha(_parameter.attack);
-    auto const alpha_r   = calculate_time_alpha(_parameter.release);
+    auto const alphaA    = calculateTimeAlpha(_parameter.attack);
+    auto const alphaR    = calculateTimeAlpha(_parameter.release);
 
     auto const in  = sideChain * sideChain;
     auto const env = in <= static_cast<Float>(1e-6) ? -Float(60) : Float(10) * std::log10(in);
 
-    auto const half_knee_range = -(knee * (-Float(60) - threshold) / Float(4));
-    auto const full_knee_range = half_knee_range + half_knee_range / ratio;
-    auto const kneed_threshold = threshold - half_knee_range;
-    auto const ceil_threshold  = threshold + half_knee_range / ratio;
-    auto const limit           = etl::clamp(env, kneed_threshold, ceil_threshold);
-    auto const factor          = -((limit - kneed_threshold) / full_knee_range) + Float(1);
-    auto const ratio_quotient  = knee > 0 ? ratio * factor + Float(1) * (-factor + Float(1)) : Float(1);
+    auto const halfKneeRange  = -(knee * (-Float(60) - threshold) / Float(4));
+    auto const fullKneeRange  = halfKneeRange + halfKneeRange / ratio;
+    auto const kneedThreshold = threshold - halfKneeRange;
+    auto const ceilThreshold  = threshold + halfKneeRange / ratio;
+    auto const limit          = etl::clamp(env, kneedThreshold, ceilThreshold);
+    auto const factor         = -((limit - kneedThreshold) / fullKneeRange) + Float(1);
+    auto const ratioQuotient  = knee > 0 ? ratio * factor + Float(1) * (-factor + Float(1)) : Float(1);
 
     auto yg = Float(0);
-    if (env < kneed_threshold) {
+    if (env < kneedThreshold) {
         yg = env;
     } else {
-        yg = kneed_threshold + (env - kneed_threshold) / (ratio / ratio_quotient);
+        yg = kneedThreshold + (env - kneedThreshold) / (ratio / ratioQuotient);
     }
 
     auto yl       = Float(0);
     auto const xl = env - yg;
-    if (xl > _yl_prev) {
-        yl = alpha_a * _yl_prev + (Float(1) - alpha_a) * xl;
+    if (xl > _ylPrev) {
+        yl = alphaA * _ylPrev + (Float(1) - alphaA) * xl;
     } else {
-        yl = alpha_r * _yl_prev + (Float(1) - alpha_r) * xl;
+        yl = alphaR * _ylPrev + (Float(1) - alphaR) * xl;
     }
 
-    auto const control_compressor = etl::pow(Float(10), (Float(1) - yl) * Float(0.05));
+    auto const controlCompressor = etl::pow(Float(10), (Float(1) - yl) * Float(0.05));
 
-    _reduction = control_compressor;
-    _yl_prev   = yl;
+    _reduction = controlCompressor;
+    _ylPrev    = yl;
 
     auto const wet    = _parameter.wet;
     auto const makeup = _parameter.makeUp;
 
-    auto const wet_sample = signal * control_compressor * makeup;
-    auto const dry_sample = signal;
+    auto const wetSample = signal * controlCompressor * makeup;
+    auto const drySample = signal;
 
-    return wet_sample * wet + dry_sample * (1.0F - wet);
+    return wetSample * wet + drySample * (1.0F - wet);
 }
 
 template<etl::floating_point Float>
-auto compressor<Float>::get_gain_reduction() const noexcept -> Float
+auto Compressor<Float>::getGainReduction() const noexcept -> Float
 {
     return _reduction;
 }
 
 template<etl::floating_point Float>
-auto compressor<Float>::reset() noexcept -> void
+auto Compressor<Float>::reset() noexcept -> void
 {
-    _yl_prev = Float(0);
+    _ylPrev = Float(0);
 }
 
 template<etl::floating_point Float>
-auto compressor<Float>::calculate_time_alpha(seconds<Float> value) const noexcept -> Float
+auto Compressor<Float>::calculateTimeAlpha(seconds<Float> value) const noexcept -> Float
 {
     static constexpr auto const euler = static_cast<Float>(etl::numbers::e);
 
@@ -130,7 +130,7 @@ auto compressor<Float>::calculate_time_alpha(seconds<Float> value) const noexcep
     if (sec == Float(0)) {
         return Float(0);
     }
-    return etl::pow(Float(1) / euler, Float(1) / static_cast<Float>(_sample_rate) / sec);
+    return etl::pow(Float(1) / euler, Float(1) / static_cast<Float>(_sampleRate) / sec);
 }
 
 }  // namespace grit

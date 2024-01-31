@@ -8,7 +8,7 @@ static constexpr auto block_size  = 16U;
 static constexpr auto sample_rate = 96'000.0F;
 
 auto patch = daisy::patch_sm::DaisyPatchSM{};
-auto hades = grit::hades{};
+auto hades = grit::Hades{};
 
 auto audio_callback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::OutputBuffer out, size_t /*size*/) -> void
 {
@@ -18,12 +18,12 @@ auto audio_callback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outp
     auto const right_in  = etl::span<float const>{etl::addressof(IN_R[0]), block_size};
     auto const left_out  = etl::span<float>{etl::addressof(OUT_L[0]), block_size};
     auto const right_out = etl::span<float>{etl::addressof(OUT_R[0]), block_size};
-    auto const context   = grit::hades::buffers{
+    auto const context   = grit::Hades::Buffers{
           .input  = { left_in,  right_in},
           .output = {left_out, right_out},
     };
 
-    auto const inputs = grit::hades::control_inputs{
+    auto const inputs = grit::Hades::ControlInputs{
         .textureKnob    = patch.GetAdcValue(daisy::patch_sm::CV_1),
         .morphKnob      = patch.GetAdcValue(daisy::patch_sm::CV_3),
         .ampKnob        = patch.GetAdcValue(daisy::patch_sm::CV_2),
@@ -36,7 +36,7 @@ auto audio_callback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outp
         .gate2          = patch.gate_in_2.State(),
     };
 
-    auto const outputs = hades.process_block(context, inputs);
+    auto const outputs = hades.processBlock(context, inputs);
     patch.WriteCvOut(daisy::patch_sm::CV_OUT_1, outputs.envelope * 5.0F);
     patch.WriteCvOut(daisy::patch_sm::CV_OUT_2, outputs.envelope * 5.0F);
     dsy_gpio_write(&patch.gate_out_1, static_cast<uint8_t>(outputs.gate1));

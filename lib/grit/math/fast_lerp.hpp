@@ -6,7 +6,7 @@
 namespace grit {
 
 template<etl::floating_point Float>
-[[nodiscard]] constexpr auto fast_lerp(Float a, Float b, Float t) noexcept -> Float
+[[nodiscard]] constexpr auto fastLerp(Float a, Float b, Float t) noexcept -> Float
 {
     return a + (b - a) * t;
 }

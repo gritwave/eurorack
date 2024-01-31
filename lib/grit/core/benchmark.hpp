@@ -5,7 +5,7 @@
 namespace grit {
 
 template<typename T>
-inline TA_ALWAYS_INLINE auto do_not_optimize(T& value) -> void
+inline TA_ALWAYS_INLINE auto doNotOptimize(T& value) -> void
 {
 #if defined(__clang__)
     asm volatile("" : "+r,m"(value) : : "memory");

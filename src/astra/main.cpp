@@ -30,8 +30,8 @@ auto audio_callback(
     auto const gain_left_knob  = patch.GetAdcValue(daisy::patch_sm::CV_1);
     auto const gain_right_knob = patch.GetAdcValue(daisy::patch_sm::CV_2);
 
-    auto const gain_left  = grit::from_decibels(grit::map_to_range(gain_left_knob, -30.0F, 6.0F));
-    auto const gain_right = grit::from_decibels(grit::map_to_range(gain_right_knob, -30.0F, 6.0F));
+    auto const gain_left  = grit::fromDecibels(grit::mapToRange(gain_left_knob, -30.0F, 6.0F));
+    auto const gain_right = grit::fromDecibels(grit::mapToRange(gain_right_knob, -30.0F, 6.0F));
 
     for (size_t i = 0; i < size; ++i) {
         auto const in_left  = input(0, i);

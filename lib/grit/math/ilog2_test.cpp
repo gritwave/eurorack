@@ -30,9 +30,9 @@ static auto test() -> bool
     return true;
 }
 
-auto test_ilog2() -> bool;
+auto testIlog2() -> bool;
 
-auto test_ilog2() -> bool
+auto testIlog2() -> bool
 {
     assert((test<signed char>()));
     assert((test<signed short>()));

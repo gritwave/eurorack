@@ -13,9 +13,9 @@
 
 namespace grit {
 
-struct hades
+struct Hades
 {
-    struct control_inputs
+    struct ControlInputs
     {
         float textureKnob{0};
         float morphKnob{0};
@@ -30,28 +30,28 @@ struct hades
         bool gate2{false};
     };
 
-    struct control_outputs
+    struct ControlOutputs
     {
         float envelope{0};
         bool gate1{false};
         bool gate2{false};
     };
 
-    struct buffers
+    struct Buffers
     {
         etl::array<etl::span<float const>, 2> input;
         etl::array<etl::span<float>, 2> output;
     };
 
-    hades() = default;
+    Hades() = default;
 
-    auto prepare(float sample_rate, etl::size_t block_size) -> void;
-    [[nodiscard]] auto process_block(buffers const& context, control_inputs const& inputs) -> control_outputs;
+    auto prepare(float sampleRate, etl::size_t blockSize) -> void;
+    [[nodiscard]] auto processBlock(Buffers const& context, ControlInputs const& inputs) -> ControlOutputs;
 
 private:
-    struct channel
+    struct Channel
     {
-        struct parameter
+        struct Parameter
         {
             float texture{0.0F};
             float morph{0.0F};
@@ -62,50 +62,50 @@ private:
             float release{0.0F};
         };
 
-        channel() = default;
+        Channel() = default;
 
-        auto set_parameter(parameter const& parameter) -> void;
+        auto setParameter(Parameter const& parameter) -> void;
 
-        auto prepare(float sample_rate) -> void;
-        [[nodiscard]] auto process_sample(float sample) -> float;
+        auto prepare(float sampleRate) -> void;
+        [[nodiscard]] auto processSample(float sample) -> float;
 
     private:
-        parameter _parameter{};
-        envelope_follower<float> _envelope_follower{};
-        white_noise<float> _noise{};
-        wave_shaper<float> _wave_shaper{etl::tanh};
-        compressor<float> _compressor;
+        Parameter _parameter{};
+        EnvelopeFollower<float> _envelopeFollower{};
+        WhiteNoise<float> _noise{};
+        WaveShaper<float> _waveShaper{etl::tanh};
+        Compressor<float> _compressor;
     };
 
-    dynamic_smoothing<float> _texture_knob;
-    dynamic_smoothing<float> _morph_knob;
-    dynamic_smoothing<float> _amp_knob;
-    dynamic_smoothing<float> _compressor_knob;
-    dynamic_smoothing<float> _morph_cv;
-    dynamic_smoothing<float> _side_chain_cv;
-    dynamic_smoothing<float> _attack_cv;
-    dynamic_smoothing<float> _release_cv;
+    DynamicSmoothing<float> _textureKnob;
+    DynamicSmoothing<float> _morphKnob;
+    DynamicSmoothing<float> _ampKnob;
+    DynamicSmoothing<float> _compressorKnob;
+    DynamicSmoothing<float> _morphCv;
+    DynamicSmoothing<float> _sideChainCv;
+    DynamicSmoothing<float> _attackCv;
+    DynamicSmoothing<float> _releaseCv;
 
-    etl::array<channel, 2> _channels{};
+    etl::array<Channel, 2> _channels{};
 };
 
-inline auto hades::channel::set_parameter(parameter const& parameter) -> void { _parameter = parameter; }
+inline auto Hades::Channel::setParameter(Parameter const& parameter) -> void { _parameter = parameter; }
 
-inline auto hades::channel::prepare(float sample_rate) -> void
+inline auto Hades::Channel::prepare(float sampleRate) -> void
 {
-    _envelope_follower.prepare(sample_rate);
-    _compressor.prepare(sample_rate);
+    _envelopeFollower.prepare(sampleRate);
+    _compressor.prepare(sampleRate);
 }
 
-inline auto hades::channel::process_sample(float sample) -> float
+inline auto Hades::Channel::processSample(float sample) -> float
 {
-    _envelope_follower.set_parameter({
+    _envelopeFollower.setParameter({
         .attack  = milliseconds<float>{50},
         .release = milliseconds<float>{50},
     });
 
-    _compressor.set_parameter({
-        .threshold = from_decibels(-12.0F),
+    _compressor.setParameter({
+        .threshold = fromDecibels(-12.0F),
         .ratio     = 10.F,
         .knee      = 1.0F,
         .attack    = milliseconds<float>{50},
@@ -114,70 +114,70 @@ inline auto hades::channel::process_sample(float sample) -> float
         .wet       = 1.0F,
     });
 
-    auto const env      = _envelope_follower.process_sample(sample);
-    auto const noise    = _noise.process_sample();
-    auto const noisy    = sample + noise * env;
-    auto const dist_out = _wave_shaper.process_sample(noisy);
-    return _compressor.process_sample(dist_out, dist_out);
+    auto const env     = _envelopeFollower.processSample(sample);
+    auto const noise   = _noise.processSample();
+    auto const noisy   = sample + noise * env;
+    auto const distOut = _waveShaper.processSample(noisy);
+    return _compressor.processSample(distOut, distOut);
 }
 
-inline auto hades::prepare(float sample_rate, etl::size_t block_size) -> void
+inline auto Hades::prepare(float sampleRate, etl::size_t blockSize) -> void
 {
-    auto const block_rate = sample_rate / static_cast<float>(block_size);
+    auto const blockRate = sampleRate / static_cast<float>(blockSize);
 
-    _texture_knob.prepare(block_rate);
-    _morph_knob.prepare(block_rate);
-    _amp_knob.prepare(block_rate);
-    _compressor_knob.prepare(block_rate);
-    _morph_cv.prepare(block_rate);
-    _side_chain_cv.prepare(block_rate);
-    _attack_cv.prepare(block_rate);
-    _release_cv.prepare(block_rate);
+    _textureKnob.prepare(blockRate);
+    _morphKnob.prepare(blockRate);
+    _ampKnob.prepare(blockRate);
+    _compressorKnob.prepare(blockRate);
+    _morphCv.prepare(blockRate);
+    _sideChainCv.prepare(blockRate);
+    _attackCv.prepare(blockRate);
+    _releaseCv.prepare(blockRate);
 
-    _channels[0].prepare(sample_rate);
-    _channels[1].prepare(sample_rate);
+    _channels[0].prepare(sampleRate);
+    _channels[1].prepare(sampleRate);
 }
 
-inline auto hades::process_block(buffers const& context, control_inputs const& inputs) -> control_outputs
+inline auto Hades::processBlock(Buffers const& context, ControlInputs const& inputs) -> ControlOutputs
 {
-    auto const texture_knob    = _texture_knob.process(inputs.textureKnob);
-    auto const morph_knob      = _morph_knob.process(inputs.morphKnob);
-    auto const amp_knob        = _amp_knob.process(inputs.ampKnob);
-    auto const compressor_knob = _compressor_knob.process(inputs.compressorKnob);
-    auto const morph_cv        = _morph_cv.process(inputs.morphCV);
-    auto const side_chain_cv   = _side_chain_cv.process(inputs.sideChainCV);
-    auto const attack_cv       = _attack_cv.process(inputs.attackCV);
-    auto const release_cv      = _release_cv.process(inputs.releaseCV);
+    auto const textureKnob    = _textureKnob.process(inputs.textureKnob);
+    auto const morphKnob      = _morphKnob.process(inputs.morphKnob);
+    auto const ampKnob        = _ampKnob.process(inputs.ampKnob);
+    auto const compressorKnob = _compressorKnob.process(inputs.compressorKnob);
+    auto const morphCv        = _morphCv.process(inputs.morphCV);
+    auto const sideChainCv    = _sideChainCv.process(inputs.sideChainCV);
+    auto const attackCv       = _attackCv.process(inputs.attackCV);
+    auto const releaseCv      = _releaseCv.process(inputs.releaseCV);
 
-    auto const channel_parameter = hades::channel::parameter{
-        .texture    = texture_knob,
-        .morph      = etl::clamp(morph_knob + morph_cv, 0.0F, 1.0F),
-        .amp        = amp_knob,
-        .compressor = compressor_knob,
-        .sideChain  = side_chain_cv,
-        .attack     = attack_cv,
-        .release    = release_cv,
+    auto const channelParameter = Hades::Channel::Parameter{
+        .texture    = textureKnob,
+        .morph      = etl::clamp(morphKnob + morphCv, 0.0F, 1.0F),
+        .amp        = ampKnob,
+        .compressor = compressorKnob,
+        .sideChain  = sideChainCv,
+        .attack     = attackCv,
+        .release    = releaseCv,
     };
 
     for (auto& channel : _channels) {
-        channel.set_parameter(channel_parameter);
+        channel.setParameter(channelParameter);
     }
 
     for (size_t i = 0; i < context.input[0].size(); ++i) {
         auto const left  = context.input[0][i];
         auto const right = context.input[1][i];
 
-        context.output[0][i] = _channels[0].process_sample(left);
-        context.output[1][i] = _channels[1].process_sample(right);
+        context.output[0][i] = _channels[0].processSample(left);
+        context.output[1][i] = _channels[1].processSample(right);
     }
 
     // "DIGITAL" GATE LOGIC
-    auto const gate_out = inputs.gate1 != inputs.gate2;
+    auto const gateOut = inputs.gate1 != inputs.gate2;
 
     return {
         .envelope = 0.0F,
-        .gate1    = gate_out,
-        .gate2    = not gate_out,
+        .gate1    = gateOut,
+        .gate2    = not gateOut,
     };
 }
 

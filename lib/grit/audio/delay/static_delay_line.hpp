@@ -8,47 +8,45 @@
 
 namespace grit {
 
-template<etl::floating_point Float, etl::size_t MaxDelay, typename Interpolation = buffer_interpolation::hermite>
-struct static_delay_line
+template<etl::floating_point Float, etl::size_t MaxDelay, typename Interpolation = BufferInterpolation::Hermite>
+struct StaticDelayLine
 {
-    static_delay_line() = default;
+    StaticDelayLine() = default;
 
-    auto set_delay(Float delay_in_samples) -> void;
+    auto setDelay(Float delayInSamples) -> void;
 
-    auto push_sample(Float sample) -> void;
-    auto pop_sample() -> Float;
+    auto pushSample(Float sample) -> void;
+    auto popSample() -> Float;
 
     auto reset() -> void;
 
 private:
     etl::array<Float, MaxDelay> _buffer{};
-    delay_line<Float, Interpolation> _delay_line{
-        etl::mdspan{_buffer.data(), etl::dextents<etl::size_t, 1>{MaxDelay}}
-    };
+    DelayLine<Float, Interpolation> _delayLine{etl::mdspan(_buffer.data(), etl::dextents<etl::size_t, 1>{MaxDelay})};
 };
 
 template<etl::floating_point Float, etl::size_t MaxDelay, typename Interpolation>
-auto static_delay_line<Float, MaxDelay, Interpolation>::set_delay(Float delay_in_samples) -> void
+auto StaticDelayLine<Float, MaxDelay, Interpolation>::setDelay(Float delayInSamples) -> void
 {
-    _delay_line.set_delay(delay_in_samples);
+    _delayLine.setDelay(delayInSamples);
 }
 
 template<etl::floating_point Float, etl::size_t MaxDelay, typename Interpolation>
-auto static_delay_line<Float, MaxDelay, Interpolation>::push_sample(Float sample) -> void
+auto StaticDelayLine<Float, MaxDelay, Interpolation>::pushSample(Float sample) -> void
 {
-    _delay_line.push_sample(sample);
+    _delayLine.pushSample(sample);
 }
 
 template<etl::floating_point Float, etl::size_t MaxDelay, typename Interpolation>
-auto static_delay_line<Float, MaxDelay, Interpolation>::pop_sample() -> Float
+auto StaticDelayLine<Float, MaxDelay, Interpolation>::popSample() -> Float
 {
-    return _delay_line.pop_sample();
+    return _delayLine.popSample();
 }
 
 template<etl::floating_point Float, etl::size_t MaxDelay, typename Interpolation>
-auto static_delay_line<Float, MaxDelay, Interpolation>::reset() -> void
+auto StaticDelayLine<Float, MaxDelay, Interpolation>::reset() -> void
 {
-    _delay_line.reset();
+    _delayLine.reset();
 }
 
 }  // namespace grit

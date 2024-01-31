@@ -85,12 +85,12 @@ struct c2c_roundtrip
         kernel(x, etl::linalg::conjugated(w));
         etl::linalg::scale(Float(1) / Float(N), x);
 
-        grit::do_not_optimize(_buf.front());
-        grit::do_not_optimize(_buf.back());
+        grit::doNotOptimize(_buf.front());
+        grit::doNotOptimize(_buf.back());
     }
 
 private:
-    etl::array<etl::complex<Float>, N / 2> _tw{grit::fft::make_twiddles_r2<Float, N>()};
+    etl::array<etl::complex<Float>, N / 2> _tw{grit::fft::makeTwiddlesR2<Float, N>()};
     etl::array<etl::complex<Float>, N> _buf{[] {
         auto rng = etl::xoshiro128plusplus{42};
         return make_noise<etl::complex<Float>, N>(rng);
@@ -111,12 +111,12 @@ struct static_c2c_roundtrip
         _plan(x, grit::fft::direction::backward);
         etl::linalg::scale(Float(1) / Float(N), x);
 
-        grit::do_not_optimize(_buf.front());
-        grit::do_not_optimize(_buf.back());
+        grit::doNotOptimize(_buf.front());
+        grit::doNotOptimize(_buf.back());
     }
 
 private:
-    grit::fft::static_fft_plan_v2<etl::complex<Float>, N> _plan{};
+    grit::fft::StaticFftPlanV2<etl::complex<Float>, N> _plan{};
     etl::array<etl::complex<Float>, N> _buf{[] {
         auto rng = etl::xoshiro128plusplus{42};
         return make_noise<etl::complex<Float>, N>(rng);

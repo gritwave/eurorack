@@ -14,9 +14,9 @@ namespace grit::fft {
 
 template<etl::size_t Size>
     requires(etl::has_single_bit(Size))
-struct static_bitrevorder_plan
+struct StaticBitrevorderPlan
 {
-    static_bitrevorder_plan() = default;
+    StaticBitrevorderPlan() = default;
 
     template<etl::linalg::inout_vector Vec>
     auto operator()(Vec x) -> void
