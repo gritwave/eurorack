@@ -4,7 +4,7 @@
 #include <grit/core/benchmark.hpp>
 #include <grit/eurorack/hades.hpp>
 #include <grit/math/buffer_interpolation.hpp>
-#include <grit/math/fast_lerp.hpp>
+#include <grit/math/linear_interpolation.hpp>
 #include <grit/math/range.hpp>
 
 extern auto testDecibel() -> bool;

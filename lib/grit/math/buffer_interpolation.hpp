@@ -1,7 +1,7 @@
 #pragma once
 
 #include <grit/core/mdspan.hpp>
-#include <grit/math/fast_lerp.hpp>
+#include <grit/math/linear_interpolation.hpp>
 #include <grit/math/hermite_interpolation.hpp>
 
 namespace grit {
@@ -25,7 +25,7 @@ struct BufferInterpolation
         {
             auto const x0 = buffer(readPos % buffer.size());
             auto const x1 = buffer((readPos + 1) % buffer.size());
-            return fastLerp(x0, x1, fracPos);
+            return linearInterpolation(x0, x1, fracPos);
         }
     };
 

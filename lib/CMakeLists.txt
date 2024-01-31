@@ -41,7 +41,7 @@ target_sources(grit-eurorack INTERFACE
         "grit/fft/fft.hpp"
 
         "grit/math/buffer_interpolation.hpp"
-        "grit/math/fast_lerp.hpp"
+        "grit/math/linear_interpolation.hpp"
         "grit/math/hermite_interpolation.hpp"
         "grit/math/ilog2.hpp"
         "grit/math/ipow.hpp"
