@@ -19,6 +19,7 @@ target_sources(grit-eurorack INTERFACE
         "grit/audio/dither/triangle_dither.hpp"
         "grit/audio/dynamic/compressor.hpp"
         "grit/audio/envelope/adsr.hpp"
+        "grit/audio/filter/dynamic_smoothing.hpp"
         "grit/audio/mix/cross_fade.hpp"
         "grit/audio/music/note.hpp"
         "grit/audio/noise/white_noise.hpp"
@@ -40,7 +41,6 @@ target_sources(grit-eurorack INTERFACE
         "grit/fft/fft.hpp"
 
         "grit/math/buffer_interpolation.hpp"
-        "grit/math/dynamic_smoothing.hpp"
         "grit/math/fast_lerp.hpp"
         "grit/math/hermite_interpolation.hpp"
         "grit/math/ilog2.hpp"

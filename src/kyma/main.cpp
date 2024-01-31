@@ -1,10 +1,10 @@
 #include <grit/audio/delay/static_delay_line.hpp>
 #include <grit/audio/envelope/adsr.hpp>
+#include <grit/audio/filter/dynamic_smoothing.hpp>
 #include <grit/audio/music/note.hpp>
 #include <grit/audio/oscillator/variable_shape_oscillator.hpp>
 #include <grit/audio/oscillator/wavetable_oscillator.hpp>
 #include <grit/audio/unit/decibel.hpp>
-#include <grit/math/dynamic_smoothing.hpp>
 #include <grit/math/range.hpp>
 
 #include <daisy_patch_sm.h>

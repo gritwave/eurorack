@@ -2,10 +2,10 @@
 
 #include <grit/audio/dynamic/compressor.hpp>
 #include <grit/audio/envelope/envelope_follower.hpp>
+#include <grit/audio/filter/dynamic_smoothing.hpp>
 #include <grit/audio/noise/white_noise.hpp>
 #include <grit/audio/unit/decibel.hpp>
 #include <grit/audio/waveshape/wave_shaper.hpp>
-#include <grit/math/dynamic_smoothing.hpp>
 
 #include <etl/array.hpp>
 #include <etl/functional.hpp>
