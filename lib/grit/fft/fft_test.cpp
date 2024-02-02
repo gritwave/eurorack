@@ -6,8 +6,8 @@
 template<etl::floating_point Float, etl::size_t Size>
 auto testTwiddles() -> bool
 {
-    auto const wf = grit::fft::makeTwiddles<Float, Size>(grit::fft::direction::forward);
-    auto const wb = grit::fft::makeTwiddles<Float, Size>(grit::fft::direction::backward);
+    auto const wf = grit::fft::makeTwiddles<Float, Size>(grit::fft::Direction::Forward);
+    auto const wb = grit::fft::makeTwiddles<Float, Size>(grit::fft::Direction::Backward);
     assert(wf.size() == wb.size());
 
     for (auto i{0U}; i < wf.size(); ++i) {
@@ -28,12 +28,12 @@ auto testComplexPlan() -> bool
     auto x    = etl::mdspan{xBuf.data(), etl::extents{xBuf.size()}};
     x(0)      = etl::complex{Float(1), Float(0)};
 
-    plan(x, grit::fft::direction::forward);
+    plan(x, grit::fft::Direction::Forward);
     for (auto const& val : xBuf) {
         assert(grit::approx(val, etl::complex{Float(1)}));
     }
 
-    plan(x, grit::fft::direction::backward);
+    plan(x, grit::fft::Direction::Backward);
     assert(grit::approx(x(0), etl::complex{Float(1) * Float(Plan::size())}));
 
     for (auto const& val : etl::span{xBuf}.last(Plan::size() - 1)) {

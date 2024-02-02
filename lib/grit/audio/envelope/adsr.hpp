@@ -23,7 +23,7 @@ struct ADSR
     [[nodiscard]] auto processSample() -> float;
 
 private:
-    enum state
+    enum State
     {
         Idle,
         Attack,
@@ -37,7 +37,7 @@ private:
         return etl::exp(-etl::log((1.0F + targetRatio) / targetRatio) / rate);
     }
 
-    state _state{state::Idle};
+    State _state{State::Idle};
     float _output{};
 
     float _attackRate{};
@@ -119,48 +119,48 @@ inline auto ADSR::setTargetRatioDr(float ratio) -> void
 inline auto ADSR::gate(bool isOn) -> void
 {
     if (isOn) {
-        _state = state::Attack;
-    } else if (_state != state::Idle) {
-        _state = state::Release;
+        _state = State::Attack;
+    } else if (_state != State::Idle) {
+        _state = State::Release;
     }
 }
 
 inline auto ADSR::reset() -> void
 {
-    _state  = state::Idle;
+    _state  = State::Idle;
     _output = 0.0;
 }
 
 inline auto ADSR::processSample() -> float
 {
     switch (_state) {
-        case state::Idle: {
+        case State::Idle: {
             break;
         }
-        case state::Attack: {
+        case State::Attack: {
             _output = _attackBase + _output * _attackCoef;
             if (_output >= 1.0) {
                 _output = 1.0;
-                _state  = state::Decay;
+                _state  = State::Decay;
             }
             break;
         }
-        case state::Decay: {
+        case State::Decay: {
             _output = _decayBase + _output * _decayCoef;
             if (_output <= _sustainLevel) {
                 _output = _sustainLevel;
-                _state  = state::Sustain;
+                _state  = State::Sustain;
             }
             break;
         }
-        case state::Sustain: {
+        case State::Sustain: {
             break;
         }
-        case state::Release: {
+        case State::Release: {
             _output = _releaseBase + _output * _releaseCoef;
             if (_output <= 0.0) {
                 _output = 0.0;
-                _state  = state::Idle;
+                _state  = State::Idle;
             }
             break;
         }

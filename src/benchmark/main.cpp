@@ -107,8 +107,8 @@ struct StaticC2cRoundtrip
     auto operator()() -> void
     {
         auto x = etl::mdspan{_buf.data(), etl::extents<etl::size_t, N>{}};
-        _plan(x, grit::fft::direction::forward);
-        _plan(x, grit::fft::direction::backward);
+        _plan(x, grit::fft::Direction::Forward);
+        _plan(x, grit::fft::Direction::Backward);
         etl::linalg::scale(Float(1) / Float(N), x);
 
         grit::doNotOptimize(_buf.front());

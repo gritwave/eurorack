@@ -20,9 +20,9 @@
 namespace grit::fft {
 
 template<typename Float, unsigned Size>
-auto makeTwiddles(direction dir = direction::forward) -> etl::array<etl::complex<Float>, Size / 2>
+auto makeTwiddles(Direction dir = Direction::Forward) -> etl::array<etl::complex<Float>, Size / 2>
 {
-    auto const sign = dir == direction::forward ? Float(-1) : Float(1);
+    auto const sign = dir == Direction::Forward ? Float(-1) : Float(1);
     auto table      = etl::array<etl::complex<Float>, Size / 2>{};
     for (unsigned i = 0; i < Size / 2; ++i) {
         auto const angle = sign * Float(2) * static_cast<Float>(etl::numbers::pi) * Float(i) / Float(Size);
@@ -252,7 +252,7 @@ struct ComplexPlan
     using value_type = Complex;
     using size_type  = etl::size_t;
 
-    explicit ComplexPlan(direction defaultDirection = direction::forward)
+    explicit ComplexPlan(Direction defaultDirection = Direction::Forward)
         : _defaultDirection{defaultDirection}
         , _w{makeTwiddles<typename Complex::value_type, size()>(defaultDirection)}
     {}
@@ -263,7 +263,7 @@ struct ComplexPlan
 
     template<etl::linalg::inout_vector InOutVec>
         requires etl::same_as<typename InOutVec::value_type, Complex>
-    auto operator()(InOutVec x, direction dir) -> void
+    auto operator()(InOutVec x, Direction dir) -> void
     {
         _reorder(x);
 
@@ -277,7 +277,7 @@ struct ComplexPlan
     }
 
 private:
-    direction _defaultDirection;
+    Direction _defaultDirection;
     StaticBitrevorderPlan<size()> _reorder{};
     etl::array<Complex, size() / 2> _w;
 };
@@ -288,7 +288,7 @@ struct ComplexPlanV2
     using value_type = Complex;
     using size_type  = etl::size_t;
 
-    explicit ComplexPlanV2(direction defaultDirection = direction::forward)
+    explicit ComplexPlanV2(Direction defaultDirection = Direction::Forward)
         : _defaultDirection{defaultDirection}
         , _w{makeTwiddles<typename Complex::value_type, size()>(defaultDirection)}
     {}
@@ -299,7 +299,7 @@ struct ComplexPlanV2
 
     template<etl::linalg::inout_vector InOutVec>
         requires etl::same_as<typename InOutVec::value_type, Complex>
-    auto operator()(InOutVec x, direction dir) -> void
+    auto operator()(InOutVec x, Direction dir) -> void
     {
         auto runStages = [x]<etl::size_t... Stage>(etl::index_sequence<Stage...>, etl::linalg::in_vector auto w) {
             (detail::staticDit2StageV2<Stage>(x, w, order()), ...);
@@ -317,7 +317,7 @@ struct ComplexPlanV2
     }
 
 private:
-    direction _defaultDirection;
+    Direction _defaultDirection;
     StaticBitrevorderPlan<size()> _reorder{};
     etl::array<Complex, size() / 2> _w;
 };

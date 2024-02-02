@@ -2,10 +2,10 @@
 
 namespace grit::fft {
 
-enum struct direction : int
+enum struct Direction : int
 {
-    forward  = -1,
-    backward = 1,
+    Forward  = -1,
+    Backward = 1,
 };
 
 }  // namespace grit::fft

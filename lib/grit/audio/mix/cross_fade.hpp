@@ -6,7 +6,7 @@
 
 namespace grit {
 
-enum struct crossFadeCurve
+enum struct CrossFadeCurve
 {
     Linear,
     ConstantPower,
@@ -20,7 +20,7 @@ struct CrossFade
     struct Parameter
     {
         Float mix{0.5};
-        crossFadeCurve curve{crossFadeCurve::Linear};
+        CrossFadeCurve curve{CrossFadeCurve::Linear};
     };
 
     CrossFade() = default;
@@ -65,22 +65,22 @@ auto CrossFade<Float>::update() -> void
     static constexpr auto const halfPi = static_cast<Float>(etl::numbers::pi * 0.5);
 
     switch (_parameter.curve) {
-        case crossFadeCurve::Linear: {
+        case CrossFadeCurve::Linear: {
             _gainR = _parameter.mix;
             _gainL = Float{1} - _gainR;
             return;
         }
-        case crossFadeCurve::ConstantPower: {
+        case CrossFadeCurve::ConstantPower: {
             _gainR = etl::sin(_parameter.mix * halfPi);
             _gainL = etl::sin((Float{1} - _parameter.mix) * halfPi);
             return;
         }
-        case crossFadeCurve::Logarithmic: {
+        case CrossFadeCurve::Logarithmic: {
             _gainR = etl::exp(_parameter.mix * (logMax - logMin) + logMin);
             _gainL = Float{1} - _gainR;
             return;
         }
-        case crossFadeCurve::Exponentail: {
+        case CrossFadeCurve::Exponentail: {
             _gainR = _parameter.mix * _parameter.mix;
             _gainL = Float{1} - _gainR;
             return;

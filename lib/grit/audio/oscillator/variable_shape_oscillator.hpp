@@ -42,7 +42,7 @@ auto VariableShapeOscillator<Float>::setShapeMorph(Float morph) -> void
 {
     _crossFade.set_parameter({
         .mix   = etl::clamp(morph, Float{0}, Float{1}),
-        .curve = crossFadeCurve::ConstantPower,
+        .curve = CrossFadeCurve::ConstantPower,
     });
 }
 
