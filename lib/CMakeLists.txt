@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.23...3.27)
-project(grit-eurorack)
+project(gritwave-grit)
 
-add_library(grit-eurorack INTERFACE)
-add_library(grit::eurorack ALIAS grit-eurorack)
-target_compile_features(grit-eurorack INTERFACE cxx_std_20)
-target_link_libraries(grit-eurorack INTERFACE tetl::etl)
+add_library(gritwave-grit INTERFACE)
+add_library(gritwave::grit ALIAS gritwave-grit)
+target_compile_features(gritwave-grit INTERFACE cxx_std_20)
+target_link_libraries(gritwave-grit INTERFACE tetl::etl)
 
-target_sources(grit-eurorack INTERFACE
+target_sources(gritwave-grit INTERFACE
     FILE_SET
         HEADERS
     BASE_DIRS
@@ -19,7 +19,7 @@ target_sources(grit-eurorack INTERFACE
 
         "grit/audio/delay.hpp"
         "grit/audio/delay/delay_line.hpp"
-        "grit/audio/delay/static_delay_line.hpp "
+        "grit/audio/delay/static_delay_line.hpp"
 
         "grit/audio/dynamic.hpp"
         "grit/audio/dynamic/compressor.hpp"
@@ -49,18 +49,16 @@ target_sources(grit-eurorack INTERFACE
         "grit/audio/oscillator/wavetable_oscillator.hpp"
 
         "grit/audio/waveshape.hpp"
-        "grit/audio/waveshape/adaa1.hpp"
         "grit/audio/waveshape/full_wave_rectifier.hpp"
         "grit/audio/waveshape/half_wave_rectifier.hpp"
         "grit/audio/waveshape/hard_clipper.hpp"
         "grit/audio/waveshape/wave_shaper.hpp"
+        "grit/audio/waveshape/wave_shaper_adaa1.hpp"
 
         "grit/core/arm.hpp"
         "grit/core/benchmark.hpp"
         "grit/core/config.hpp"
         "grit/core/mdspan.hpp"
-
-        "grit/eurorack/hades.hpp"
 
         "grit/fft.hpp"
         "grit/fft/bitrevorder.hpp"
@@ -81,4 +79,13 @@ target_sources(grit-eurorack INTERFACE
         "grit/unit.hpp"
         "grit/unit/decibel.hpp"
         "grit/unit/time.hpp"
+)
+
+add_library(gritwave-eurorack)
+add_library(gritwave::eurorack ALIAS gritwave-eurorack)
+target_link_libraries(gritwave-eurorack PUBLIC gritwave::grit)
+target_sources(gritwave-eurorack
+    PRIVATE
+        "grit/eurorack/hades.cpp"
+        "grit/eurorack/hades.hpp"
 )

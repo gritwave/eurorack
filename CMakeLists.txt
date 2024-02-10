@@ -43,7 +43,7 @@ if(NOT CMAKE_CROSSCOMPILING)
 
     add_executable(grit-eurorack-tests)
     catch_discover_tests(grit-eurorack-tests WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-    target_link_libraries(grit-eurorack-tests PRIVATE grit::eurorack Catch2::Catch2WithMain)
+    target_link_libraries(grit-eurorack-tests PRIVATE gritwave::eurorack Catch2::Catch2WithMain)
     target_compile_options(grit-eurorack-tests PRIVATE "-Wall" "-Wextra" "-Wpedantic")
     target_sources(grit-eurorack-tests
         PRIVATE
