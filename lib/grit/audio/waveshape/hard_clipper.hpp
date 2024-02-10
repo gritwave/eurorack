@@ -2,6 +2,7 @@
 
 #include <grit/audio/waveshape/adaa1.hpp>
 #include <grit/audio/waveshape/wave_shaper.hpp>
+#include <grit/math/sign.hpp>
 
 #include <etl/algorithm.hpp>
 
@@ -18,13 +19,7 @@ struct HardClipperFunctions
 
     [[nodiscard]] static constexpr auto ad1(Float x)
     {
-        if (x < Float(-1)) {
-            return -x;
-        }
-        if (x > Float(+1)) {
-            return x;
-        }
-        return (x * x) / Float(2);
+        return etl::abs(x) > Float(1) ? x * sign(x) : (x * x) * Float(0.5);
     }
 };
 
