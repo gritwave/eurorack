@@ -24,7 +24,6 @@ target_sources(grit-eurorack INTERFACE
         "grit/audio/oscillator/oscillator.hpp"
         "grit/audio/oscillator/variable_shape_oscillator.hpp"
         "grit/audio/oscillator/wavetable_oscillator.hpp"
-        "grit/audio/unit/time.hpp"
         "grit/audio/waveshape/wave_shaper.hpp"
 
         "grit/core/arm.hpp"
@@ -46,4 +45,6 @@ target_sources(grit-eurorack INTERFACE
         "grit/math/range.hpp"
 
         "grit/testing/approx.hpp"
+
+        "grit/unit/time.hpp"
 )

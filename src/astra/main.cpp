@@ -1,4 +1,4 @@
-#include <grit/audio/unit/decibel.hpp>
+#include <grit/unit/decibel.hpp>
 #include <grit/math/range.hpp>
 
 #include <daisy_patch_sm.h>

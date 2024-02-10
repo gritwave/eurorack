@@ -1,6 +1,6 @@
 #pragma once
 
-#include <grit/audio/unit/time.hpp>
+#include <grit/unit/time.hpp>
 
 #include <etl/algorithm.hpp>
 #include <etl/cmath.hpp>

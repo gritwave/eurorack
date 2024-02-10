@@ -52,10 +52,10 @@ if(NOT CMAKE_CROSSCOMPILING)
             "lib/grit/audio/music/note_test.cpp"
             "lib/grit/audio/noise/dither_test.cpp"
             "lib/grit/audio/noise/white_noise_test.cpp"
-            "lib/grit/audio/unit/decibel_test.cpp"
             "lib/grit/fft/fft_test.cpp"
             "lib/grit/math/ilog2_test.cpp"
             "lib/grit/math/ipow_test.cpp"
             "lib/grit/math/static_lookup_table_test.cpp"
+            "lib/grit/unit/decibel_test.cpp"
     )
 endif()

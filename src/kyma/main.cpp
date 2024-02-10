@@ -4,7 +4,7 @@
 #include <grit/audio/music/note.hpp>
 #include <grit/audio/oscillator/variable_shape_oscillator.hpp>
 #include <grit/audio/oscillator/wavetable_oscillator.hpp>
-#include <grit/audio/unit/decibel.hpp>
+#include <grit/unit/decibel.hpp>
 #include <grit/math/range.hpp>
 
 #include <daisy_patch_sm.h>
