@@ -62,6 +62,7 @@ if(NOT CMAKE_CROSSCOMPILING)
             "lib/grit/audio/waveshape/full_wave_rectifier_test.cpp"
             "lib/grit/audio/waveshape/half_wave_rectifier_test.cpp"
             "lib/grit/audio/waveshape/hard_clipper_test.cpp"
+            "lib/grit/audio/waveshape/tanh_clipper_test.cpp"
             "lib/grit/audio/waveshape/wave_shaper_test.cpp"
             "lib/grit/audio/waveshape/wave_shaper_adaa1_test.cpp"
             "lib/grit/fft/fft_test.cpp"
