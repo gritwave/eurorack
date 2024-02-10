@@ -1,6 +1,9 @@
 name: Coverage
 
-on: push
+on:
+  push:
+    branches:
+      - main
 
 concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}

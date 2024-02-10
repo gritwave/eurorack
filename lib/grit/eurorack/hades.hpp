@@ -117,12 +117,6 @@ inline auto Hades::Channel::setParameter(Parameter const& parameter) -> void
     });
 }
 
-inline auto Hades::Channel::prepare(float sampleRate) -> void
-{
-    _envelopeFollower.prepare(sampleRate);
-    _compressor.prepare(sampleRate);
-}
-
 inline auto Hades::Channel::operator()(float sample) -> float
 {
     auto const env = _envelopeFollower(sample);
@@ -136,6 +130,12 @@ inline auto Hades::Channel::operator()(float sample) -> float
     auto const drive   = remap(_parameter.amp, 1.0F, 4.0F);  // +12dB
     auto const distOut = _waveShaper(vinyl * drive);
     return _compressor(distOut, distOut);
+}
+
+inline auto Hades::Channel::prepare(float sampleRate) -> void
+{
+    _envelopeFollower.prepare(sampleRate);
+    _compressor.prepare(sampleRate);
 }
 
 inline auto Hades::prepare(float sampleRate, etl::size_t blockSize) -> void
