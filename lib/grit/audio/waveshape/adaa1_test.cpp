@@ -1,5 +1,6 @@
 #include "full_wave_rectifier.hpp"
 #include "half_wave_rectifier.hpp"
+#include "hard_clipper.hpp"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_template_test_macros.hpp>
@@ -7,7 +8,7 @@
 TEMPLATE_PRODUCT_TEST_CASE(
     "grit/audio/waveshape: Waveshaper",
     "",
-    (grit::FullWaveRectifier, grit::HalfWaveRectifier),
+    (grit::FullWaveRectifier, grit::HalfWaveRectifier, grit::HardClipper),
     (float, double)
 )
 {
