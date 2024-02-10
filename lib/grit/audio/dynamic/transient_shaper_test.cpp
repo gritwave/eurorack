@@ -13,7 +13,12 @@ TEMPLATE_TEST_CASE("grit/audio/dynamic: TransientShaper", "", float, double)
     REQUIRE(shaper(Float(0)) == Catch::Approx(Float(0)));
     REQUIRE(shaper(Float(0.25)) == Catch::Approx(Float(0.25)));
 
-    shaper.setParameter({Float(0.25), Float(0.0)});
+    shaper.setParameter({Float(0.25), Float(0.1)});
     REQUIRE(shaper(Float(0.30)) > Float(0.30));
     REQUIRE(shaper(Float(0.32)) > Float(0.32));
+
+    shaper.reset();
+    shaper.setParameter({Float(0), Float(0)});
+    REQUIRE(shaper(Float(0)) == Catch::Approx(Float(0)));
+    REQUIRE(shaper(Float(0.25)) == Catch::Approx(Float(0.25)));
 }

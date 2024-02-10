@@ -20,6 +20,7 @@ target_sources(grit-eurorack INTERFACE
 
         "grit/audio/dynamic.hpp"
         "grit/audio/dynamic/compressor.hpp"
+        "grit/audio/dynamic/transient_shaper.hpp"
 
         "grit/audio/envelope.hpp"
         "grit/audio/envelope/adsr.hpp"
