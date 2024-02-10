@@ -6,23 +6,38 @@
       "generator": "Ninja Multi-Config",
       "binaryDir": "${sourceDir}/build",
       "toolchainFile": "${sourceDir}/cmake/toolchain/stm32h750xx.cmake"
+    },
+    {
+      "name": "desktop",
+      "generator": "Ninja Multi-Config",
+      "binaryDir": "${sourceDir}/cmake-build-desktop"
     }
   ],
   "buildPresets": [
     {
-      "name": "debug",
+      "name": "firmware-debug",
       "configurePreset": "arm-gnu",
       "configuration": "Debug"
     },
     {
-      "name": "release",
+      "name": "firmware-release",
       "configurePreset": "arm-gnu",
       "configuration": "Release"
     },
     {
-      "name": "release-with-debug-info",
+      "name": "firmware-release-with-debug-info",
       "configurePreset": "arm-gnu",
       "configuration": "RelWithDebInfo"
+    },
+    {
+      "name": "desktop-debug",
+      "configurePreset": "desktop",
+      "configuration": "Debug"
+    },
+    {
+      "name": "desktop-release",
+      "configurePreset": "desktop",
+      "configuration": "Release"
     }
   ]
 }
