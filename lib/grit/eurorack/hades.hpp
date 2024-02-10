@@ -3,9 +3,11 @@
 #include <grit/audio/dynamic/compressor.hpp>
 #include <grit/audio/envelope/envelope_follower.hpp>
 #include <grit/audio/filter/dynamic_smoothing.hpp>
+#include <grit/audio/mix/cross_fade.hpp>
 #include <grit/audio/noise/airwindows_vinyl_dither.hpp>
 #include <grit/audio/noise/white_noise.hpp>
 #include <grit/audio/waveshape/wave_shaper.hpp>
+#include <grit/math/remap.hpp>
 #include <grit/unit/decibel.hpp>
 
 #include <etl/algorithm.hpp>
@@ -92,7 +94,28 @@ private:
     etl::array<Channel, 2> _channels{};
 };
 
-inline auto Hades::Channel::setParameter(Parameter const& parameter) -> void { _parameter = parameter; }
+inline auto Hades::Channel::setParameter(Parameter const& parameter) -> void
+{
+    _parameter = parameter;
+
+    auto const attack  = Milliseconds<float>{remap(parameter.attack, 1.0F, 50.0F)};
+    auto const release = Milliseconds<float>{remap(parameter.release, 1.0F, 500.0F)};
+
+    _envelopeFollower.setParameter({
+        .attack  = attack,
+        .release = release,
+    });
+
+    _compressor.setParameter({
+        .threshold = remap(parameter.compressor, -12.0F, -20.0F),
+        .ratio     = remap(parameter.compressor, +4.0F, +10.0F),
+        .knee      = 2.0F,
+        .attack    = attack,
+        .release   = release,
+        .makeUp    = 1.0F,
+        .wet       = 1.0F,
+    });
+}
 
 inline auto Hades::Channel::prepare(float sampleRate) -> void
 {
@@ -102,27 +125,16 @@ inline auto Hades::Channel::prepare(float sampleRate) -> void
 
 inline auto Hades::Channel::operator()(float sample) -> float
 {
-    _envelopeFollower.setParameter({
-        .attack  = Milliseconds<float>{50},
-        .release = Milliseconds<float>{50},
-    });
-
-    _compressor.setParameter({
-        .threshold = fromDecibels(-12.0F),
-        .ratio     = 10.F,
-        .knee      = 1.0F,
-        .attack    = Milliseconds<float>{50},
-        .release   = Milliseconds<float>{50},
-        .makeUp    = 1.0F,
-        .wet       = 1.0F,
-    });
-
     auto const env = _envelopeFollower(sample);
     _vinylDither.setDeRez(etl::clamp(env, 0.0F, 1.0F));
 
-    // auto const noise   = _noise();
-    auto const noisy   = _vinylDither(sample);
-    auto const distOut = _waveShaper(noisy);
+    auto const noise = _noise();
+    auto const vinyl = _vinylDither(sample);
+    auto const mix   = _parameter.morph;
+    auto const mixed = (noise * mix) + (vinyl * (1.0F - mix));
+
+    auto const drive   = remap(_parameter.amp, 1.0F, 4.0F);  // +12dB
+    auto const distOut = _waveShaper(vinyl * drive);
     return _compressor(distOut, distOut);
 }
 
