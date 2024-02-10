@@ -6,17 +6,17 @@
 #include <catch2/catch_template_test_macros.hpp>
 
 TEMPLATE_PRODUCT_TEST_CASE(
-    "grit/audio/waveshape: Waveshaper",
+    "grit/audio/waveshape: WaveShaper",
     "",
     (grit::FullWaveRectifier, grit::HalfWaveRectifier, grit::HardClipper),
     (float, double)
 )
 {
-    using Waveshaper = TestType;
-    using Float      = typename Waveshaper::value_type;
+    using WaveShaper = TestType;
+    using Float      = typename WaveShaper::value_type;
 
-    auto shaper = Waveshaper{};
-    STATIC_REQUIRE(etl::is_empty_v<Waveshaper>);
+    auto shaper = WaveShaper{};
+    STATIC_REQUIRE(etl::is_empty_v<WaveShaper>);
 
     REQUIRE(shaper(Float(0.1)) == Catch::Approx(0.1));
     REQUIRE(shaper(Float(0.1)) == Catch::Approx(0.1));

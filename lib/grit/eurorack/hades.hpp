@@ -14,7 +14,6 @@
 #include <etl/algorithm.hpp>
 #include <etl/array.hpp>
 #include <etl/functional.hpp>
-#include <etl/span.hpp>
 #include <etl/utility.hpp>
 
 namespace grit {
