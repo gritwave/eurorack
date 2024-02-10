@@ -48,6 +48,9 @@ if(NOT CMAKE_CROSSCOMPILING)
     target_sources(grit-eurorack-tests
         PRIVATE
             "lib/grit/audio_test.cpp"
+            "lib/grit/fft_test.cpp"
+            "lib/grit/math_test.cpp"
+            "lib/grit/unit_test.cpp"
 
             "lib/grit/audio/delay/static_delay_line_test.cpp"
             "lib/grit/audio/envelope/envelope_follower_test.cpp"

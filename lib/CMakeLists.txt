@@ -12,19 +12,38 @@ target_sources(grit-eurorack INTERFACE
     BASE_DIRS
         ${PROJECT_SOURCE_DIR}
     FILES
+        "grit/audio.hpp"
+
+        "grit/audio/delay.hpp"
         "grit/audio/delay/delay_line.hpp"
         "grit/audio/delay/static_delay_line.hpp "
+
+        "grit/audio/dynamic.hpp"
         "grit/audio/dynamic/compressor.hpp"
+
+        "grit/audio/envelope.hpp"
         "grit/audio/envelope/adsr.hpp"
         "grit/audio/envelope/envelope_follower.hpp"
+
+        "grit/audio/filter.hpp"
         "grit/audio/filter/dynamic_smoothing.hpp"
+
+        "grit/audio/mix.hpp"
         "grit/audio/mix/cross_fade.hpp"
+
+        "grit/audio/music.hpp"
         "grit/audio/music/note.hpp"
+
+        "grit/audio/noise.hpp"
         "grit/audio/noise/dither.hpp"
         "grit/audio/noise/white_noise.hpp"
+
+        "grit/audio/oscillator.hpp"
         "grit/audio/oscillator/oscillator.hpp"
         "grit/audio/oscillator/variable_shape_oscillator.hpp"
         "grit/audio/oscillator/wavetable_oscillator.hpp"
+
+        "grit/audio/waveshape.hpp"
         "grit/audio/waveshape/adaa1.hpp"
         "grit/audio/waveshape/full_wave_rectifier.hpp"
         "grit/audio/waveshape/half_wave_rectifier.hpp"
@@ -38,10 +57,12 @@ target_sources(grit-eurorack INTERFACE
 
         "grit/eurorack/hades.hpp"
 
+        "grit/fft.hpp"
         "grit/fft/bitrevorder.hpp"
         "grit/fft/direction.hpp"
         "grit/fft/fft.hpp"
 
+        "grit/math.hpp"
         "grit/math/buffer_interpolation.hpp"
         "grit/math/hermite_interpolation.hpp"
         "grit/math/ilog2.hpp"
@@ -50,8 +71,9 @@ target_sources(grit-eurorack INTERFACE
         "grit/math/remap.hpp"
         "grit/math/sign.hpp"
         "grit/math/static_lookup_table.hpp"
-        "grit/math/static_lookup_table.hpp"
+        "grit/math/static_lookup_table_transform.hpp"
 
+        "grit/unit.hpp"
         "grit/unit/decibel.hpp"
         "grit/unit/time.hpp"
 )
