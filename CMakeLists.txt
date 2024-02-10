@@ -52,7 +52,7 @@ if(NOT CMAKE_CROSSCOMPILING)
             "lib/grit/audio/music/note_test.cpp"
             "lib/grit/audio/noise/dither_test.cpp"
             "lib/grit/audio/noise/white_noise_test.cpp"
-            "lib/grit/audio/waveshape/full_wave_rectifier_test.cpp"
+            "lib/grit/audio/waveshape/adaa1_test.cpp"
             "lib/grit/fft/fft_test.cpp"
             "lib/grit/math/ilog2_test.cpp"
             "lib/grit/math/ipow_test.cpp"

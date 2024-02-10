@@ -1,5 +1,5 @@
-#include <grit/unit/decibel.hpp>
 #include <grit/math/remap.hpp>
+#include <grit/unit/decibel.hpp>
 
 #include <daisy_patch_sm.h>
 

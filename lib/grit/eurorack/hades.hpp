@@ -4,8 +4,8 @@
 #include <grit/audio/envelope/envelope_follower.hpp>
 #include <grit/audio/filter/dynamic_smoothing.hpp>
 #include <grit/audio/noise/white_noise.hpp>
-#include <grit/unit/decibel.hpp>
 #include <grit/audio/waveshape/wave_shaper.hpp>
+#include <grit/unit/decibel.hpp>
 
 #include <etl/array.hpp>
 #include <etl/functional.hpp>
