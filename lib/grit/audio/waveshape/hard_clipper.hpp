@@ -1,7 +1,7 @@
 #pragma once
 
-#include <grit/audio/waveshape/adaa1.hpp>
 #include <grit/audio/waveshape/wave_shaper.hpp>
+#include <grit/audio/waveshape/wave_shaper_adaa1.hpp>
 #include <grit/math/sign.hpp>
 
 #include <etl/algorithm.hpp>
@@ -27,6 +27,6 @@ template<etl::floating_point Float>
 using HardClipper = WaveShaper<Float, HardClipperFunctions<Float>>;
 
 template<etl::floating_point Float>
-using HardClipperADAA1 = ADAA1<Float, HardClipperFunctions<Float>>;
+using HardClipperADAA1 = WaveShaperADAA1<Float, HardClipperFunctions<Float>>;
 
 }  // namespace grit

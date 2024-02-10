@@ -1,7 +1,7 @@
 #pragma once
 
-#include <grit/audio/waveshape/adaa1.hpp>
 #include <grit/audio/waveshape/wave_shaper.hpp>
+#include <grit/audio/waveshape/wave_shaper_adaa1.hpp>
 
 namespace grit {
 
@@ -26,6 +26,6 @@ template<etl::floating_point Float>
 using HalfWaveRectifier = WaveShaper<Float, HalfWaveRectifierFunctions<Float>>;
 
 template<etl::floating_point Float>
-using HalfWaveRectifierADAA1 = ADAA1<Float, HalfWaveRectifierFunctions<Float>>;
+using HalfWaveRectifierADAA1 = WaveShaperADAA1<Float, HalfWaveRectifierFunctions<Float>>;
 
 }  // namespace grit
