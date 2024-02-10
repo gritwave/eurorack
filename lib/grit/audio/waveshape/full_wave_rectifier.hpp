@@ -1,23 +1,36 @@
 #pragma once
 
 #include <grit/audio/waveshape/adaa1.hpp>
+#include <grit/audio/waveshape/wave_shaper.hpp>
 
 namespace grit {
 
+template<etl::floating_point Float>
 struct FullWaveRectifierFunctions
 {
-    FullWaveRectifierFunctions() = default;
+    constexpr FullWaveRectifierFunctions() = default;
 
-    [[nodiscard]] static auto f(etl::floating_point auto x) { return etl::abs(x); }
+    [[nodiscard]] constexpr auto operator()(Float x) const { return f(x); }
 
-    [[nodiscard]] static auto AD1(etl::floating_point auto x)
+    [[nodiscard]] static constexpr auto f(Float x) { return etl::abs(x); }
+
+    [[nodiscard]] static constexpr auto ad1(Float x)
     {
-        using Float = decltype(x);
-        return x <= Float(0) ? x * x * -0.5 : x * x * 0.5;
+        return x <= Float(0) ? x * x * Float(-0.5) : x * x * Float(0.5);
+    }
+
+    [[nodiscard]] static constexpr auto ad2(Float x)
+    {
+        auto const x3       = x * x * x;
+        auto const oneSixth = Float(1) / Float(6);
+        return x <= Float(0) ? x3 * -oneSixth : x3 * oneSixth;
     }
 };
 
 template<etl::floating_point Float>
-using FullWaveRectifierADAA1 = ADAA1<Float, FullWaveRectifierFunctions>;
+using FullWaveRectifier = WaveShaper<Float, FullWaveRectifierFunctions<Float>>;
+
+template<etl::floating_point Float>
+using FullWaveRectifierADAA1 = ADAA1<Float, FullWaveRectifierFunctions<Float>>;
 
 }  // namespace grit

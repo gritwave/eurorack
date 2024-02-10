@@ -10,18 +10,18 @@ struct ADAA1
 {
     using value_type = Float;
 
-    ADAA1() = default;
+    constexpr ADAA1() = default;
 
-    auto reset() -> void
+    constexpr auto reset() -> void
     {
         _xm1   = Float(0);
         _ad1m1 = Float(0);
     }
 
-    [[nodiscard]] auto processSample(Float x) -> Float
+    [[nodiscard]] constexpr auto processSample(Float x) -> Float
     {
         auto const tooSmall = etl::abs(x - _xm1) < tolerance;
-        auto const ad1      = _nl.AD1(x);
+        auto const ad1      = _nl.ad1(x);
         auto const y        = tooSmall ? _nl.f((x + _xm1) * Float(0.5)) : (ad1 - _ad1m1) / (x - _xm1);
 
         _xm1   = x;
