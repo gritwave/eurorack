@@ -1,4 +1,8 @@
 #include "static_lookup_table.hpp"
+#include "static_lookup_table_transform.hpp"
+
+#include <etl/cmath.hpp>
+#include <etl/numbers.hpp>
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_template_test_macros.hpp>
@@ -17,4 +21,24 @@ TEMPLATE_TEST_CASE("grit/math: StaticLookupTable", "", float, double)
     REQUIRE(lut.at(Float(126)) == Catch::Approx(126.0));
     REQUIRE(lut.at(Float(127)) == Catch::Approx(126.0));
     REQUIRE(lut.at(Float(128)) == Catch::Approx(126.0));
+}
+
+TEMPLATE_TEST_CASE("grit/math: StaticLookupTableTransform", "", float, double)
+{
+    using Float = TestType;
+
+    auto const func = [](auto val) { return etl::sin(val); };
+    auto const min  = Float(-etl::numbers::pi);
+    auto const max  = Float(+etl::numbers::pi);
+
+    auto lut = grit::StaticLookupTableTransform<Float, 2047>{func, min, max};
+    REQUIRE(lut[min] == Catch::Approx(func(min)));
+    REQUIRE(lut[max] == Catch::Approx(func(max)));
+    REQUIRE(lut[Float(-1)] == Catch::Approx(func(Float(-1))));
+    REQUIRE(lut[Float(+1)] == Catch::Approx(func(Float(+1))));
+
+    REQUIRE(lut.at(min) == Catch::Approx(func(min)));
+    REQUIRE(lut.at(max) == Catch::Approx(func(max)));
+    REQUIRE(lut.at(Float(-1)) == Catch::Approx(func(Float(-1))));
+    REQUIRE(lut.at(Float(+1)) == Catch::Approx(func(Float(+1))));
 }

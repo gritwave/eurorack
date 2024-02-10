@@ -1,3 +1,7 @@
+.idea
+.vscode
+.vs
+
 *.obj
 *.exe
 *.dll
