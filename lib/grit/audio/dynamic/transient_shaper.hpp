@@ -22,7 +22,7 @@ struct TransientShaper
 
     auto reset() -> void;
     auto prepare(Float sampleRate) -> void;
-    [[nodiscard]] auto operator()(Float signal) -> Float;
+    [[nodiscard]] auto operator()(Float x) -> Float;
 
 private:
     static constexpr auto const dbOffset = Float(1e-6);
