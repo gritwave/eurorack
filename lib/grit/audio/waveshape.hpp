@@ -1,5 +1,6 @@
 #pragma once
 
+#include <grit/audio/waveshape/diode_rectifier.hpp>
 #include <grit/audio/waveshape/full_wave_rectifier.hpp>
 #include <grit/audio/waveshape/half_wave_rectifier.hpp>
 #include <grit/audio/waveshape/hard_clipper.hpp>
