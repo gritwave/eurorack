@@ -1,0 +1,53 @@
+---
+title: Gritwave Hades
+---
+graph LR
+    subgraph Amp
+        Drive
+        AlgorithmAmp[Algorithm]
+    end
+
+    subgraph Envelope[Envelope\nFollower]
+        AttackEnv[Attack]
+        ReleaseEnv[Release]
+    end
+
+    subgraph Compressor
+        Compression
+        Sidechain
+        AttackComp[Attack]
+        ReleaseComp[Release]
+    end
+
+    subgraph Texture
+        Morph
+        Amount
+        AlgorithmTexture[Algorithm]
+    end
+
+    Knob1((Knob 1)) --> Amount
+    Knob2((Knob 2)) --> Morph
+    Knob3((Knob 3)) --> Drive
+    Knob4((Knob 4)) --> Compression
+
+    Button --> Switch{Switch}
+    Switch --> |Down| AlgorithmAmp
+    Switch --> |Up| AlgorithmTexture
+
+    CV5(CV5) --> Morph
+    CV6(CV6) --> Sidechain
+    CV7(CV7) --> AttackEnv
+    CV8(CV8) --> ReleaseEnv
+    CV7 --> AttackComp
+    CV8 --> ReleaseComp
+
+    Input(Input L/R) --> |Signal| Envelope
+    Envelope ---> |Envelope| Compressor
+    Envelope ---> |Envelope| Amount
+    Envelope --> CV_Out
+
+    Input --> |Signal| Texture
+    Texture --> |Signal| Amp
+    Amp --> |Signal| Compressor
+    Compressor --> |Signal| Output(Output L/R)
+
