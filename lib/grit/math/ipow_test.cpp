@@ -1,25 +1,36 @@
 #include "ipow.hpp"
 
-#include <grit/testing/assert.hpp>
+#include <catch2/catch_approx.hpp>
+#include <catch2/catch_template_test_macros.hpp>
 
-auto testIpow() -> bool;
-
-auto testIpow() -> bool
+TEMPLATE_TEST_CASE(
+    "grit/math: ipow",
+    "",
+    short,
+    int,
+    long,
+    long long,
+    unsigned short,
+    unsigned int,
+    unsigned long,
+    unsigned long long
+)
 {
-    assert(grit::ipow(1, 0) == 1);  // NOLINT
-    assert(grit::ipow(1, 1) == 1);  // NOLINT
-    assert(grit::ipow(1, 2) == 1);  // NOLINT
+    using Int = TestType;
 
-    assert(grit::ipow(2, 0) == 1);  // NOLINT
-    assert(grit::ipow(2, 1) == 2);  // NOLINT
-    assert(grit::ipow(2, 2) == 4);  // NOLINT
+    REQUIRE(grit::ipow<Int>(1, 0) == 1);
+    REQUIRE(grit::ipow<Int>(1, 1) == 1);
+    REQUIRE(grit::ipow<Int>(1, 2) == 1);
 
-    assert(grit::ipow<1>(0) == 1);  // NOLINT
-    assert(grit::ipow<1>(1) == 1);  // NOLINT
-    assert(grit::ipow<1>(2) == 1);  // NOLINT
+    REQUIRE(grit::ipow<Int>(2, 0) == 1);
+    REQUIRE(grit::ipow<Int>(2, 1) == 2);
+    REQUIRE(grit::ipow<Int>(2, 2) == 4);
 
-    assert(grit::ipow<2>(0) == 1);  // NOLINT
-    assert(grit::ipow<2>(1) == 2);  // NOLINT
-    assert(grit::ipow<2>(2) == 4);  // NOLINT
-    return true;
+    REQUIRE(grit::ipow<Int(1)>(Int(0)) == 1);
+    REQUIRE(grit::ipow<Int(1)>(Int(1)) == 1);
+    REQUIRE(grit::ipow<Int(1)>(Int(2)) == 1);
+
+    REQUIRE(grit::ipow<Int(2)>(Int(0)) == 1);
+    REQUIRE(grit::ipow<Int(2)>(Int(1)) == 2);
+    REQUIRE(grit::ipow<Int(2)>(Int(2)) == 4);
 }

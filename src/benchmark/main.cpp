@@ -1,6 +1,4 @@
-#include <grit/audio/dither/no_dither.hpp>
-#include <grit/audio/dither/rectangle_dither.hpp>
-#include <grit/audio/dither/triangle_dither.hpp>
+#include <grit/audio/noise/dither.hpp>
 #include <grit/core/benchmark.hpp>
 #include <grit/fft/fft.hpp>
 

@@ -1,24 +1,10 @@
 #include "fft.hpp"
 
-#include <grit/testing/approx.hpp>
-#include <grit/testing/assert.hpp>
-
-template<etl::floating_point Float, etl::size_t Size>
-auto testTwiddles() -> bool
-{
-    auto const wf = grit::fft::makeTwiddles<Float, Size>(grit::fft::Direction::Forward);
-    auto const wb = grit::fft::makeTwiddles<Float, Size>(grit::fft::Direction::Backward);
-    assert(wf.size() == wb.size());
-
-    for (auto i{0U}; i < wf.size(); ++i) {
-        assert(grit::approx(wf[i], etl::conj(wb[i])));
-    }
-
-    return true;
-}
+#include <catch2/catch_approx.hpp>
+#include <catch2/catch_template_test_macros.hpp>
 
 template<typename Plan>
-auto testComplexPlan() -> bool
+auto testComplexPlan() -> void
 {
     using Complex = typename Plan::value_type;
     using Float   = typename Complex::value_type;
@@ -30,50 +16,34 @@ auto testComplexPlan() -> bool
 
     plan(x, grit::fft::Direction::Forward);
     for (auto const& val : xBuf) {
-        assert(grit::approx(val, etl::complex{Float(1)}));
+        REQUIRE(val.real() == Catch::Approx(etl::complex{Float(1)}.real()));
+        REQUIRE(val.imag() == Catch::Approx(etl::complex{Float(1)}.imag()));
     }
 
     plan(x, grit::fft::Direction::Backward);
-    assert(grit::approx(x(0), etl::complex{Float(1) * Float(Plan::size())}));
+    REQUIRE(x(0).real() == Catch::Approx(etl::complex{Float(1) * Float(Plan::size())}.real()));
+    REQUIRE(x(0).imag() == Catch::Approx(etl::complex{Float(1) * Float(Plan::size())}.imag()));
 
     for (auto const& val : etl::span{xBuf}.last(Plan::size() - 1)) {
-        assert(grit::approx(val, etl::complex{Float(0)}));
+        REQUIRE(val.real() == Catch::Approx(etl::complex{Float(0)}.real()));
+        REQUIRE(val.imag() == Catch::Approx(etl::complex{Float(0)}.imag()));
     }
-
-    return true;
 }
 
-template<etl::floating_point Float, etl::size_t Size>
-auto testPlan() -> bool
+TEMPLATE_TEST_CASE("grit/fft: ComplexPlan", "", etl::complex<float>, etl::complex<double>)
 {
-    testComplexPlan<grit::fft::ComplexPlan<etl::complex<Float>, Size>>();
-    testComplexPlan<grit::fft::ComplexPlanV2<etl::complex<Float>, Size>>();
-    return true;
+    testComplexPlan<grit::fft::ComplexPlan<TestType, 64>>();
+    testComplexPlan<grit::fft::ComplexPlan<TestType, 128>>();
+    testComplexPlan<grit::fft::ComplexPlan<TestType, 256>>();
+    testComplexPlan<grit::fft::ComplexPlan<TestType, 512>>();
+    testComplexPlan<grit::fft::ComplexPlan<TestType, 1024>>();
 }
 
-template<etl::size_t Size>
-static auto testSize() -> bool
+TEMPLATE_TEST_CASE("grit/fft: ComplexPlanV2", "", etl::complex<float>, etl::complex<double>)
 {
-    assert((testTwiddles<float, Size>()));
-    assert((testTwiddles<double, Size>()));
-    assert((testPlan<float, Size>()));
-    assert((testPlan<double, Size>()));
-    return true;
-}
-
-auto testFft() -> bool;
-
-auto testFft() -> bool
-{
-    assert((testSize<4>()));
-    assert((testSize<8>()));
-    assert((testSize<16>()));
-    assert((testSize<32>()));
-    assert((testSize<64>()));
-    assert((testSize<128>()));
-    assert((testSize<256>()));
-    assert((testSize<512>()));
-    assert((testSize<1024>()));
-
-    return true;
+    testComplexPlan<grit::fft::ComplexPlanV2<TestType, 64>>();
+    testComplexPlan<grit::fft::ComplexPlanV2<TestType, 128>>();
+    testComplexPlan<grit::fft::ComplexPlanV2<TestType, 256>>();
+    testComplexPlan<grit::fft::ComplexPlanV2<TestType, 512>>();
+    testComplexPlan<grit::fft::ComplexPlanV2<TestType, 1024>>();
 }

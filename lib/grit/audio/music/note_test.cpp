@@ -1,25 +1,13 @@
 #include "note.hpp"
 
-#include <grit/testing/approx.hpp>
-#include <grit/testing/assert.hpp>
+#include <catch2/catch_approx.hpp>
+#include <catch2/catch_template_test_macros.hpp>
 
-#include <etl/concepts.hpp>
-
-template<etl::floating_point Float>
-static auto test() -> bool
+TEMPLATE_TEST_CASE("grit/audio/music: noteToHertz", "", float, double)
 {
-    assert(grit::approx(grit::noteToHertz(Float(57)), Float(220)));
-    assert(grit::approx(grit::noteToHertz(Float(69)), Float(440)));
-    assert(grit::approx(grit::noteToHertz(Float(81)), Float(880)));
+    using Float = TestType;
 
-    return true;
-}
-
-auto testNote() -> bool;
-
-auto testNote() -> bool
-{
-    assert((test<float>()));
-    assert((test<double>()));
-    return true;
+    REQUIRE(grit::noteToHertz(Float(57)) == Catch::Approx(220.0));
+    REQUIRE(grit::noteToHertz(Float(69)) == Catch::Approx(440.0));
+    REQUIRE(grit::noteToHertz(Float(81)) == Catch::Approx(880.0));
 }
