@@ -20,8 +20,8 @@ auto audioCallback(
 {
     patch.ProcessAllControls();
 
-    auto const input  = grit::stereo_block<float const>{in, size};
-    auto const output = grit::stereo_block<float>{out, size};
+    auto const input  = grit::StereoBlock<float const>{in, size};
+    auto const output = grit::StereoBlock<float>{out, size};
 
     auto const gainLeftKnob  = patch.GetAdcValue(daisy::patch_sm::CV_1);
     auto const gainRightKnob = patch.GetAdcValue(daisy::patch_sm::CV_2);

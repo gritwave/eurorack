@@ -1,5 +1,6 @@
 #pragma once
 
+#include <grit/audio/container/stereo_block.hpp>
 #include <grit/audio/dynamic/compressor.hpp>
 #include <grit/audio/envelope/envelope_follower.hpp>
 #include <grit/audio/filter/dynamic_smoothing.hpp>
@@ -43,8 +44,8 @@ struct Hades
 
     struct Buffers
     {
-        etl::array<etl::span<float const>, 2> input{};
-        etl::array<etl::span<float>, 2> output{};
+        StereoBlock<float const> input;
+        StereoBlock<float> output;
     };
 
     Hades() = default;
@@ -128,7 +129,7 @@ inline auto Hades::Channel::operator()(float sample) -> float
     auto const mixed = (noise * mix) + (vinyl * (1.0F - mix));
 
     auto const drive   = remap(_parameter.amp, 1.0F, 4.0F);  // +12dB
-    auto const distOut = _waveShaper(vinyl * drive);
+    auto const distOut = _waveShaper(mixed * drive);
     return _compressor(distOut, distOut);
 }
 
@@ -180,12 +181,9 @@ inline auto Hades::processBlock(Buffers const& context, ControlInputs const& inp
         channel.setParameter(channelParameter);
     }
 
-    for (size_t i = 0; i < context.input[0].size(); ++i) {
-        auto const left  = context.input[0][i];
-        auto const right = context.input[1][i];
-
-        context.output[0][i] = _channels[0](left);
-        context.output[1][i] = _channels[1](right);
+    for (size_t i = 0; i < context.input.extent(0); ++i) {
+        context.output(0, i) = etl::invoke(_channels[0], context.input(0, i));
+        context.output(1, i) = etl::invoke(_channels[1], context.input(1, i));
     }
 
     // "DIGITAL" GATE LOGIC

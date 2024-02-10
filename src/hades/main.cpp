@@ -4,23 +4,23 @@
 
 namespace hades {
 
-static constexpr auto blockSize  = 16U;
+static constexpr auto blockSize  = 32U;
 static constexpr auto sampleRate = 96'000.0F;
 
 auto patch = daisy::patch_sm::DaisyPatchSM{};
 auto hades = grit::Hades{};
 
-auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::OutputBuffer out, size_t /*size*/) -> void
+auto audioCallback(
+    daisy::AudioHandle::InterleavingInputBuffer in,
+    daisy::AudioHandle::InterleavingOutputBuffer out,
+    size_t size
+) -> void
 {
     patch.ProcessAllControls();
 
-    auto const leftIn   = etl::span<float const>{etl::addressof(IN_L[0]), blockSize};
-    auto const rightIn  = etl::span<float const>{etl::addressof(IN_R[0]), blockSize};
-    auto const leftOut  = etl::span<float>{etl::addressof(OUT_L[0]), blockSize};
-    auto const rightOut = etl::span<float>{etl::addressof(OUT_R[0]), blockSize};
-    auto const context  = grit::Hades::Buffers{
-         .input  = { leftIn,  rightIn},
-         .output = {leftOut, rightOut},
+    auto const context = grit::Hades::Buffers{
+        .input  = grit::StereoBlock<float const>{ in, size},
+        .output = grit::StereoBlock<float>{out, size},
     };
 
     auto const inputs = grit::Hades::ControlInputs{

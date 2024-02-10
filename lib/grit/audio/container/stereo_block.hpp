@@ -6,6 +6,6 @@
 namespace grit {
 
 template<etl::floating_point Float>
-using stereo_block = etl::mdspan<Float, etl::extents<etl::size_t, 2, etl::dynamic_extent>, etl::layout_left>;
+using StereoBlock = etl::mdspan<Float, etl::extents<etl::size_t, 2, etl::dynamic_extent>, etl::layout_left>;
 
 }  // namespace grit
