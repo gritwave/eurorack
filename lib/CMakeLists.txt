@@ -14,6 +14,9 @@ target_sources(grit-eurorack INTERFACE
     FILES
         "grit/audio.hpp"
 
+        "grit/audio/container.hpp"
+        "grit/audio/container/stereo_block.hpp"
+
         "grit/audio/delay.hpp"
         "grit/audio/delay/delay_line.hpp"
         "grit/audio/delay/static_delay_line.hpp "

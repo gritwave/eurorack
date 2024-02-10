@@ -1,5 +1,6 @@
 #pragma once
 
+#include <grit/audio/container.hpp>
 #include <grit/audio/delay.hpp>
 #include <grit/audio/dynamic.hpp>
 #include <grit/audio/envelope.hpp>

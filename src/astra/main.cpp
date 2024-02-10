@@ -1,15 +1,11 @@
+#include <grit/audio/container.hpp>
 #include <grit/math/remap.hpp>
 #include <grit/unit/decibel.hpp>
 
 #include <daisy_patch_sm.h>
 
-#include <etl/mdspan.hpp>
-
 namespace {
 namespace astra {
-
-template<etl::floating_point Float>
-using stereo_buffer = etl::mdspan<Float, etl::extents<size_t, 2, etl::dynamic_extent>, etl::layout_left>;
 
 constexpr auto blockSize  = 16U;
 constexpr auto sampleRate = 96'000.0F;
@@ -24,8 +20,8 @@ auto audioCallback(
 {
     patch.ProcessAllControls();
 
-    auto const input  = stereo_buffer<float const>{in, size};
-    auto const output = stereo_buffer<float>{out, size};
+    auto const input  = grit::stereo_block<float const>{in, size};
+    auto const output = grit::stereo_block<float>{out, size};
 
     auto const gainLeftKnob  = patch.GetAdcValue(daisy::patch_sm::CV_1);
     auto const gainRightKnob = patch.GetAdcValue(daisy::patch_sm::CV_2);
