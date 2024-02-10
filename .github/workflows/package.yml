@@ -36,7 +36,7 @@ jobs:
         run: |
           export PATH="$PATH:$GITHUB_WORKSPACE/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin"
           cmake --preset arm-gnu
-          cmake --build --preset release
+          cmake --build --preset firmware-release
 
       - name: Make firmware archive
         run: |
