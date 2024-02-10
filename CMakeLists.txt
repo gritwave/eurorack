@@ -47,6 +47,8 @@ if(NOT CMAKE_CROSSCOMPILING)
     target_compile_options(grit-eurorack-tests PRIVATE "-Wall" "-Wextra" "-Wpedantic")
     target_sources(grit-eurorack-tests
         PRIVATE
+            "lib/grit/audio_test.cpp"
+
             "lib/grit/audio/delay/static_delay_line_test.cpp"
             "lib/grit/audio/envelope/envelope_follower_test.cpp"
             "lib/grit/audio/music/note_test.cpp"
