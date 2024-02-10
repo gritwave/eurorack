@@ -29,7 +29,7 @@ TEMPLATE_PRODUCT_TEST_CASE(
 TEMPLATE_PRODUCT_TEST_CASE(
     "grit/audio/waveshape: ADAA1",
     "",
-    (grit::FullWaveRectifierADAA1, grit::HalfWaveRectifierADAA1),
+    (grit::FullWaveRectifierADAA1, grit::HalfWaveRectifierADAA1, grit::HardClipperADAA1),
     (float, double)
 )
 {
