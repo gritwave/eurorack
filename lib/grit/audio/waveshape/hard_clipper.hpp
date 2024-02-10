@@ -9,9 +9,9 @@
 namespace grit {
 
 template<etl::floating_point Float>
-struct HardClipperFunctions
+struct HardClipperNonlinearity
 {
-    constexpr HardClipperFunctions() = default;
+    constexpr HardClipperNonlinearity() = default;
 
     [[nodiscard]] constexpr auto operator()(Float x) const { return f(x); }
 
@@ -24,9 +24,9 @@ struct HardClipperFunctions
 };
 
 template<etl::floating_point Float>
-using HardClipper = WaveShaper<Float, HardClipperFunctions<Float>>;
+using HardClipper = WaveShaper<Float, HardClipperNonlinearity<Float>>;
 
 template<etl::floating_point Float>
-using HardClipperADAA1 = WaveShaperADAA1<Float, HardClipperFunctions<Float>>;
+using HardClipperADAA1 = WaveShaperADAA1<Float, HardClipperNonlinearity<Float>>;
 
 }  // namespace grit

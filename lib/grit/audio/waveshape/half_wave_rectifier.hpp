@@ -6,9 +6,9 @@
 namespace grit {
 
 template<etl::floating_point Float>
-struct HalfWaveRectifierFunctions
+struct HalfWaveRectifierNonlinearity
 {
-    constexpr HalfWaveRectifierFunctions() = default;
+    constexpr HalfWaveRectifierNonlinearity() = default;
 
     [[nodiscard]] constexpr auto operator()(Float x) const { return f(x); }
 
@@ -23,9 +23,9 @@ struct HalfWaveRectifierFunctions
 };
 
 template<etl::floating_point Float>
-using HalfWaveRectifier = WaveShaper<Float, HalfWaveRectifierFunctions<Float>>;
+using HalfWaveRectifier = WaveShaper<Float, HalfWaveRectifierNonlinearity<Float>>;
 
 template<etl::floating_point Float>
-using HalfWaveRectifierADAA1 = WaveShaperADAA1<Float, HalfWaveRectifierFunctions<Float>>;
+using HalfWaveRectifierADAA1 = WaveShaperADAA1<Float, HalfWaveRectifierNonlinearity<Float>>;
 
 }  // namespace grit
