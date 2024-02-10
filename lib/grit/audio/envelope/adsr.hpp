@@ -20,7 +20,7 @@ struct ADSR
 
     auto reset() -> void;
     auto gate(bool isOn) -> void;
-    [[nodiscard]] auto processSample() -> float;
+    [[nodiscard]] auto operator()() -> float;
 
 private:
     enum State
@@ -131,7 +131,7 @@ inline auto ADSR::reset() -> void
     _output = 0.0;
 }
 
-inline auto ADSR::processSample() -> float
+inline auto ADSR::operator()() -> float
 {
     switch (_state) {
         case State::Idle: {

@@ -78,7 +78,7 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
         auto const fmAmount    = IN_R[i];
         oscillator.addPhaseOffset(fmModulator * fmAmount);
 
-        auto const env = adsr.processSample();
+        auto const env = adsr();
         patch.WriteCvOut(daisy::patch_sm::CV_OUT_1, env * 5.0F);
         patch.WriteCvOut(daisy::patch_sm::CV_OUT_2, env * 5.0F);
 

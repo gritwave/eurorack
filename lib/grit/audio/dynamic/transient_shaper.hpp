@@ -22,7 +22,7 @@ struct TransientShaper
 
     auto reset() -> void;
     auto prepare(Float sampleRate) -> void;
-    [[nodiscard]] auto processSample(Float signal) -> Float;
+    [[nodiscard]] auto operator()(Float signal) -> Float;
 
 private:
     static constexpr auto const dbOffset = Float(1e-6);
@@ -66,19 +66,19 @@ auto TransientShaper<Float>::prepare(Float sampleRate) -> void
 }
 
 template<etl::floating_point Float>
-auto TransientShaper<Float>::processSample(Float x) -> Float
+auto TransientShaper<Float>::operator()(Float x) -> Float
 {
     auto const absX = etl::abs(x);
 
     // Attack
-    auto const aenv1 = toDecibels(_attack1.processSample(absX) + dbOffset);
-    auto const aenv2 = toDecibels(_attack2.processSample(absX) + dbOffset);
+    auto const aenv1 = toDecibels(_attack1(absX) + dbOffset);
+    auto const aenv2 = toDecibels(_attack2(absX) + dbOffset);
     auto const adiff = etl::clamp((aenv1 - aenv2) * _parameter.attack, -maxGain, +maxGain);
     auto const again = fromDecibels(adiff);
 
     // Sustain
-    auto const senv1 = toDecibels(_sustain1.processSample(absX) + dbOffset);
-    auto const senv2 = toDecibels(_sustain2.processSample(absX) + dbOffset);
+    auto const senv1 = toDecibels(_sustain1(absX) + dbOffset);
+    auto const senv2 = toDecibels(_sustain2(absX) + dbOffset);
     auto const sdiff = etl::clamp((senv1 - senv2) * _parameter.sustain, -maxGain, +maxGain);
     auto const sgain = fromDecibels(sdiff);
 

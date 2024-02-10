@@ -34,7 +34,7 @@ struct Compressor
 
     auto reset() -> void;
     auto prepare(Float sampleRate) -> void;
-    [[nodiscard]] auto processSample(Float signal, Float sideChain) -> Float;
+    [[nodiscard]] auto operator()(Float signal, Float sideChain) -> Float;
 
     [[nodiscard]] auto getGainReduction() const -> Float;
 
@@ -61,7 +61,7 @@ auto Compressor<Float>::prepare(Float sampleRate) -> void
 }
 
 template<etl::floating_point Float>
-auto Compressor<Float>::processSample(Float signal, Float sideChain) -> Float
+auto Compressor<Float>::operator()(Float signal, Float sideChain) -> Float
 {
     auto const threshold = _parameter.threshold;
     auto const ratio     = _parameter.ratio;

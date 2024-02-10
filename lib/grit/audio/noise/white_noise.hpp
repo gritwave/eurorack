@@ -16,7 +16,7 @@ struct WhiteNoise
     auto setGain(Float gain) -> void;
     [[nodiscard]] auto getGain() const -> Float;
 
-    [[nodiscard]] auto processSample() -> Float;
+    [[nodiscard]] auto operator()() -> Float;
 
 private:
     URNG _rng{};
@@ -40,7 +40,7 @@ auto WhiteNoise<Float, URNG>::getGain() const -> Float
 }
 
 template<etl::floating_point Float, typename URNG>
-auto WhiteNoise<Float, URNG>::processSample() -> Float
+auto WhiteNoise<Float, URNG>::operator()() -> Float
 {
     auto dist = etl::uniform_real_distribution<Float>{Float(-1), Float(1)};
     return dist(_rng) * _gain;

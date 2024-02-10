@@ -18,10 +18,10 @@ TEMPLATE_PRODUCT_TEST_CASE(
     auto shaper = Waveshaper{};
     STATIC_REQUIRE(etl::is_empty_v<Waveshaper>);
 
-    REQUIRE(shaper.processSample(Float(0.1)) == Catch::Approx(0.1));
-    REQUIRE(shaper.processSample(Float(0.1)) == Catch::Approx(0.1));
+    REQUIRE(shaper(Float(0.1)) == Catch::Approx(0.1));
+    REQUIRE(shaper(Float(0.1)) == Catch::Approx(0.1));
 
     shaper.reset();
-    REQUIRE(shaper.processSample(Float(0.1)) == Catch::Approx(0.1));
-    REQUIRE(shaper.processSample(Float(0.1)) == Catch::Approx(0.1));
+    REQUIRE(shaper(Float(0.1)) == Catch::Approx(0.1));
+    REQUIRE(shaper(Float(0.1)) == Catch::Approx(0.1));
 }

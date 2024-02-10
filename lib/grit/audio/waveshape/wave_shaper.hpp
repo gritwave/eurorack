@@ -20,7 +20,7 @@ struct WaveShaper
 
     static auto reset() -> void {}
 
-    [[nodiscard]] auto processSample(Float input) const -> Float { return _function(input); }
+    [[nodiscard]] auto operator()(Float input) const -> Float { return _function(input); }
 
 private:
     [[no_unique_address]] Function _function;

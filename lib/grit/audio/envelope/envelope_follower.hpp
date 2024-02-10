@@ -23,7 +23,7 @@ struct EnvelopeFollower
 
     auto reset() -> void;
     auto prepare(Float sampleRate) -> void;
-    [[nodiscard]] auto processSample(Float in) -> Float;
+    [[nodiscard]] auto operator()(Float in) -> Float;
 
 private:
     auto update() -> void;
@@ -51,7 +51,7 @@ auto EnvelopeFollower<Float>::prepare(Float sampleRate) -> void
 }
 
 template<etl::floating_point Float>
-auto EnvelopeFollower<Float>::processSample(Float in) -> Float
+auto EnvelopeFollower<Float>::operator()(Float in) -> Float
 {
     auto const env  = etl::abs(in);
     auto const coef = env > _envelope ? _attackCoef : _releaseCoef;

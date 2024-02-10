@@ -13,7 +13,7 @@ TEMPLATE_TEST_CASE("grit/audio/noise: WhiteNoise", "", float, double)
     REQUIRE(proc.getGain() == Catch::Approx(Float(0.5)));
 
     for (auto i{0}; i < 1'000; ++i) {
-        REQUIRE(proc.processSample() >= Float(-1.0 * 0.5));
-        REQUIRE(proc.processSample() <= Float(+1.0 * 0.5));
+        REQUIRE(proc() >= Float(-1.0 * 0.5));
+        REQUIRE(proc() <= Float(+1.0 * 0.5));
     }
 }

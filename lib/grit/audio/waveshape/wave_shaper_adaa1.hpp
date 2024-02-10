@@ -18,7 +18,7 @@ struct WaveShaperADAA1
         _ad1m1 = Float(0);
     }
 
-    [[nodiscard]] constexpr auto processSample(Float x) -> Float
+    [[nodiscard]] constexpr auto operator()(Float x) -> Float
     {
         auto const tooSmall = etl::abs(x - _xm1) < tolerance;
         auto const ad1      = _nl.ad1(x);

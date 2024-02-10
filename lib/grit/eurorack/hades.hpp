@@ -67,7 +67,7 @@ private:
         auto setParameter(Parameter const& parameter) -> void;
 
         auto prepare(float sampleRate) -> void;
-        [[nodiscard]] auto processSample(float sample) -> float;
+        [[nodiscard]] auto operator()(float sample) -> float;
 
     private:
         Parameter _parameter{};
@@ -97,7 +97,7 @@ inline auto Hades::Channel::prepare(float sampleRate) -> void
     _compressor.prepare(sampleRate);
 }
 
-inline auto Hades::Channel::processSample(float sample) -> float
+inline auto Hades::Channel::operator()(float sample) -> float
 {
     _envelopeFollower.setParameter({
         .attack  = Milliseconds<float>{50},
@@ -114,11 +114,11 @@ inline auto Hades::Channel::processSample(float sample) -> float
         .wet       = 1.0F,
     });
 
-    auto const env     = _envelopeFollower.processSample(sample);
-    auto const noise   = _noise.processSample();
+    auto const env     = _envelopeFollower(sample);
+    auto const noise   = _noise();
     auto const noisy   = sample + noise * env;
-    auto const distOut = _waveShaper.processSample(noisy);
-    return _compressor.processSample(distOut, distOut);
+    auto const distOut = _waveShaper(noisy);
+    return _compressor(distOut, distOut);
 }
 
 inline auto Hades::prepare(float sampleRate, etl::size_t blockSize) -> void
@@ -167,8 +167,8 @@ inline auto Hades::processBlock(Buffers const& context, ControlInputs const& inp
         auto const left  = context.input[0][i];
         auto const right = context.input[1][i];
 
-        context.output[0][i] = _channels[0].processSample(left);
-        context.output[1][i] = _channels[1].processSample(right);
+        context.output[0][i] = _channels[0](left);
+        context.output[1][i] = _channels[1](right);
     }
 
     // "DIGITAL" GATE LOGIC

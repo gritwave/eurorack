@@ -18,12 +18,12 @@ TEMPLATE_PRODUCT_TEST_CASE(
     auto shaper = Waveshaper{};
     STATIC_REQUIRE(sizeof(shaper) == sizeof(Float) * 2);
 
-    REQUIRE(shaper.processSample(0.1) == Catch::Approx(0.05));
-    REQUIRE(shaper.processSample(0.1) == Catch::Approx(0.1));
-    REQUIRE(shaper.processSample(0.1) == Catch::Approx(0.1));
+    REQUIRE(shaper(0.1) == Catch::Approx(0.05));
+    REQUIRE(shaper(0.1) == Catch::Approx(0.1));
+    REQUIRE(shaper(0.1) == Catch::Approx(0.1));
 
     shaper.reset();
-    REQUIRE(shaper.processSample(0.1) == Catch::Approx(0.05));
-    REQUIRE(shaper.processSample(0.1) == Catch::Approx(0.1));
-    REQUIRE(shaper.processSample(0.1) == Catch::Approx(0.1));
+    REQUIRE(shaper(0.1) == Catch::Approx(0.05));
+    REQUIRE(shaper(0.1) == Catch::Approx(0.1));
+    REQUIRE(shaper(0.1) == Catch::Approx(0.1));
 }
