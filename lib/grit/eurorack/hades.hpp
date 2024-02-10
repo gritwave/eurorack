@@ -3,10 +3,12 @@
 #include <grit/audio/dynamic/compressor.hpp>
 #include <grit/audio/envelope/envelope_follower.hpp>
 #include <grit/audio/filter/dynamic_smoothing.hpp>
+#include <grit/audio/noise/airwindows_vinyl_dither.hpp>
 #include <grit/audio/noise/white_noise.hpp>
 #include <grit/audio/waveshape/wave_shaper.hpp>
 #include <grit/unit/decibel.hpp>
 
+#include <etl/algorithm.hpp>
 #include <etl/array.hpp>
 #include <etl/functional.hpp>
 #include <etl/span.hpp>
@@ -73,6 +75,7 @@ private:
         Parameter _parameter{};
         EnvelopeFollower<float> _envelopeFollower{};
         WhiteNoise<float> _noise{};
+        AirWindowsVinylDither<float> _vinylDither{};
         WaveShaper<float> _waveShaper{etl::tanh};
         Compressor<float> _compressor{};
     };
@@ -114,9 +117,11 @@ inline auto Hades::Channel::operator()(float sample) -> float
         .wet       = 1.0F,
     });
 
-    auto const env     = _envelopeFollower(sample);
-    auto const noise   = _noise();
-    auto const noisy   = sample + noise * env;
+    auto const env = _envelopeFollower(sample);
+    _vinylDither.setDeRez(etl::clamp(env, 0.0F, 1.0F));
+
+    // auto const noise   = _noise();
+    auto const noisy   = _vinylDither(sample);
     auto const distOut = _waveShaper(noisy);
     return _compressor(distOut, distOut);
 }
