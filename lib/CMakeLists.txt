@@ -52,8 +52,6 @@ target_sources(grit-eurorack INTERFACE
         "grit/math/static_lookup_table.hpp"
         "grit/math/static_lookup_table.hpp"
 
-        "grit/testing/approx.hpp"
-
         "grit/unit/decibel.hpp"
         "grit/unit/time.hpp"
 )
