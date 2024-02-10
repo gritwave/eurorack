@@ -2,7 +2,7 @@
 
 #include <grit/audio/mix/cross_fade.hpp>
 #include <grit/audio/oscillator/oscillator.hpp>
-#include <grit/math/range.hpp>
+#include <grit/math/remap.hpp>
 
 #include <etl/concepts.hpp>
 

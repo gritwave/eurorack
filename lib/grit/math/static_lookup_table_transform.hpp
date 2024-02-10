@@ -1,5 +1,6 @@
 #pragma once
 
+#include <grit/math/remap.hpp>
 #include <grit/math/static_lookup_table.hpp>
 
 #include <etl/algorithm.hpp>
@@ -32,7 +33,7 @@ struct StaticLookupTableTransform
         _offset = -min * _scaler;
 
         _lut.initialize([func, min, max](size_t i) {
-            auto idx = map(Float(i), Float(0), Float(Size - 1), min, max);
+            auto idx = remap(Float(i), Float(0), Float(Size - 1), min, max);
             return func(etl::clamp(idx, min, max));
         });
     }
@@ -50,11 +51,6 @@ struct StaticLookupTableTransform
     [[nodiscard]] static constexpr auto size() -> etl::size_t { return Size; }
 
 private:
-    static constexpr auto map(Float x, Float srcMin, Float srcMax, Float min, Float max) -> Float
-    {
-        return min + ((max - min) * (x - srcMin)) / (srcMax - srcMin);
-    }
-
     StaticLookupTable<Float, Size> _lut{};
     Float _min{};
     Float _max{};

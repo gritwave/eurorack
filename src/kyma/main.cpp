@@ -5,7 +5,7 @@
 #include <grit/audio/oscillator/variable_shape_oscillator.hpp>
 #include <grit/audio/oscillator/wavetable_oscillator.hpp>
 #include <grit/unit/decibel.hpp>
-#include <grit/math/range.hpp>
+#include <grit/math/remap.hpp>
 
 #include <daisy_patch_sm.h>
 
@@ -47,18 +47,18 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
     auto const subGainCv  = patch.GetAdcValue(daisy::patch_sm::CV_7);
     auto const subMorphCv = patch.GetAdcValue(daisy::patch_sm::CV_8);
 
-    auto const pitch          = grit::mapToRange(pitchKnob, 36.0F, 96.0F);
-    auto const voltsPerOctave = grit::mapToRange(vOctCv, 0.0F, 60.0F);
+    auto const pitch          = grit::remap(pitchKnob, 36.0F, 96.0F);
+    auto const voltsPerOctave = grit::remap(vOctCv, 0.0F, 60.0F);
     auto const note           = etl::clamp(pitch + voltsPerOctave, 0.0F, 127.0F);
     auto const morph          = etl::clamp(morphKnob + morphCv, 0.0F, 1.0F);
 
     auto const subOffset     = subOctaveToggle.Pressed() ? 12.0F : 24.0F;
     auto const subNoteNumber = etl::clamp(note - subOffset, 0.0F, 127.0F);
     auto const subMorph      = etl::clamp(subMorphCv, 0.0F, 1.0F);
-    auto const subGain       = grit::mapToRange(subGainCv, 0.0F, 1.0F);
+    auto const subGain       = grit::remap(subGainCv, 0.0F, 1.0F);
 
-    auto const attack  = grit::mapToRange(attackKnob, 0.0F, 0.750F);
-    auto const release = grit::mapToRange(releaseKnob, 0.0F, 2.5F);
+    auto const attack  = grit::remap(attackKnob, 0.0F, 0.750F);
+    auto const release = grit::remap(releaseKnob, 0.0F, 2.5F);
 
     // oscillator.setWavetable(SineWavetable);
     // subOscillator.setWavetable(SineWavetable);

@@ -1,5 +1,5 @@
 #include <grit/unit/decibel.hpp>
-#include <grit/math/range.hpp>
+#include <grit/math/remap.hpp>
 
 #include <daisy_patch_sm.h>
 
@@ -30,8 +30,8 @@ auto audioCallback(
     auto const gainLeftKnob  = patch.GetAdcValue(daisy::patch_sm::CV_1);
     auto const gainRightKnob = patch.GetAdcValue(daisy::patch_sm::CV_2);
 
-    auto const gainLeft  = grit::fromDecibels(grit::mapToRange(gainLeftKnob, -30.0F, 6.0F));
-    auto const gainRight = grit::fromDecibels(grit::mapToRange(gainRightKnob, -30.0F, 6.0F));
+    auto const gainLeft  = grit::fromDecibels(grit::remap(gainLeftKnob, -30.0F, 6.0F));
+    auto const gainRight = grit::fromDecibels(grit::remap(gainRightKnob, -30.0F, 6.0F));
 
     for (size_t i = 0; i < size; ++i) {
         auto const inLeft  = input(0, i);

@@ -42,7 +42,7 @@ target_sources(grit-eurorack INTERFACE
         "grit/math/hermite_interpolation.hpp"
         "grit/math/ilog2.hpp"
         "grit/math/ipow.hpp"
-        "grit/math/range.hpp"
+        "grit/math/remap.hpp"
 
         "grit/testing/approx.hpp"
 

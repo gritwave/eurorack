@@ -1,6 +1,6 @@
 #pragma once
 
-#include <grit/math/range.hpp>
+#include <grit/math/remap.hpp>
 
 #include <etl/algorithm.hpp>
 #include <etl/concepts.hpp>

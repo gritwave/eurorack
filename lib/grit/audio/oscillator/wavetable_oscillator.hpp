@@ -1,7 +1,7 @@
 #pragma once
 
 #include <grit/math/buffer_interpolation.hpp>
-#include <grit/math/range.hpp>
+#include <grit/math/remap.hpp>
 
 #include <etl/algorithm.hpp>
 #include <etl/cmath.hpp>
