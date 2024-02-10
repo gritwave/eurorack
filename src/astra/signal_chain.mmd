@@ -1,0 +1,44 @@
+---
+title: Gritwave Astra
+---
+
+graph LR
+    Knob1((Knob 1)) --> GainL[Gain]
+    Knob2((Knob 2)) --> GainR[Gain]
+    Knob3((Knob 3)) --> FxMix1[FX Mix]
+    Knob4((Knob 4)) --> FxMix2[FX Mix]
+
+    CV5(CV5) --> FxMix1
+    CV6(CV6) --> FxMix2
+    CV7(CV7) --> DuckFX1
+    CV8(CV8) --> DuckFX2
+
+    Button --> Switch{Switch}
+    Switch ---> |Up| Select1
+    Switch ---> |Down| Select2
+
+    subgraph FX1
+        Select1[Select]
+        GainFX1[Gain]
+        DuckFX1[Duck]
+    end
+
+    subgraph FX2
+        Select2[Select]
+        GainFX2[Gain]
+        DuckFX2[Duck]
+    end
+
+    Input(Inputs A/B) ---> |A| GainL
+    Input ---> |B| GainR
+
+    GainL ---> |Signal| FX1
+    GainL ---> |Signal| FX2
+    GainR ---> |Signal| FX1
+    GainR ---> |Signal| FX2
+
+    FxMix1 ---> GainFX1
+    FxMix2 ---> GainFX2
+
+    FX1 --> |Signal| Output(Output L/R)
+    FX2 --> |Signal| Output(Output L/R)
