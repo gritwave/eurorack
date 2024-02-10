@@ -56,6 +56,7 @@ if(NOT CMAKE_CROSSCOMPILING)
             "lib/grit/audio/dynamic/transient_shaper_test.cpp"
             "lib/grit/audio/envelope/envelope_follower_test.cpp"
             "lib/grit/audio/music/note_test.cpp"
+            "lib/grit/audio/noise/airwindows_vinyl_dither_test.cpp"
             "lib/grit/audio/noise/dither_test.cpp"
             "lib/grit/audio/noise/white_noise_test.cpp"
             "lib/grit/audio/waveshape/full_wave_rectifier_test.cpp"

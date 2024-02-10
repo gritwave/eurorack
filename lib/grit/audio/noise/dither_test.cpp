@@ -6,7 +6,7 @@
 #include <random>
 
 TEMPLATE_PRODUCT_TEST_CASE(
-    "grit/audio/dither:",
+    "grit/audio/noise: Dither",
     "",
     (grit::NoDither, grit::RectangleDither, grit::TriangleDither),
     (etl::xorshift32, etl::xoshiro128plus, std::mt19937)

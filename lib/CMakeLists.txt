@@ -36,6 +36,7 @@ target_sources(grit-eurorack INTERFACE
         "grit/audio/music/note.hpp"
 
         "grit/audio/noise.hpp"
+        "grit/audio/noise/airwindows_vinyl_dither.hpp"
         "grit/audio/noise/dither.hpp"
         "grit/audio/noise/white_noise.hpp"
 
