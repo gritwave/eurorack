@@ -24,6 +24,7 @@ target_sources(grit-eurorack INTERFACE
         "grit/audio/oscillator/oscillator.hpp"
         "grit/audio/oscillator/variable_shape_oscillator.hpp"
         "grit/audio/oscillator/wavetable_oscillator.hpp"
+        "grit/audio/waveshape/adaa1.hpp"
         "grit/audio/waveshape/wave_shaper.hpp"
 
         "grit/core/arm.hpp"
