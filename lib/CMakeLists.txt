@@ -14,9 +14,6 @@ target_sources(gritwave-grit INTERFACE
     FILES
         "grit/audio.hpp"
 
-        "grit/audio/container.hpp"
-        "grit/audio/container/stereo_block.hpp"
-
         "grit/audio/delay.hpp"
         "grit/audio/delay/delay_line.hpp"
         "grit/audio/delay/static_delay_line.hpp"
@@ -47,6 +44,9 @@ target_sources(gritwave-grit INTERFACE
         "grit/audio/oscillator/oscillator.hpp"
         "grit/audio/oscillator/variable_shape_oscillator.hpp"
         "grit/audio/oscillator/wavetable_oscillator.hpp"
+
+        "grit/audio/stereo.hpp"
+        "grit/audio/stereo/stereo_block.hpp"
 
         "grit/audio/waveshape.hpp"
         "grit/audio/waveshape/full_wave_rectifier.hpp"

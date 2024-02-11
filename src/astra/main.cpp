@@ -1,4 +1,4 @@
-#include <grit/audio/container.hpp>
+#include <grit/audio/stereo.hpp>
 #include <grit/math/remap.hpp>
 #include <grit/unit/decibel.hpp>
 
