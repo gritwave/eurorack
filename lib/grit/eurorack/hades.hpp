@@ -7,7 +7,11 @@
 #include <grit/audio/mix/cross_fade.hpp>
 #include <grit/audio/noise/airwindows_vinyl_dither.hpp>
 #include <grit/audio/noise/white_noise.hpp>
-#include <grit/audio/waveshape/wave_shaper.hpp>
+#include <grit/audio/waveshape/diode_rectifier.hpp>
+#include <grit/audio/waveshape/full_wave_rectifier.hpp>
+#include <grit/audio/waveshape/half_wave_rectifier.hpp>
+#include <grit/audio/waveshape/hard_clipper.hpp>
+#include <grit/audio/waveshape/tanh_clipper.hpp>
 #include <grit/math/remap.hpp>
 #include <grit/unit/decibel.hpp>
 
@@ -51,7 +55,7 @@ struct Hades
     Hades() = default;
 
     auto prepare(float sampleRate, etl::size_t blockSize) -> void;
-    [[nodiscard]] auto processBlock(Buffer const& context, ControlInput const& inputs) -> ControlOutput;
+    [[nodiscard]] auto processBlock(Buffer const& buffer, ControlInput const& inputs) -> ControlOutput;
 
 private:
     struct Channel
@@ -76,10 +80,18 @@ private:
 
     private:
         Parameter _parameter{};
-        EnvelopeFollower<float> _envelopeFollower{};
-        WhiteNoise<float> _noise{};
-        AirWindowsVinylDither<float> _vinylDither{};
-        WaveShaper<float> _waveShaper{etl::tanh};
+
+        EnvelopeFollower<float> _envelope{};
+
+        WhiteNoise<float> _whiteNoise{};
+        AirWindowsVinylDither<float> _vinyl{};
+
+        TanhClipperADAA1<float> _tanh{};
+        HardClipperADAA1<float> _hard{};
+        FullWaveRectifierADAA1<float> _fullWave{};
+        HalfWaveRectifierADAA1<float> _halfWave{};
+        DiodeRectifierADAA1<float> _diode{};
+
         Compressor<float> _compressor{};
     };
 

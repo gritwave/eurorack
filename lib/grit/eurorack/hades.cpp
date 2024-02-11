@@ -9,7 +9,7 @@ auto Hades::Channel::setParameter(Parameter const& parameter) -> void
     auto const attack  = Milliseconds<float>{remap(parameter.attack, 1.0F, 50.0F)};
     auto const release = Milliseconds<float>{remap(parameter.release, 1.0F, 500.0F)};
 
-    _envelopeFollower.setParameter({
+    _envelope.setParameter({
         .attack  = attack,
         .release = release,
     });
@@ -27,22 +27,22 @@ auto Hades::Channel::setParameter(Parameter const& parameter) -> void
 
 auto Hades::Channel::operator()(float sample) -> etl::pair<float, float>
 {
-    auto const env = _envelopeFollower(sample);
-    _vinylDither.setDeRez(etl::clamp(env, 0.0F, 1.0F));
+    auto const env = _envelope(sample);
+    _vinyl.setDeRez(etl::clamp(env, 0.0F, 1.0F));
 
-    auto const noise = _noise();
-    auto const vinyl = _vinylDither(sample);
+    auto const noise = _whiteNoise();
+    auto const vinyl = _vinyl(sample);
     auto const mix   = _parameter.morph;
     auto const mixed = (noise * mix) + (vinyl * (1.0F - mix));
 
     auto const drive   = remap(_parameter.amp, 1.0F, 4.0F);  // +12dB
-    auto const distOut = _waveShaper(mixed * drive);
+    auto const distOut = _tanh(mixed * drive);
     return {_compressor(distOut, distOut), env};
 }
 
 auto Hades::Channel::prepare(float sampleRate) -> void
 {
-    _envelopeFollower.prepare(sampleRate);
+    _envelope.prepare(sampleRate);
     _compressor.prepare(sampleRate);
 }
 
