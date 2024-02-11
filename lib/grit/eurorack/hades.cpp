@@ -120,7 +120,7 @@ auto Hades::Channel::operator()(float sample) -> etl::pair<float, float>
     auto const env = _envelope(sample);
     _vinyl.setDeRez(etl::clamp(env, 0.0F, 1.0F));
 
-    auto const noise = _whiteNoise();
+    auto const noise = _whiteNoise() * 0.5F;
     auto const vinyl = _vinyl(sample);
     auto const mix   = _parameter.morph;
     auto const mixed = (noise * mix) + (vinyl * (1.0F - mix));

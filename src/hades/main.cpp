@@ -2,13 +2,13 @@
 
 #include <daisy_patch_sm.h>
 
-namespace hades {
+namespace {
 
-static constexpr auto blockSize  = 32U;
+static constexpr auto blockSize  = 16U;
 static constexpr auto sampleRate = 96'000.0F;
 
-auto patch  = daisy::patch_sm::DaisyPatchSM{};
 auto hades  = grit::Hades{};
+auto patch  = daisy::patch_sm::DaisyPatchSM{};
 auto button = daisy::Switch{};
 auto toggle = daisy::Switch{};
 
@@ -19,6 +19,9 @@ auto audioCallback(
 ) -> void
 {
     patch.ProcessAllControls();
+    button.Debounce();
+    toggle.Debounce();
+    patch.SetLed(button.Pressed());
 
     if (button.FallingEdge()) {
         if (toggle.Pressed()) {
@@ -54,23 +57,19 @@ auto audioCallback(
     dsy_gpio_write(&patch.gate_out_2, static_cast<uint8_t>(outputs.gate2));
 }
 
-}  // namespace hades
+}  // namespace
 
 auto main() -> int
 {
-    hades::patch.Init();
-    hades::button.Init(hades::patch.B7);
-    hades::toggle.Init(hades::patch.B7);
+    patch.Init();
+    button.Init(patch.B7);
+    toggle.Init(patch.B8);
 
-    hades::hades.prepare(hades::sampleRate, hades::blockSize);
+    hades.prepare(sampleRate, blockSize);
 
-    hades::patch.SetAudioSampleRate(hades::sampleRate);
-    hades::patch.SetAudioBlockSize(hades::blockSize);
-    hades::patch.StartAudio(hades::audioCallback);
+    patch.SetAudioSampleRate(sampleRate);
+    patch.SetAudioBlockSize(blockSize);
+    patch.StartAudio(audioCallback);
 
-    while (true) {
-        hades::button.Debounce();
-        hades::toggle.Debounce();
-        hades::patch.SetLed(hades::button.Pressed());
-    }
+    while (true) {}
 }
