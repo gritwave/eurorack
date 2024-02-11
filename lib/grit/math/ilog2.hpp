@@ -4,6 +4,7 @@
 
 namespace grit {
 
+/// \ingroup grit-math
 template<etl::integral Int>
 [[nodiscard]] constexpr auto ilog2(Int x) -> Int
 {

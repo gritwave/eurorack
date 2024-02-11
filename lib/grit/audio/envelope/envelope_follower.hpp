@@ -8,6 +8,7 @@
 
 namespace grit {
 
+/// \ingroup grit-audio-envelope
 template<etl::floating_point Float>
 struct EnvelopeFollower
 {

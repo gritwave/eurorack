@@ -11,6 +11,7 @@
 
 namespace grit {
 
+/// \ingroup grit-audio-oscillator
 template<etl::floating_point Float, etl::size_t TableSize = etl::dynamic_extent>
 struct WavetableOscillator
 {

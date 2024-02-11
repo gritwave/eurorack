@@ -5,6 +5,7 @@
 
 namespace grit {
 
+/// \ingroup grit-audio-waveshape
 template<etl::floating_point Float, typename Function = Float (*)(Float)>
 struct WaveShaper
 {

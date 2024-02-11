@@ -8,6 +8,7 @@
 
 namespace grit {
 
+/// \ingroup grit-audio-waveshape
 template<etl::floating_point Float>
 struct HardClipperNonlinearity
 {
@@ -23,9 +24,11 @@ struct HardClipperNonlinearity
     }
 };
 
+/// \ingroup grit-audio-waveshape
 template<etl::floating_point Float>
 using HardClipper = WaveShaper<Float, HardClipperNonlinearity<Float>>;
 
+/// \ingroup grit-audio-waveshape
 template<etl::floating_point Float>
 using HardClipperADAA1 = WaveShaperADAA1<Float, HardClipperNonlinearity<Float>>;
 

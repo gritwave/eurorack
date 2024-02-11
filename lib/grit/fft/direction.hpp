@@ -2,6 +2,7 @@
 
 namespace grit::fft {
 
+/// \ingroup grit-fft
 enum struct Direction : int
 {
     Forward  = -1,

@@ -2,6 +2,7 @@
 
 namespace grit {
 
+/// \ingroup grit-audio-stereo
 template<typename SampleType>
 struct StereoFrame
 {
@@ -11,6 +12,7 @@ struct StereoFrame
     SampleType right{};
 };
 
+/// \ingroup grit-audio-stereo
 template<typename T>
 [[nodiscard]] constexpr auto operator+(StereoFrame<T> lhs, StereoFrame<T> rhs) -> StereoFrame<T>
 {
@@ -20,6 +22,7 @@ template<typename T>
     };
 }
 
+/// \ingroup grit-audio-stereo
 template<typename T>
 [[nodiscard]] constexpr auto operator-(StereoFrame<T> lhs, StereoFrame<T> rhs) -> StereoFrame<T>
 {
@@ -29,6 +32,7 @@ template<typename T>
     };
 }
 
+/// \ingroup grit-audio-stereo
 template<typename T>
 [[nodiscard]] constexpr auto operator*(StereoFrame<T> lhs, StereoFrame<T> rhs) -> StereoFrame<T>
 {
@@ -38,6 +42,7 @@ template<typename T>
     };
 }
 
+/// \ingroup grit-audio-stereo
 template<typename T>
 [[nodiscard]] constexpr auto operator/(StereoFrame<T> lhs, StereoFrame<T> rhs) -> StereoFrame<T>
 {
@@ -47,6 +52,7 @@ template<typename T>
     };
 }
 
+/// \ingroup grit-audio-stereo
 template<typename T>
 [[nodiscard]] constexpr auto operator+(StereoFrame<T> lhs, T rhs) -> StereoFrame<T>
 {
@@ -56,6 +62,7 @@ template<typename T>
     };
 }
 
+/// \ingroup grit-audio-stereo
 template<typename T>
 [[nodiscard]] constexpr auto operator-(StereoFrame<T> lhs, T rhs) -> StereoFrame<T>
 {
@@ -65,6 +72,7 @@ template<typename T>
     };
 }
 
+/// \ingroup grit-audio-stereo
 template<typename T>
 [[nodiscard]] constexpr auto operator*(StereoFrame<T> lhs, T rhs) -> StereoFrame<T>
 {
@@ -74,6 +82,7 @@ template<typename T>
     };
 }
 
+/// \ingroup grit-audio-stereo
 template<typename T>
 [[nodiscard]] constexpr auto operator/(StereoFrame<T> lhs, T rhs) -> StereoFrame<T>
 {
@@ -83,6 +92,7 @@ template<typename T>
     };
 }
 
+/// \ingroup grit-audio-stereo
 template<typename T>
 constexpr auto operator+=(StereoFrame<T>& lhs, StereoFrame<T> rhs) -> StereoFrame<T>&
 {
@@ -90,6 +100,7 @@ constexpr auto operator+=(StereoFrame<T>& lhs, StereoFrame<T> rhs) -> StereoFram
     return lhs;
 }
 
+/// \ingroup grit-audio-stereo
 template<typename T>
 constexpr auto operator-=(StereoFrame<T>& lhs, StereoFrame<T> rhs) -> StereoFrame<T>&
 {
@@ -97,6 +108,7 @@ constexpr auto operator-=(StereoFrame<T>& lhs, StereoFrame<T> rhs) -> StereoFram
     return lhs;
 }
 
+/// \ingroup grit-audio-stereo
 template<typename T>
 constexpr auto operator*=(StereoFrame<T>& lhs, StereoFrame<T> rhs) -> StereoFrame<T>&
 {
@@ -104,6 +116,7 @@ constexpr auto operator*=(StereoFrame<T>& lhs, StereoFrame<T> rhs) -> StereoFram
     return lhs;
 }
 
+/// \ingroup grit-audio-stereo
 template<typename T>
 constexpr auto operator/=(StereoFrame<T>& lhs, StereoFrame<T> rhs) -> StereoFrame<T>&
 {
@@ -111,6 +124,7 @@ constexpr auto operator/=(StereoFrame<T>& lhs, StereoFrame<T> rhs) -> StereoFram
     return lhs;
 }
 
+/// \ingroup grit-audio-stereo
 template<typename T>
 constexpr auto operator+=(StereoFrame<T>& lhs, T rhs) -> StereoFrame<T>&
 {
@@ -118,6 +132,7 @@ constexpr auto operator+=(StereoFrame<T>& lhs, T rhs) -> StereoFrame<T>&
     return lhs;
 }
 
+/// \ingroup grit-audio-stereo
 template<typename T>
 constexpr auto operator-=(StereoFrame<T>& lhs, T rhs) -> StereoFrame<T>&
 {
@@ -125,6 +140,7 @@ constexpr auto operator-=(StereoFrame<T>& lhs, T rhs) -> StereoFrame<T>&
     return lhs;
 }
 
+/// \ingroup grit-audio-stereo
 template<typename T>
 constexpr auto operator*=(StereoFrame<T>& lhs, T rhs) -> StereoFrame<T>&
 {
@@ -132,6 +148,7 @@ constexpr auto operator*=(StereoFrame<T>& lhs, T rhs) -> StereoFrame<T>&
     return lhs;
 }
 
+/// \ingroup grit-audio-stereo
 template<typename T>
 constexpr auto operator/=(StereoFrame<T>& lhs, T rhs) -> StereoFrame<T>&
 {

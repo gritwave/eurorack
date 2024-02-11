@@ -8,6 +8,7 @@
 
 namespace grit {
 
+/// \ingroup grit-math
 template<etl::floating_point Float, etl::size_t Size>
 struct StaticLookupTableTransform
 {

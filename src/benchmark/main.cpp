@@ -88,7 +88,7 @@ struct C2cRoundtrip
     }
 
 private:
-    etl::array<etl::complex<Float>, N / 2> _tw{grit::fft::makeTwiddles<Float, N>()};
+    etl::array<etl::complex<Float>, N / 2> _tw{grit::fft::detail::makeTwiddles<Float, N>()};
     etl::array<etl::complex<Float>, N> _buf{[] {
         auto rng = etl::xoshiro128plusplus{42};
         return makeNoise<etl::complex<Float>, N>(rng);

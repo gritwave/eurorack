@@ -6,6 +6,7 @@
 
 namespace grit {
 
+/// \ingroup grit-audio-waveshape
 template<etl::floating_point Float>
 struct FullWaveRectifierNonlinearity
 {
@@ -20,9 +21,11 @@ struct FullWaveRectifierNonlinearity
     [[nodiscard]] static constexpr auto ad2(Float x) { return x * x * x * (Float(1) / Float(6)) * sign(x); }
 };
 
+/// \ingroup grit-audio-waveshape
 template<etl::floating_point Float>
 using FullWaveRectifier = WaveShaper<Float, FullWaveRectifierNonlinearity<Float>>;
 
+/// \ingroup grit-audio-waveshape
 template<etl::floating_point Float>
 using FullWaveRectifierADAA1 = WaveShaperADAA1<Float, FullWaveRectifierNonlinearity<Float>>;
 

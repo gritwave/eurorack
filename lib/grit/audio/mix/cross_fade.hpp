@@ -6,6 +6,7 @@
 
 namespace grit {
 
+/// \ingroup grit-audio-mix
 enum struct CrossFadeCurve
 {
     Linear,
@@ -14,6 +15,7 @@ enum struct CrossFadeCurve
     Exponentail,
 };
 
+/// \ingroup grit-audio-mix
 template<etl::floating_point Float>
 struct CrossFade
 {

@@ -5,6 +5,7 @@
 
 namespace grit {
 
+/// \ingroup grit-audio-stereo
 template<etl::floating_point Float>
 using StereoBlock = etl::mdspan<Float, etl::extents<etl::size_t, 2, etl::dynamic_extent>, etl::layout_left>;
 

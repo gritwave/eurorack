@@ -8,6 +8,7 @@
 
 namespace grit {
 
+/// \ingroup grit-audio-delay
 template<etl::floating_point Float, etl::size_t MaxDelay, typename Interpolation = BufferInterpolation::Hermite>
 struct StaticDelayLine
 {

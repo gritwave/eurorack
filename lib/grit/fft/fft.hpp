@@ -19,6 +19,8 @@
 
 namespace grit::fft {
 
+namespace detail {
+
 template<typename Float, unsigned Size>
 auto makeTwiddles(Direction dir = Direction::Forward) -> etl::array<etl::complex<Float>, Size / 2>
 {
@@ -31,125 +33,6 @@ auto makeTwiddles(Direction dir = Direction::Forward) -> etl::array<etl::complex
     return table;
 }
 
-struct C2cDit2V1
-{
-    C2cDit2V1() = default;
-
-    template<typename Vec>
-        requires(Vec::rank() == 1)
-    auto operator()(Vec x, auto const& w) -> void
-    {
-        auto const len   = x.extent(0);
-        auto const order = ilog2(len);
-
-        for (auto stage = 0; stage < order; ++stage) {
-
-            auto const stageLength = ipow<2>(stage);
-            auto const stride      = ipow<2>(stage + 1);
-            auto const twStride    = ipow<2>(order - stage - 1);
-
-            for (auto k = 0; etl::cmp_less(k, len); k += stride) {
-                for (auto pair = 0; pair < stageLength; ++pair) {
-                    auto const tw = w(pair * twStride);
-
-                    auto const i1 = k + pair;
-                    auto const i2 = k + pair + stageLength;
-
-                    auto const temp = x(i1) + tw * x(i2);
-                    x(i2)           = x(i1) - tw * x(i2);
-                    x(i1)           = temp;
-                }
-            }
-        }
-    }
-};
-
-struct C2cDit2V2
-{
-    C2cDit2V2() = default;
-
-    template<typename Vec>
-        requires(Vec::rank() == 1)
-    auto operator()(Vec x, auto const& w) -> void
-    {
-        auto const len = x.extent(0);
-
-        auto stageSize = 2U;
-        while (stageSize <= len) {
-            auto const halfStage = stageSize / 2;
-            auto const kStep     = len / stageSize;
-
-            for (auto i{0U}; i < len; i += stageSize) {
-                for (auto k{i}; k < i + halfStage; ++k) {
-                    auto const index = k - i;
-                    auto const tw    = w(index * kStep);
-
-                    auto const idx1 = k;
-                    auto const idx2 = k + halfStage;
-
-                    auto const even = x(idx1);
-                    auto const odd  = x(idx2);
-
-                    auto const tmp = odd * tw;
-                    x(idx1)        = even + tmp;
-                    x(idx2)        = even - tmp;
-                }
-            }
-
-            stageSize *= 2;
-        }
-    }
-};
-
-struct C2cDit2V3
-{
-    C2cDit2V3() = default;
-
-    template<typename Vec>
-        requires(Vec::rank() == 1)
-    auto operator()(Vec x, auto const& w) -> void
-    {
-        auto const len   = static_cast<int>(x.extent(0));
-        auto const order = ilog2(len);
-
-        {
-            // stage 0
-            static constexpr auto const stageLength = 1;  // ipow<2>(0)
-            static constexpr auto const stride      = 2;  // ipow<2>(0 + 1)
-
-            for (auto k{0}; k < static_cast<int>(len); k += stride) {
-                auto const i1 = k;
-                auto const i2 = k + stageLength;
-
-                auto const temp = x(i1) + x(i2);
-                x(i2)           = x(i1) - x(i2);
-                x(i1)           = temp;
-            }
-        }
-
-        for (auto stage = 1; stage < order; ++stage) {
-
-            auto const stageLength = ipow<2>(stage);
-            auto const stride      = ipow<2>(stage + 1);
-            auto const twStride    = ipow<2>(order - stage - 1);
-
-            for (auto k = 0; etl::cmp_less(k, len); k += stride) {
-                for (auto pair = 0; pair < stageLength; ++pair) {
-                    auto const tw = w(pair * twStride);
-
-                    auto const i1 = k + pair;
-                    auto const i2 = k + pair + stageLength;
-
-                    auto const temp = x(i1) + tw * x(i2);
-                    x(i2)           = x(i1) - tw * x(i2);
-                    x(i1)           = temp;
-                }
-            }
-        }
-    }
-};
-
-namespace detail {
 template<typename Complex, int Order, int Stage>
 struct ComplexDit2Stage
 {
@@ -246,6 +129,7 @@ template<int Stage, etl::linalg::inout_vector InOutVec, etl::linalg::in_vector I
 
 }  // namespace detail
 
+/// \ingroup grit-fft
 template<typename Complex, etl::size_t Size>
 struct ComplexPlan
 {
@@ -254,7 +138,7 @@ struct ComplexPlan
 
     explicit ComplexPlan(Direction defaultDirection = Direction::Forward)
         : _defaultDirection{defaultDirection}
-        , _w{makeTwiddles<typename Complex::value_type, size()>(defaultDirection)}
+        , _w{detail::makeTwiddles<typename Complex::value_type, size()>(defaultDirection)}
     {}
 
     [[nodiscard]] static constexpr auto size() -> etl::size_t { return Size; }
@@ -282,6 +166,7 @@ private:
     etl::array<Complex, size() / 2> _w;
 };
 
+/// \ingroup grit-fft
 template<typename Complex, etl::size_t Size>
 struct ComplexPlanV2
 {
@@ -290,7 +175,7 @@ struct ComplexPlanV2
 
     explicit ComplexPlanV2(Direction defaultDirection = Direction::Forward)
         : _defaultDirection{defaultDirection}
-        , _w{makeTwiddles<typename Complex::value_type, size()>(defaultDirection)}
+        , _w{detail::makeTwiddles<typename Complex::value_type, size()>(defaultDirection)}
     {}
 
     [[nodiscard]] static constexpr auto size() -> etl::size_t { return Size; }

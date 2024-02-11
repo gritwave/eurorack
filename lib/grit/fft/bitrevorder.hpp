@@ -12,6 +12,7 @@
 
 namespace grit::fft {
 
+/// \ingroup grit-fft
 template<etl::size_t Size>
     requires(etl::has_single_bit(Size))
 struct StaticBitrevorderPlan

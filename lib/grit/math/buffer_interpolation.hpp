@@ -6,6 +6,7 @@
 
 namespace grit {
 
+/// \ingroup grit-math
 struct BufferInterpolation
 {
     struct None

@@ -4,6 +4,7 @@
 
 namespace grit {
 
+/// \ingroup grit-math
 template<typename Type>
 [[nodiscard]] constexpr auto sign(Type x) -> Type
 {

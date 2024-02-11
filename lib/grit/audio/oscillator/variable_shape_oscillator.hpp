@@ -8,6 +8,7 @@
 
 namespace grit {
 
+/// \ingroup grit-audio-oscillator
 template<etl::floating_point Float>
 struct VariableShapeOscillator
 {

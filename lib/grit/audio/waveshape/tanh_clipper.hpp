@@ -8,6 +8,7 @@
 
 namespace grit {
 
+/// \ingroup grit-audio-waveshape
 template<etl::floating_point Float>
 struct TanhClipperNonlinearity
 {
@@ -20,9 +21,11 @@ struct TanhClipperNonlinearity
     [[nodiscard]] static constexpr auto ad1(Float x) -> Float { return x - etl::log(etl::tanh(x) + 1); }
 };
 
+/// \ingroup grit-audio-waveshape
 template<etl::floating_point Float>
 using TanhClipper = WaveShaper<Float, TanhClipperNonlinearity<Float>>;
 
+/// \ingroup grit-audio-waveshape
 template<etl::floating_point Float>
 using TanhClipperADAA1 = WaveShaperADAA1<Float, TanhClipperNonlinearity<Float>>;
 

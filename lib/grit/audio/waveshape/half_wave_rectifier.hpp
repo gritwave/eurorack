@@ -5,6 +5,7 @@
 
 namespace grit {
 
+/// \ingroup grit-audio-waveshape
 template<etl::floating_point Float>
 struct HalfWaveRectifierNonlinearity
 {
@@ -22,9 +23,11 @@ struct HalfWaveRectifierNonlinearity
     }
 };
 
+/// \ingroup grit-audio-waveshape
 template<etl::floating_point Float>
 using HalfWaveRectifier = WaveShaper<Float, HalfWaveRectifierNonlinearity<Float>>;
 
+/// \ingroup grit-audio-waveshape
 template<etl::floating_point Float>
 using HalfWaveRectifierADAA1 = WaveShaperADAA1<Float, HalfWaveRectifierNonlinearity<Float>>;
 

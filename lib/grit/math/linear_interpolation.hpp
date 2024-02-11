@@ -5,6 +5,7 @@
 
 namespace grit {
 
+/// \ingroup grit-math
 template<etl::floating_point Float>
 [[nodiscard]] constexpr auto linearInterpolation(Float a, Float b, Float t) -> Float
 {

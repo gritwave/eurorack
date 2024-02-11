@@ -8,6 +8,7 @@
 
 namespace grit {
 
+/// \ingroup grit-audio-waveshape
 template<etl::floating_point Float>
 struct DiodeRectifierNonlinearity
 {
@@ -26,9 +27,11 @@ struct DiodeRectifierNonlinearity
     }
 };
 
+/// \ingroup grit-audio-waveshape
 template<etl::floating_point Float>
 using DiodeRectifier = WaveShaper<Float, DiodeRectifierNonlinearity<Float>>;
 
+/// \ingroup grit-audio-waveshape
 template<etl::floating_point Float>
 using DiodeRectifierADAA1 = WaveShaperADAA1<Float, DiodeRectifierNonlinearity<Float>>;
 

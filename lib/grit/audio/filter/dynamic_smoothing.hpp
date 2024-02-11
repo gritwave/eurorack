@@ -9,7 +9,9 @@
 
 namespace grit {
 
-/// \brief https://cytomic.com/files/dsp/DynamicSmoothing.pdf
+/// \brief Parameter Smoothing
+/// \details https://cytomic.com/files/dsp/DynamicSmoothing.pdf
+/// \ingroup grit-audio-filter
 template<etl::floating_point Float>
 struct DynamicSmoothing
 {

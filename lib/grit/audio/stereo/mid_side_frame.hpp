@@ -2,6 +2,7 @@
 
 namespace grit {
 
+/// \ingroup grit-audio-stereo
 template<typename SampleType>
 struct MidSideFrame
 {

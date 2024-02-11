@@ -4,6 +4,7 @@
 
 namespace grit {
 
+/// \ingroup grit-audio-stereo
 template<typename T>
 struct StereoWidth
 {

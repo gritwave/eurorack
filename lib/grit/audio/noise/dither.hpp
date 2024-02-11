@@ -5,6 +5,7 @@
 namespace grit {
 
 /// \brief Dummy dithering class. Performs no dithering.
+/// \ingroup grit-audio-noise
 template<typename URNG>
 struct NoDither
 {
@@ -15,6 +16,7 @@ struct NoDither
     [[nodiscard]] constexpr auto operator()(float v) -> float { return v; }
 };
 
+/// \ingroup grit-audio-noise
 template<typename URNG>
 struct RectangleDither
 {
@@ -29,6 +31,7 @@ private:
     etl::uniform_real_distribution<float> _dist{-0.5F, 0.5F};
 };
 
+/// \ingroup grit-audio-noise
 template<typename URNG>
 struct TriangleDither
 {

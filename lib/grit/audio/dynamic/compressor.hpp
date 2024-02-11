@@ -12,6 +12,7 @@
 
 namespace grit {
 
+/// \ingroup grit-audio-dynamic
 template<etl::floating_point Float>
 struct Compressor
 {

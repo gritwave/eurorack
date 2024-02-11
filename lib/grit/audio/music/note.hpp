@@ -5,6 +5,7 @@
 
 namespace grit {
 
+/// \ingroup grit-audio-music
 template<etl::floating_point Float>
 [[nodiscard]] auto noteToHertz(Float note) -> Float
 {

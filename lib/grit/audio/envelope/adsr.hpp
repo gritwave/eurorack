@@ -4,8 +4,11 @@
 
 namespace grit {
 
-// https://github.com/fdeste/ADSR
-// http://www.earlevel.com/main/2013/06/03/envelope-generators-adsr-code
+/// ADSR Envelope Generator
+///
+/// https://github.com/fdeste/ADSR
+/// http://www.earlevel.com/main/2013/06/03/envelope-generators-adsr-code
+/// \ingroup grit-audio-envelope
 struct ADSR
 {
     ADSR();

@@ -4,6 +4,7 @@
 
 namespace grit {
 
+/// \ingroup grit-math
 template<etl::integral Int>
 [[nodiscard]] constexpr auto ipow(Int base, Int exponent) -> Int
 {
@@ -14,6 +15,7 @@ template<etl::integral Int>
     return result;
 }
 
+/// \ingroup grit-math
 template<auto Base>
     requires(etl::integral<decltype(Base)> and Base > 0)
 [[nodiscard]] constexpr auto ipow(decltype(Base) exponent) -> decltype(Base)

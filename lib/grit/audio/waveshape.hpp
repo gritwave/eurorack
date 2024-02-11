@@ -1,5 +1,8 @@
 #pragma once
 
+/// \defgroup grit-audio-waveshape Waveshape
+/// \ingroup grit-audio
+
 #include <grit/audio/waveshape/diode_rectifier.hpp>
 #include <grit/audio/waveshape/full_wave_rectifier.hpp>
 #include <grit/audio/waveshape/half_wave_rectifier.hpp>
