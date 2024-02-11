@@ -8,152 +8,120 @@ struct StereoFrame
 {
     using value_type = SampleType;
 
+    friend constexpr auto operator+(StereoFrame lhs, SampleType rhs) -> StereoFrame
+    {
+        return {
+            lhs.left + rhs,
+            lhs.right + rhs,
+        };
+    }
+
+    friend constexpr auto operator-(StereoFrame lhs, SampleType rhs) -> StereoFrame
+    {
+        return {
+            lhs.left - rhs,
+            lhs.right - rhs,
+        };
+    }
+
+    friend constexpr auto operator*(StereoFrame lhs, SampleType rhs) -> StereoFrame
+    {
+        return {
+            lhs.left * rhs,
+            lhs.right * rhs,
+        };
+    }
+
+    friend constexpr auto operator/(StereoFrame lhs, SampleType rhs) -> StereoFrame
+    {
+        return {
+            lhs.left / rhs,
+            lhs.right / rhs,
+        };
+    }
+
+    friend constexpr auto operator+(StereoFrame lhs, StereoFrame rhs) -> StereoFrame
+    {
+        return {
+            lhs.left + rhs.left,
+            lhs.right + rhs.right,
+        };
+    }
+
+    friend constexpr auto operator-(StereoFrame lhs, StereoFrame rhs) -> StereoFrame
+    {
+        return {
+            lhs.left - rhs.left,
+            lhs.right - rhs.right,
+        };
+    }
+
+    friend constexpr auto operator*(StereoFrame lhs, StereoFrame rhs) -> StereoFrame
+    {
+        return {
+            lhs.left * rhs.left,
+            lhs.right * rhs.right,
+        };
+    }
+
+    friend constexpr auto operator/(StereoFrame lhs, StereoFrame rhs) -> StereoFrame
+    {
+        return {
+            lhs.left / rhs.left,
+            lhs.right / rhs.right,
+        };
+    }
+
+    friend constexpr auto operator+=(StereoFrame& lhs, StereoFrame rhs) -> StereoFrame&
+    {
+        lhs = lhs + rhs;
+        return lhs;
+    }
+
+    friend constexpr auto operator-=(StereoFrame& lhs, StereoFrame rhs) -> StereoFrame&
+    {
+        lhs = lhs - rhs;
+        return lhs;
+    }
+
+    friend constexpr auto operator*=(StereoFrame& lhs, StereoFrame rhs) -> StereoFrame&
+    {
+        lhs = lhs * rhs;
+        return lhs;
+    }
+
+    friend constexpr auto operator/=(StereoFrame& lhs, StereoFrame rhs) -> StereoFrame&
+    {
+        lhs = lhs / rhs;
+        return lhs;
+    }
+
+    friend constexpr auto operator+=(StereoFrame& lhs, SampleType rhs) -> StereoFrame&
+    {
+        lhs = lhs + rhs;
+        return lhs;
+    }
+
+    friend constexpr auto operator-=(StereoFrame& lhs, SampleType rhs) -> StereoFrame&
+    {
+        lhs = lhs - rhs;
+        return lhs;
+    }
+
+    friend constexpr auto operator*=(StereoFrame& lhs, SampleType rhs) -> StereoFrame&
+    {
+        lhs = lhs * rhs;
+        return lhs;
+    }
+
+    friend constexpr auto operator/=(StereoFrame& lhs, SampleType rhs) -> StereoFrame&
+    {
+        lhs = lhs / rhs;
+        return lhs;
+    }
+
     SampleType left{};
     SampleType right{};
 };
-
-/// \ingroup grit-audio-stereo
-template<typename T>
-[[nodiscard]] constexpr auto operator+(StereoFrame<T> lhs, StereoFrame<T> rhs) -> StereoFrame<T>
-{
-    return {
-        lhs.left + rhs.left,
-        lhs.right + rhs.right,
-    };
-}
-
-/// \ingroup grit-audio-stereo
-template<typename T>
-[[nodiscard]] constexpr auto operator-(StereoFrame<T> lhs, StereoFrame<T> rhs) -> StereoFrame<T>
-{
-    return {
-        lhs.left - rhs.left,
-        lhs.right - rhs.right,
-    };
-}
-
-/// \ingroup grit-audio-stereo
-template<typename T>
-[[nodiscard]] constexpr auto operator*(StereoFrame<T> lhs, StereoFrame<T> rhs) -> StereoFrame<T>
-{
-    return {
-        lhs.left * rhs.left,
-        lhs.right * rhs.right,
-    };
-}
-
-/// \ingroup grit-audio-stereo
-template<typename T>
-[[nodiscard]] constexpr auto operator/(StereoFrame<T> lhs, StereoFrame<T> rhs) -> StereoFrame<T>
-{
-    return {
-        lhs.left / rhs.left,
-        lhs.right / rhs.right,
-    };
-}
-
-/// \ingroup grit-audio-stereo
-template<typename T>
-[[nodiscard]] constexpr auto operator+(StereoFrame<T> lhs, T rhs) -> StereoFrame<T>
-{
-    return {
-        lhs.left + rhs,
-        lhs.right + rhs,
-    };
-}
-
-/// \ingroup grit-audio-stereo
-template<typename T>
-[[nodiscard]] constexpr auto operator-(StereoFrame<T> lhs, T rhs) -> StereoFrame<T>
-{
-    return {
-        lhs.left - rhs,
-        lhs.right - rhs,
-    };
-}
-
-/// \ingroup grit-audio-stereo
-template<typename T>
-[[nodiscard]] constexpr auto operator*(StereoFrame<T> lhs, T rhs) -> StereoFrame<T>
-{
-    return {
-        lhs.left * rhs,
-        lhs.right * rhs,
-    };
-}
-
-/// \ingroup grit-audio-stereo
-template<typename T>
-[[nodiscard]] constexpr auto operator/(StereoFrame<T> lhs, T rhs) -> StereoFrame<T>
-{
-    return {
-        lhs.left / rhs,
-        lhs.right / rhs,
-    };
-}
-
-/// \ingroup grit-audio-stereo
-template<typename T>
-constexpr auto operator+=(StereoFrame<T>& lhs, StereoFrame<T> rhs) -> StereoFrame<T>&
-{
-    lhs = lhs + rhs;
-    return lhs;
-}
-
-/// \ingroup grit-audio-stereo
-template<typename T>
-constexpr auto operator-=(StereoFrame<T>& lhs, StereoFrame<T> rhs) -> StereoFrame<T>&
-{
-    lhs = lhs - rhs;
-    return lhs;
-}
-
-/// \ingroup grit-audio-stereo
-template<typename T>
-constexpr auto operator*=(StereoFrame<T>& lhs, StereoFrame<T> rhs) -> StereoFrame<T>&
-{
-    lhs = lhs * rhs;
-    return lhs;
-}
-
-/// \ingroup grit-audio-stereo
-template<typename T>
-constexpr auto operator/=(StereoFrame<T>& lhs, StereoFrame<T> rhs) -> StereoFrame<T>&
-{
-    lhs = lhs / rhs;
-    return lhs;
-}
-
-/// \ingroup grit-audio-stereo
-template<typename T>
-constexpr auto operator+=(StereoFrame<T>& lhs, T rhs) -> StereoFrame<T>&
-{
-    lhs = lhs + rhs;
-    return lhs;
-}
-
-/// \ingroup grit-audio-stereo
-template<typename T>
-constexpr auto operator-=(StereoFrame<T>& lhs, T rhs) -> StereoFrame<T>&
-{
-    lhs = lhs - rhs;
-    return lhs;
-}
-
-/// \ingroup grit-audio-stereo
-template<typename T>
-constexpr auto operator*=(StereoFrame<T>& lhs, T rhs) -> StereoFrame<T>&
-{
-    lhs = lhs * rhs;
-    return lhs;
-}
-
-/// \ingroup grit-audio-stereo
-template<typename T>
-constexpr auto operator/=(StereoFrame<T>& lhs, T rhs) -> StereoFrame<T>&
-{
-    lhs = lhs / rhs;
-    return lhs;
-}
 
 }  // namespace grit
