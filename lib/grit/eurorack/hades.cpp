@@ -2,48 +2,13 @@
 
 namespace grit {
 
-auto Hades::Channel::setParameter(Parameter const& parameter) -> void
+auto Hades::nextTextureAlgorithm() -> void {}
+
+auto Hades::nextDistortionAlgorithm() -> void
 {
-    _parameter = parameter;
-
-    auto const attack  = Milliseconds<float>{remap(parameter.attack, 1.0F, 50.0F)};
-    auto const release = Milliseconds<float>{remap(parameter.release, 1.0F, 500.0F)};
-
-    _envelope.setParameter({
-        .attack  = attack,
-        .release = release,
-    });
-
-    _compressor.setParameter({
-        .threshold = remap(parameter.compressor, -12.0F, -20.0F),
-        .ratio     = remap(parameter.compressor, +4.0F, +10.0F),
-        .knee      = 2.0F,
-        .attack    = attack,
-        .release   = release,
-        .makeUp    = 1.0F,
-        .wet       = 1.0F,
-    });
-}
-
-auto Hades::Channel::operator()(float sample) -> etl::pair<float, float>
-{
-    auto const env = _envelope(sample);
-    _vinyl.setDeRez(etl::clamp(env, 0.0F, 1.0F));
-
-    auto const noise = _whiteNoise();
-    auto const vinyl = _vinyl(sample);
-    auto const mix   = _parameter.morph;
-    auto const mixed = (noise * mix) + (vinyl * (1.0F - mix));
-
-    auto const drive   = remap(_parameter.amp, 1.0F, 4.0F);  // +12dB
-    auto const distOut = _tanh(mixed * drive);
-    return {_compressor(distOut, distOut), env};
-}
-
-auto Hades::Channel::prepare(float sampleRate) -> void
-{
-    _envelope.prepare(sampleRate);
-    _compressor.prepare(sampleRate);
+    for (auto& channel : _channels) {
+        channel.nextDistortionAlgorithm();
+    }
 }
 
 auto Hades::prepare(float sampleRate, etl::size_t blockSize) -> void
@@ -63,7 +28,7 @@ auto Hades::prepare(float sampleRate, etl::size_t blockSize) -> void
     _channels[1].prepare(sampleRate);
 }
 
-auto Hades::processBlock(Buffer const& buffer, ControlInput const& inputs) -> ControlOutput
+auto Hades::process(Buffer const& buffer, ControlInput const& inputs) -> ControlOutput
 {
     auto const textureKnob    = _textureKnob.process(inputs.textureKnob);
     auto const morphKnob      = _morphKnob.process(inputs.morphKnob);
@@ -107,6 +72,62 @@ auto Hades::processBlock(Buffer const& buffer, ControlInput const& inputs) -> Co
         .gate1    = gateOut,
         .gate2    = not gateOut,
     };
+}
+
+auto Hades::Channel::setParameter(Parameter const& parameter) -> void
+{
+    _parameter = parameter;
+
+    auto const attack  = Milliseconds<float>{remap(parameter.attack, 1.0F, 50.0F)};
+    auto const release = Milliseconds<float>{remap(parameter.release, 1.0F, 500.0F)};
+
+    _envelope.setParameter({
+        .attack  = attack,
+        .release = release,
+    });
+
+    _compressor.setParameter({
+        .threshold = remap(parameter.compressor, -12.0F, -20.0F),
+        .ratio     = remap(parameter.compressor, +4.0F, +10.0F),
+        .knee      = 2.0F,
+        .attack    = attack,
+        .release   = release,
+        .makeUp    = 1.0F,
+        .wet       = 1.0F,
+    });
+}
+
+auto Hades::Channel::nextDistortionAlgorithm() -> void
+{
+    switch (_distortion.index()) {
+        case 0: _distortion = Distortion{HardClipperADAA1<float>{}}; break;
+        case 1: _distortion = Distortion{FullWaveRectifierADAA1<float>{}}; break;
+        case 2: _distortion = Distortion{HalfWaveRectifierADAA1<float>{}}; break;
+        case 3: _distortion = Distortion{DiodeRectifierADAA1<float>{}}; break;
+        case 4: _distortion = Distortion{TanhClipperADAA1<float>{}}; break;
+        default: break;
+    }
+}
+
+auto Hades::Channel::prepare(float sampleRate) -> void
+{
+    _envelope.prepare(sampleRate);
+    _compressor.prepare(sampleRate);
+}
+
+auto Hades::Channel::operator()(float sample) -> etl::pair<float, float>
+{
+    auto const env = _envelope(sample);
+    _vinyl.setDeRez(etl::clamp(env, 0.0F, 1.0F));
+
+    auto const noise = _whiteNoise();
+    auto const vinyl = _vinyl(sample);
+    auto const mix   = _parameter.morph;
+    auto const mixed = (noise * mix) + (vinyl * (1.0F - mix));
+
+    auto const drive   = remap(_parameter.amp, 1.0F, 4.0F);  // +12dB
+    auto const distOut = etl::visit([x = mixed * drive](auto& func) { return func(x); }, _distortion);
+    return {_compressor(distOut, distOut), env};
 }
 
 }  // namespace grit

@@ -19,6 +19,7 @@
 #include <etl/array.hpp>
 #include <etl/functional.hpp>
 #include <etl/utility.hpp>
+#include <etl/variant.hpp>
 
 namespace grit {
 
@@ -54,8 +55,11 @@ struct Hades
 
     Hades() = default;
 
+    auto nextTextureAlgorithm() -> void;
+    auto nextDistortionAlgorithm() -> void;
+
     auto prepare(float sampleRate, etl::size_t blockSize) -> void;
-    [[nodiscard]] auto processBlock(Buffer const& buffer, ControlInput const& inputs) -> ControlOutput;
+    [[nodiscard]] auto process(Buffer const& buffer, ControlInput const& inputs) -> ControlOutput;
 
 private:
     struct Channel
@@ -74,24 +78,25 @@ private:
         Channel() = default;
 
         auto setParameter(Parameter const& parameter) -> void;
+        auto nextDistortionAlgorithm() -> void;
 
         auto prepare(float sampleRate) -> void;
         [[nodiscard]] auto operator()(float sample) -> etl::pair<float, float>;
 
     private:
+        using Distortion = etl::variant<
+            TanhClipperADAA1<float>,
+            HardClipperADAA1<float>,
+            FullWaveRectifierADAA1<float>,
+            HalfWaveRectifierADAA1<float>,
+            DiodeRectifierADAA1<float>>;
+
         Parameter _parameter{};
 
         EnvelopeFollower<float> _envelope{};
-
         WhiteNoise<float> _whiteNoise{};
         AirWindowsVinylDither<float> _vinyl{};
-
-        TanhClipperADAA1<float> _tanh{};
-        HardClipperADAA1<float> _hard{};
-        FullWaveRectifierADAA1<float> _fullWave{};
-        HalfWaveRectifierADAA1<float> _halfWave{};
-        DiodeRectifierADAA1<float> _diode{};
-
+        Distortion _distortion{TanhClipperADAA1<float>{}};
         Compressor<float> _compressor{};
     };
 
