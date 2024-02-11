@@ -18,12 +18,12 @@ auto audioCallback(
 {
     patch.ProcessAllControls();
 
-    auto const context = grit::Hades::Buffers{
+    auto const context = grit::Hades::Buffer{
         .input  = grit::StereoBlock<float const>{ in, size},
         .output = grit::StereoBlock<float>{out, size},
     };
 
-    auto const inputs = grit::Hades::ControlInputs{
+    auto const inputs = grit::Hades::ControlInput{
         .textureKnob    = patch.GetAdcValue(daisy::patch_sm::CV_1),
         .morphKnob      = patch.GetAdcValue(daisy::patch_sm::CV_3),
         .ampKnob        = patch.GetAdcValue(daisy::patch_sm::CV_2),

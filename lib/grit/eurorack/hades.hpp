@@ -20,7 +20,7 @@ namespace grit {
 
 struct Hades
 {
-    struct ControlInputs
+    struct ControlInput
     {
         float textureKnob{0};
         float morphKnob{0};
@@ -35,14 +35,14 @@ struct Hades
         bool gate2{false};
     };
 
-    struct ControlOutputs
+    struct ControlOutput
     {
         float envelope{0};
         bool gate1{false};
         bool gate2{false};
     };
 
-    struct Buffers
+    struct Buffer
     {
         StereoBlock<float const> input;
         StereoBlock<float> output;
@@ -51,7 +51,7 @@ struct Hades
     Hades() = default;
 
     auto prepare(float sampleRate, etl::size_t blockSize) -> void;
-    [[nodiscard]] auto processBlock(Buffers const& context, ControlInputs const& inputs) -> ControlOutputs;
+    [[nodiscard]] auto processBlock(Buffer const& context, ControlInput const& inputs) -> ControlOutput;
 
 private:
     struct Channel
