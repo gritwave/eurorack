@@ -59,6 +59,7 @@ if(NOT CMAKE_CROSSCOMPILING)
             "lib/grit/audio/noise/airwindows_vinyl_dither_test.cpp"
             "lib/grit/audio/noise/dither_test.cpp"
             "lib/grit/audio/noise/white_noise_test.cpp"
+            "lib/grit/audio/stereo/stereo_frame_test.cpp"
             "lib/grit/audio/waveshape/diode_rectifier_test.cpp"
             "lib/grit/audio/waveshape/full_wave_rectifier_test.cpp"
             "lib/grit/audio/waveshape/half_wave_rectifier_test.cpp"
