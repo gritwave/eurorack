@@ -2,7 +2,7 @@
 
 #include <daisy_patch_sm.h>
 
-namespace {
+namespace mcu {
 
 static constexpr auto blockSize  = 16U;
 static constexpr auto sampleRate = 96'000.0F;
@@ -57,19 +57,19 @@ auto audioCallback(
     dsy_gpio_write(&patch.gate_out_2, static_cast<uint8_t>(outputs.gate2));
 }
 
-}  // namespace
+}  // namespace mcu
 
 auto main() -> int
 {
-    patch.Init();
-    button.Init(patch.B7);
-    toggle.Init(patch.B8);
+    mcu::patch.Init();
+    mcu::button.Init(mcu::patch.B7);
+    mcu::toggle.Init(mcu::patch.B8);
 
-    hades.prepare(sampleRate, blockSize);
+    mcu::hades.prepare(mcu::sampleRate, mcu::blockSize);
 
-    patch.SetAudioSampleRate(sampleRate);
-    patch.SetAudioBlockSize(blockSize);
-    patch.StartAudio(audioCallback);
+    mcu::patch.SetAudioSampleRate(mcu::sampleRate);
+    mcu::patch.SetAudioBlockSize(mcu::blockSize);
+    mcu::patch.StartAudio(mcu::audioCallback);
 
     while (true) {}
 }
