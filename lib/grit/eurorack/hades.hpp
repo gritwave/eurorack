@@ -62,6 +62,32 @@ struct Hades
     [[nodiscard]] auto process(Buffer const& buffer, ControlInput const& inputs) -> ControlOutput;
 
 private:
+    struct Distortion
+    {
+        Distortion() = default;
+
+        auto next() -> void;
+        [[nodiscard]] auto operator()(float sample) -> float;
+
+    private:
+        enum Index : int
+        {
+            TanhIndex = 0,
+            HardIndex,
+            FullWaveIndex,
+            HalfWaveIndex,
+            DiodeIndex,
+            MaxIndex,
+        };
+
+        Index _index{TanhIndex};
+        TanhClipperADAA1<float> _tanh{};
+        HardClipperADAA1<float> _hard{};
+        FullWaveRectifierADAA1<float> _fullWave{};
+        HalfWaveRectifierADAA1<float> _halfWave{};
+        DiodeRectifierADAA1<float> _diode{};
+    };
+
     struct Channel
     {
         struct Parameter
@@ -84,19 +110,12 @@ private:
         [[nodiscard]] auto operator()(float sample) -> etl::pair<float, float>;
 
     private:
-        using Distortion = etl::variant<
-            TanhClipperADAA1<float>,
-            HardClipperADAA1<float>,
-            FullWaveRectifierADAA1<float>,
-            HalfWaveRectifierADAA1<float>,
-            DiodeRectifierADAA1<float>>;
-
         Parameter _parameter{};
 
         EnvelopeFollower<float> _envelope{};
         WhiteNoise<float> _whiteNoise{};
         AirWindowsVinylDither<float> _vinyl{};
-        Distortion _distortion{TanhClipperADAA1<float>{}};
+        Distortion _distortion{};
         Compressor<float> _compressor{};
     };
 

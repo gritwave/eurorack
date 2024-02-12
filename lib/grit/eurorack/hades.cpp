@@ -74,6 +74,27 @@ auto Hades::process(Buffer const& buffer, ControlInput const& inputs) -> Control
     };
 }
 
+auto Hades::Distortion::next() -> void
+{
+    _index = Index{int(_index) + 1};
+    if (_index == MaxIndex) {
+        _index = Index{0};
+    }
+}
+
+auto Hades::Distortion::operator()(float sample) -> float
+{
+    switch (_index) {
+        case TanhIndex: return _tanh(sample);
+        case HardIndex: return _hard(sample);
+        case FullWaveIndex: return _fullWave(sample);
+        case HalfWaveIndex: return _halfWave(sample);
+        case DiodeIndex: return _diode(sample);
+        default: break;
+    }
+    return sample;
+}
+
 auto Hades::Channel::setParameter(Parameter const& parameter) -> void
 {
     _parameter = parameter;
@@ -97,17 +118,7 @@ auto Hades::Channel::setParameter(Parameter const& parameter) -> void
     });
 }
 
-auto Hades::Channel::nextDistortionAlgorithm() -> void
-{
-    switch (_distortion.index()) {
-        case 0: _distortion = Distortion{HardClipperADAA1<float>{}}; break;
-        case 1: _distortion = Distortion{FullWaveRectifierADAA1<float>{}}; break;
-        case 2: _distortion = Distortion{HalfWaveRectifierADAA1<float>{}}; break;
-        case 3: _distortion = Distortion{DiodeRectifierADAA1<float>{}}; break;
-        case 4: _distortion = Distortion{TanhClipperADAA1<float>{}}; break;
-        default: break;
-    }
-}
+auto Hades::Channel::nextDistortionAlgorithm() -> void { _distortion.next(); }
 
 auto Hades::Channel::prepare(float sampleRate) -> void
 {
@@ -126,7 +137,7 @@ auto Hades::Channel::operator()(float sample) -> etl::pair<float, float>
     auto const mixed = (noise * mix) + (vinyl * (1.0F - mix));
 
     auto const drive   = remap(_parameter.amp, 1.0F, 4.0F);  // +12dB
-    auto const distOut = etl::visit([x = mixed * drive](auto& func) { return func(x); }, _distortion);
+    auto const distOut = _distortion(mixed * drive);
     return {_compressor(distOut, distOut), env};
 }
 

@@ -56,6 +56,7 @@ TEST_CASE("grit/audio/eurorack: Hades")
             .gate2          = false,
         };
 
+        hades.nextDistortionAlgorithm();
         auto const cv = hades.process(buffer, controls);
         REQUIRE(cv.gate1 == true);
         REQUIRE(cv.gate2 == false);
