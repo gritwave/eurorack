@@ -12,24 +12,14 @@ TEST_CASE("grit/audio/eurorack: Hades")
     static constexpr auto sampleRate = 96'000.0F;
     static constexpr auto blockSize  = 32;
 
-    auto input = [] {
+    auto buffer = [] {
         auto buf  = etl::array<float, 2 * blockSize>{};
         auto rng  = etl::xoshiro128plusplus{Catch::getSeed()};
         auto dist = etl::uniform_real_distribution<float>{-1.0F, 1.0F};
         etl::generate(buf.begin(), buf.end(), [&] { return dist(rng); });
         return buf;
     }();
-
-    auto output       = etl::array<float, 2 * blockSize>{};
-    auto const buffer = grit::Hades::Buffer{
-        .input  = grit::StereoBlock<float const>{ input.data(), blockSize},
-        .output = grit::StereoBlock<float>{output.data(), blockSize},
-    };
-
-    REQUIRE(buffer.input.extent(0) == 2);
-    REQUIRE(buffer.input.extent(1) == blockSize);
-    REQUIRE(buffer.output.extent(0) == 2);
-    REQUIRE(buffer.output.extent(1) == blockSize);
+    auto block = grit::StereoBlock<float>{buffer.data(), blockSize};
 
     auto hades = grit::Hades{};
     hades.prepare(sampleRate, blockSize);
@@ -48,7 +38,7 @@ TEST_CASE("grit/audio/eurorack: Hades")
             .gate2          = false,
         };
 
-        auto const cv = hades.process(buffer, controls);
+        auto const cv = hades.process(block, controls);
         REQUIRE(cv.gate1 == false);
         REQUIRE(cv.gate2 == true);
     }
@@ -68,7 +58,7 @@ TEST_CASE("grit/audio/eurorack: Hades")
         };
 
         hades.nextDistortionAlgorithm();
-        auto const cv = hades.process(buffer, controls);
+        auto const cv = hades.process(block, controls);
         REQUIRE(cv.gate1 == true);
         REQUIRE(cv.gate2 == false);
     }
