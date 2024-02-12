@@ -2,12 +2,12 @@
 
 #include <daisy_patch_sm.h>
 
-namespace mcu {
+namespace hades {
 
 static constexpr auto blockSize  = 16U;
 static constexpr auto sampleRate = 96'000.0F;
 
-auto hades     = grit::Hades{};
+auto processor = grit::Hades{};
 auto patch     = daisy::patch_sm::DaisyPatchSM{};
 auto button    = daisy::Switch{};
 auto toggle    = daisy::Switch{};
@@ -22,9 +22,9 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
 
     if (button.FallingEdge()) {
         if (toggle.Pressed()) {
-            hades.nextDistortionAlgorithm();
+            processor.nextDistortionAlgorithm();
         } else {
-            hades.nextTextureAlgorithm();
+            processor.nextTextureAlgorithm();
         }
     }
 
@@ -48,7 +48,7 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
         .gate2          = patch.gate_in_2.State(),
     };
 
-    auto const outputs = hades.process(io, controls);
+    auto const outputs = processor.process(io, controls);
 
     // Copy from interleaved
     for (auto i{0U}; i < size; ++i) {
@@ -56,25 +56,24 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
         out[1][i] = io(1, i);
     }
 
-    patch.WriteCvOut(daisy::patch_sm::CV_OUT_1, outputs.envelope * 5.0F);
-    patch.WriteCvOut(daisy::patch_sm::CV_OUT_2, outputs.envelope * 5.0F);
+    patch.WriteCvOut(daisy::patch_sm::CV_OUT_BOTH, outputs.envelope * 5.0F);
     dsy_gpio_write(&patch.gate_out_1, static_cast<uint8_t>(outputs.gate1));
     dsy_gpio_write(&patch.gate_out_2, static_cast<uint8_t>(outputs.gate2));
 }
 
-}  // namespace mcu
+}  // namespace hades
 
 auto main() -> int
 {
-    mcu::patch.Init();
-    mcu::button.Init(mcu::patch.B7);
-    mcu::toggle.Init(mcu::patch.B8);
+    hades::patch.Init();
+    hades::button.Init(hades::patch.B7);
+    hades::toggle.Init(hades::patch.B8);
 
-    mcu::hades.prepare(mcu::sampleRate, mcu::blockSize);
+    hades::processor.prepare(hades::sampleRate, hades::blockSize);
 
-    mcu::patch.SetAudioSampleRate(mcu::sampleRate);
-    mcu::patch.SetAudioBlockSize(mcu::blockSize);
-    mcu::patch.StartAudio(mcu::audioCallback);
+    hades::patch.SetAudioSampleRate(hades::sampleRate);
+    hades::patch.SetAudioBlockSize(hades::blockSize);
+    hades::patch.StartAudio(hades::audioCallback);
 
     while (true) {}
 }
