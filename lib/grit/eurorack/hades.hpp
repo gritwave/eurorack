@@ -82,11 +82,11 @@ private:
         };
 
         Index _index{TanhIndex};
-        TanhClipperADAA1<float> _tanh{};
-        HardClipperADAA1<float> _hard{};
-        FullWaveRectifierADAA1<float> _fullWave{};
-        HalfWaveRectifierADAA1<float> _halfWave{};
-        DiodeRectifierADAA1<float> _diode{};
+        TanhClipper<float> _tanh{};
+        HardClipper<float> _hard{};
+        FullWaveRectifier<float> _fullWave{};
+        HalfWaveRectifier<float> _halfWave{};
+        DiodeRectifier<float> _diode{};
     };
 
     struct Channel
