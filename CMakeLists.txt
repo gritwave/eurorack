@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.23...3.27)
 file(STRINGS VERSION CURRENT_VERSION)
 project(grit-eurorack-dev VERSION ${CURRENT_VERSION} LANGUAGES C CXX)
 
+option(GRITWAVE_EURORACK_ENABLE_PLUGIN "Build plugin (development tool)" OFF)
+
 find_program(CCACHE ccache)
 if (CCACHE)
     set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE})
@@ -75,4 +77,8 @@ if(NOT CMAKE_CROSSCOMPILING)
             "lib/grit/math/static_lookup_table_test.cpp"
             "lib/grit/unit/decibel_test.cpp"
     )
+
+    if(GRITWAVE_EURORACK_ENABLE_PLUGIN)
+        add_subdirectory(src/plugin)
+    endif()
 endif()
