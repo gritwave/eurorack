@@ -48,19 +48,13 @@ struct Hades
         bool gate2{false};
     };
 
-    struct Buffer
-    {
-        StereoBlock<float const> input;
-        StereoBlock<float> output;
-    };
-
     Hades() = default;
 
     auto nextTextureAlgorithm() -> void;
     auto nextDistortionAlgorithm() -> void;
 
     auto prepare(float sampleRate, etl::size_t blockSize) -> void;
-    [[nodiscard]] auto process(Buffer const& buffer, ControlInput const& inputs) -> ControlOutput;
+    [[nodiscard]] auto process(StereoBlock<float> const& buffer, ControlInput const& inputs) -> ControlOutput;
 
 private:
     struct Distortion

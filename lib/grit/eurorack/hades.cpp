@@ -28,7 +28,7 @@ auto Hades::prepare(float sampleRate, etl::size_t blockSize) -> void
     _channels[1].prepare(sampleRate);
 }
 
-auto Hades::process(Buffer const& buffer, ControlInput const& inputs) -> ControlOutput
+auto Hades::process(StereoBlock<float> const& buffer, ControlInput const& inputs) -> ControlOutput
 {
     auto const textureKnob    = _textureKnob.process(inputs.textureKnob);
     auto const morphKnob      = _morphKnob.process(inputs.morphKnob);
@@ -54,14 +54,14 @@ auto Hades::process(Buffer const& buffer, ControlInput const& inputs) -> Control
     }
 
     auto env = 0.0F;
-    for (auto i = size_t(0); i < buffer.input.extent(1); ++i) {
-        auto const [left, envLeft]   = etl::invoke(_channels[0], buffer.input(0, i));
-        auto const [right, envRight] = etl::invoke(_channels[1], buffer.input(1, i));
+    for (auto i = size_t(0); i < buffer.extent(1); ++i) {
+        auto const [left, envLeft]   = etl::invoke(_channels[0], buffer(0, i));
+        auto const [right, envRight] = etl::invoke(_channels[1], buffer(1, i));
 
         env = (envLeft + envRight) * 0.5F;
 
-        buffer.output(0, i) = left;
-        buffer.output(1, i) = right;
+        buffer(0, i) = left;
+        buffer(1, i) = right;
     }
 
     // "DIGITAL" GATE LOGIC

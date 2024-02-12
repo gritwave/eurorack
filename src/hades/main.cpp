@@ -7,16 +7,13 @@ namespace mcu {
 static constexpr auto blockSize  = 16U;
 static constexpr auto sampleRate = 96'000.0F;
 
-auto hades  = grit::Hades{};
-auto patch  = daisy::patch_sm::DaisyPatchSM{};
-auto button = daisy::Switch{};
-auto toggle = daisy::Switch{};
+auto hades     = grit::Hades{};
+auto patch     = daisy::patch_sm::DaisyPatchSM{};
+auto button    = daisy::Switch{};
+auto toggle    = daisy::Switch{};
+auto io_buffer = etl::array<float, blockSize * 2U>{};
 
-auto audioCallback(
-    daisy::AudioHandle::InterleavingInputBuffer in,
-    daisy::AudioHandle::InterleavingOutputBuffer out,
-    size_t size
-) -> void
+auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::OutputBuffer out, size_t size) -> void
 {
     patch.ProcessAllControls();
     button.Debounce();
@@ -29,6 +26,13 @@ auto audioCallback(
         } else {
             hades.nextTextureAlgorithm();
         }
+    }
+
+    // Copy to interleaved
+    auto io = grit::StereoBlock<float>{io_buffer.data(), size};
+    for (auto i{0U}; i < size; ++i) {
+        io(0, i) = in[0][i];
+        io(1, i) = in[1][i];
     }
 
     auto const controls = grit::Hades::ControlInput{
@@ -44,12 +48,13 @@ auto audioCallback(
         .gate2          = patch.gate_in_2.State(),
     };
 
-    auto const buffer = grit::Hades::Buffer{
-        .input  = grit::StereoBlock<float const>{ in, size},
-        .output = grit::StereoBlock<float>{out, size},
-    };
+    auto const outputs = hades.process(io, controls);
 
-    auto const outputs = hades.process(buffer, controls);
+    // Copy from interleaved
+    for (auto i{0U}; i < size; ++i) {
+        out[0][i] = io(0, i);
+        out[1][i] = io(1, i);
+    }
 
     patch.WriteCvOut(daisy::patch_sm::CV_OUT_1, outputs.envelope * 5.0F);
     patch.WriteCvOut(daisy::patch_sm::CV_OUT_2, outputs.envelope * 5.0F);
