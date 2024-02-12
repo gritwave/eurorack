@@ -108,8 +108,8 @@ auto Hades::Channel::setParameter(Parameter const& parameter) -> void
     });
 
     _compressor.setParameter({
-        .threshold = remap(parameter.compressor, -12.0F, -20.0F),
-        .ratio     = remap(parameter.compressor, +4.0F, +10.0F),
+        .threshold = remap(parameter.compressor, -6.0F, -12.0F),
+        .ratio     = remap(parameter.compressor, +1.0F, +8.0F),
         .knee      = 2.0F,
         .attack    = attack,
         .release   = release,
@@ -128,16 +128,18 @@ auto Hades::Channel::prepare(float sampleRate) -> void
 
 auto Hades::Channel::operator()(float sample) -> etl::pair<float, float>
 {
-    auto const env = _envelope(sample);
-    _vinyl.setDeRez(etl::clamp(env, 0.0F, 1.0F));
+    auto const env     = _envelope(sample);
+    auto const texture = etl::clamp(env + _parameter.texture, 0.0F, 1.0F);
 
-    auto const noise = _whiteNoise() * 0.5F;
-    auto const vinyl = _vinyl(sample);
-    auto const mix   = _parameter.morph;
-    auto const mixed = (noise * mix) + (vinyl * (1.0F - mix));
+    // _vinyl.setDeRez(texture);
+    // auto const vinyl = _vinyl(sample);
 
-    auto const drive   = remap(_parameter.amp, 1.0F, 4.0F);  // +12dB
-    auto const distOut = _distortion(mixed * drive);
+    auto const noise = _whiteNoise() * 0.05F * _parameter.morph * texture;
+    // auto const mix   = ;
+    // auto const mixed = (noise * mix) + (vinyl * (1.0F - mix));
+
+    auto const drive   = remap(_parameter.amp, 1.0F, 8.0F);  // +18dB
+    auto const distOut = _distortion((sample + noise) * drive);
     return {_compressor(distOut, distOut), env};
 }
 
