@@ -61,7 +61,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3 " CACHE INTERNAL "C++ Compiler options for rele
 set(CMAKE_ASM_FLAGS_RELEASE "" CACHE INTERNAL "ASM Compiler options for release build type")
 set(CMAKE_EXE_LINKER_FLAGS_RELEASE "" CACHE INTERNAL "Linker options for release build type")
 
-set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g3" CACHE INTERNAL "C Compiler options for release build type")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -g3" CACHE INTERNAL "C++ Compiler options for release build type")
-set(CMAKE_ASM_FLAGS_RELWITHDEBINFO "-g3" CACHE INTERNAL "ASM Compiler options for release build type")
+set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g3 -gdwarf-4" CACHE INTERNAL "C Compiler options for release build type")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -g3 -gdwarf-4" CACHE INTERNAL "C++ Compiler options for release build type")
+set(CMAKE_ASM_FLAGS_RELWITHDEBINFO "-g3 -gdwarf-4" CACHE INTERNAL "ASM Compiler options for release build type")
 set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "" CACHE INTERNAL "Linker options for release build type")
