@@ -12,6 +12,7 @@
 #include <grit/audio/waveshape/half_wave_rectifier.hpp>
 #include <grit/audio/waveshape/hard_clipper.hpp>
 #include <grit/audio/waveshape/tanh_clipper.hpp>
+#include <grit/math/normalizable_range.hpp>
 #include <grit/math/remap.hpp>
 #include <grit/unit/decibel.hpp>
 
@@ -110,6 +111,9 @@ private:
         [[nodiscard]] auto operator()(float sample) -> etl::pair<float, float>;
 
     private:
+        static constexpr auto attackRange  = NormalizableRange<float>{1.0F, 100.0F, 25.0F};
+        static constexpr auto releaseRange = NormalizableRange<float>{1.0F, 500.0F, 100.0F};
+
         Parameter _parameter{};
 
         EnvelopeFollower<float> _envelope{};

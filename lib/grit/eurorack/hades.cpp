@@ -99,8 +99,8 @@ auto Hades::Channel::setParameter(Parameter const& parameter) -> void
 {
     _parameter = parameter;
 
-    auto const attack  = Milliseconds<float>{remap(parameter.attack, 1.0F, 50.0F)};
-    auto const release = Milliseconds<float>{remap(parameter.release, 1.0F, 500.0F)};
+    auto const attack  = Milliseconds<float>{attackRange.from0to1(parameter.attack)};
+    auto const release = Milliseconds<float>{releaseRange.from0to1(parameter.release)};
 
     _envelope.setParameter({
         .attack  = attack,
