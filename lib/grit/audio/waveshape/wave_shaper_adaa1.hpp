@@ -32,7 +32,7 @@ struct WaveShaperADAA1
     }
 
 private:
-    static constexpr auto const tolerance = Float(1e-5);
+    static constexpr auto const tolerance = Float(1e-3);
 
     Float _xm1{0};
     Float _ad1m1{0};
