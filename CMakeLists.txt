@@ -73,6 +73,7 @@ if(NOT CMAKE_CROSSCOMPILING)
             "lib/grit/fft/fft_test.cpp"
             "lib/grit/math/ilog2_test.cpp"
             "lib/grit/math/ipow_test.cpp"
+            "lib/grit/math/power_test.cpp"
             "lib/grit/math/normalizable_range_test.cpp"
             "lib/grit/math/static_lookup_table_test.cpp"
             "lib/grit/unit/decibel_test.cpp"
