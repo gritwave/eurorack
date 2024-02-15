@@ -34,6 +34,7 @@ if(CMAKE_CROSSCOMPILING)
     add_subdirectory(src/astra)
     add_subdirectory(src/benchmark)
     add_subdirectory(src/hades)
+    add_subdirectory(src/hermas)
     add_subdirectory(src/kyma)
 endif()
 

@@ -1,0 +1,28 @@
+---
+title: Gritwave Hermás
+---
+flowchart LR
+    subgraph Transient[TransientShaper]
+        Attack
+        Sustain
+        Strength
+        Smooth
+        SelectOut[Select CV Output]
+    end
+    
+    Knob1((Knob 1)) --> Attack
+    Knob2((Knob 2)) --> Sustain
+    Knob3((Knob 3)) --> Strength
+    Knob4((Knob 4)) --> Smooth
+  
+    %% Button
+    Switch --> SelectOut
+
+    CV5(CV5) --> Attack
+    CV6(CV6) --> Sustain
+    CV7(CV7) --> Strength
+    CV8(CV8) --> Smooth
+
+    Input --> |Signal| Transient
+    Transient --> |Signal| Output
+    Transient --> |Transient Gain| CVOut(CV Out)
