@@ -3,7 +3,7 @@
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_template_test_macros.hpp>
 
-TEMPLATE_TEST_CASE("grit/audio/noise: AirWindowsVinylDither", "", float, double)
+TEMPLATE_TEST_CASE("grit/audio/airwindows: AirWindowsVinylDither", "", float, double)
 {
     using Float = TestType;
 

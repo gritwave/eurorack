@@ -1,10 +1,10 @@
 #pragma once
 
+#include <grit/audio/airwindows/airwindows_vinyl_dither.hpp>
 #include <grit/audio/dynamic/compressor.hpp>
 #include <grit/audio/envelope/envelope_follower.hpp>
 #include <grit/audio/filter/dynamic_smoothing.hpp>
 #include <grit/audio/mix/cross_fade.hpp>
-#include <grit/audio/noise/airwindows_vinyl_dither.hpp>
 #include <grit/audio/noise/white_noise.hpp>
 #include <grit/audio/stereo/stereo_block.hpp>
 #include <grit/audio/waveshape/diode_rectifier.hpp>

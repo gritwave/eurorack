@@ -8,7 +8,7 @@
 
 namespace grit {
 
-/// \ingroup grit-audio-noise
+/// \ingroup grit-audio-airwindows
 template<etl::floating_point Float, typename URNG = etl::xoshiro128plusplus>
 struct AirWindowsVinylDither
 {

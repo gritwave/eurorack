@@ -2,6 +2,7 @@
 
 /// \defgroup grit-audio Audio
 
+#include <grit/audio/airwindows.hpp>
 #include <grit/audio/delay.hpp>
 #include <grit/audio/dynamic.hpp>
 #include <grit/audio/envelope.hpp>
