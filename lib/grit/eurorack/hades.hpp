@@ -1,5 +1,6 @@
 #pragma once
 
+#include <grit/audio/airwindows/airwindows_fire_amp.hpp>
 #include <grit/audio/airwindows/airwindows_grind_amp.hpp>
 #include <grit/audio/airwindows/airwindows_vinyl_dither.hpp>
 #include <grit/audio/dynamic/compressor.hpp>
@@ -74,6 +75,7 @@ private:
             FullWaveIndex,
             HalfWaveIndex,
             DiodeIndex,
+            FireAmpIndex,
             GrindAmpIndex,
             MaxIndex,
         };
@@ -84,6 +86,7 @@ private:
         FullWaveRectifier<float> _fullWave{};
         HalfWaveRectifier<float> _halfWave{};
         DiodeRectifier<float> _diode{};
+        AirWindowsFireAmp<float> _fireAmp{};
         AirWindowsGrindAmp<float> _grindAmp{};
     };
 

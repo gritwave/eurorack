@@ -82,7 +82,11 @@ auto Hades::Amp::next() -> void
     }
 }
 
-auto Hades::Amp::prepare(float sampleRate) -> void { _grindAmp.setSampleRate(sampleRate); }
+auto Hades::Amp::prepare(float sampleRate) -> void
+{
+    _fireAmp.setSampleRate(sampleRate);
+    _grindAmp.setSampleRate(sampleRate);
+}
 
 auto Hades::Amp::operator()(float sample) -> float
 {
@@ -92,6 +96,7 @@ auto Hades::Amp::operator()(float sample) -> float
         case FullWaveIndex: return _fullWave(sample);
         case HalfWaveIndex: return _halfWave(sample);
         case DiodeIndex: return _diode(sample);
+        case FireAmpIndex: return _fireAmp(sample);
         case GrindAmpIndex: return _grindAmp(sample);
         default: break;
     }

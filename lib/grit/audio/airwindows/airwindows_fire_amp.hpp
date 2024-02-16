@@ -692,10 +692,12 @@ auto AirWindowsFireAmp<Float, URNG>::operator()(Float const x) -> Float
             lastRefL[8]  = inputSampleL;
             inputSampleL = (inputSampleL + lastRefL[7]) * 0.5;
             lastRefL[7]  = lastRefL[8];  // continue, do not break
+            [[fallthrough]];
         case 3:
             lastRefL[8]  = inputSampleL;
             inputSampleL = (inputSampleL + lastRefL[6]) * 0.5;
             lastRefL[6]  = lastRefL[8];  // continue, do not break
+            [[fallthrough]];
         case 2:
             lastRefL[8]  = inputSampleL;
             inputSampleL = (inputSampleL + lastRefL[5]) * 0.5;
