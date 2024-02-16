@@ -86,8 +86,8 @@ private:
         FullWaveRectifier<float> _fullWave{};
         HalfWaveRectifier<float> _halfWave{};
         DiodeRectifier<float> _diode{};
-        AirWindowsFireAmp<float> _fireAmp{};
-        AirWindowsGrindAmp<float> _grindAmp{};
+        AirWindowsFireAmp<float> _fireAmp{42};
+        AirWindowsGrindAmp<float> _grindAmp{143};
     };
 
     struct Channel

@@ -22,7 +22,7 @@ struct AirWindowsGrindAmp
         Float mix{1};
     };
 
-    AirWindowsGrindAmp() = default;
+    AirWindowsGrindAmp();
     explicit AirWindowsGrindAmp(seed_type seed);
 
     auto setParameter(Parameter parameter) -> void;
@@ -114,6 +114,12 @@ private:
     Float fixE[fix_total];
     Float fixF[fix_total];  // filtering
 };
+
+template<etl::floating_point Float, typename URNG>
+AirWindowsGrindAmp<Float, URNG>::AirWindowsGrindAmp()
+{
+    reset();
+}
 
 template<etl::floating_point Float, typename URNG>
 AirWindowsGrindAmp<Float, URNG>::AirWindowsGrindAmp(seed_type seed) : _rng{seed}
