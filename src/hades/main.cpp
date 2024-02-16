@@ -4,7 +4,7 @@
 
 namespace hades {
 
-static constexpr auto blockSize  = 16U;
+static constexpr auto blockSize  = 32U;
 static constexpr auto sampleRate = 96'000.0F;
 
 auto processor = grit::Hades{};
