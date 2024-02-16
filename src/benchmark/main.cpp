@@ -66,10 +66,57 @@ template<typename Complex, unsigned N>
     return buf;
 };
 
-template<typename Float, int N, typename Kernel>
-struct C2cRoundtrip
+struct c2c_dit2_v3
 {
-    C2cRoundtrip() = default;
+    c2c_dit2_v3() = default;
+
+    template<etl::linalg::inout_vector Vec>
+    auto operator()(Vec x, auto const& twiddles) const noexcept -> void
+    {
+        auto const size  = x.size();
+        auto const order = grit::ilog2(size);
+
+        {
+            // stage 0
+            static constexpr auto const stage_length = 1;  // grit::ipow<2>(0)
+            static constexpr auto const stride       = 2;  // grit::ipow<2>(0 + 1)
+
+            for (auto k{0}; k < static_cast<int>(size); k += stride) {
+                auto const i1 = k;
+                auto const i2 = k + stage_length;
+
+                auto const temp = x(i1) + x(i2);
+                x(i2)           = x(i1) - x(i2);
+                x(i1)           = temp;
+            }
+        }
+
+        for (auto stage{1ULL}; stage < order; ++stage) {
+
+            auto const stage_length = grit::ipow<2ULL>(stage);
+            auto const stride       = grit::ipow<2ULL>(stage + 1);
+            auto const tw_stride    = grit::ipow<2ULL>(order - stage - 1ULL);
+
+            for (auto k{0ULL}; k < size; k += stride) {
+                for (auto pair{0ULL}; pair < stage_length; ++pair) {
+                    auto const tw = twiddles(pair * tw_stride);
+
+                    auto const i1 = k + pair;
+                    auto const i2 = k + pair + stage_length;
+
+                    auto const temp = x(i1) + tw * x(i2);
+                    x(i2)           = x(i1) - tw * x(i2);
+                    x(i1)           = temp;
+                }
+            }
+        }
+    }
+};
+
+template<typename Float, int N, typename Kernel>
+struct ComplexRoundtrip
+{
+    ComplexRoundtrip() = default;
 
     static constexpr auto size() { return N; }
 
@@ -96,9 +143,9 @@ private:
 };
 
 template<typename Float, int N>
-struct StaticC2cRoundtrip
+struct StaticComplexRoundtrip
 {
-    StaticC2cRoundtrip() = default;
+    StaticComplexRoundtrip() = default;
 
     static constexpr auto size() { return N; }
 
@@ -130,47 +177,25 @@ auto main() -> int
     daisy::patch_sm::DaisyPatchSM::StartLog(true);
     daisy::patch_sm::DaisyPatchSM::PrintLine("Daisy Patch SM started. Test Beginning");
 
-    // etl::timeit<64>("c2c_roundtrip<float, 16, v1>      - ", c2c_roundtrip<float, 16, grit::fft::c2c_dit2_v1>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 32, v1>      - ", c2c_roundtrip<float, 32, grit::fft::c2c_dit2_v1>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 64, v1>      - ", c2c_roundtrip<float, 64, grit::fft::c2c_dit2_v1>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 128, v1>     - ", c2c_roundtrip<float, 128, grit::fft::c2c_dit2_v1>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 256, v1>     - ", c2c_roundtrip<float, 256, grit::fft::c2c_dit2_v1>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 512, v1>     - ", c2c_roundtrip<float, 512, grit::fft::c2c_dit2_v1>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 1024, v1>    - ", c2c_roundtrip<float, 1024, grit::fft::c2c_dit2_v1>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 2048, v1>    - ", c2c_roundtrip<float, 2048, grit::fft::c2c_dit2_v1>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 4096, v1>    - ", c2c_roundtrip<float, 4096, grit::fft::c2c_dit2_v1>{});
-    // astra::mcu.PrintLine("");
-
-    // etl::timeit<64>("c2c_roundtrip<float, 16, v2>      - ", c2c_roundtrip<float, 16, grit::fft::c2c_dit2_v2>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 32, v2>      - ", c2c_roundtrip<float, 32, grit::fft::c2c_dit2_v2>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 64, v2>      - ", c2c_roundtrip<float, 64, grit::fft::c2c_dit2_v2>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 128, v2>     - ", c2c_roundtrip<float, 128, grit::fft::c2c_dit2_v2>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 256, v2>     - ", c2c_roundtrip<float, 256, grit::fft::c2c_dit2_v2>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 512, v2>     - ", c2c_roundtrip<float, 512, grit::fft::c2c_dit2_v2>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 1024, v2>    - ", c2c_roundtrip<float, 1024, grit::fft::c2c_dit2_v2>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 2048, v2>    - ", c2c_roundtrip<float, 2048, grit::fft::c2c_dit2_v2>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 4096, v2>    - ", c2c_roundtrip<float, 4096, grit::fft::c2c_dit2_v2>{});
-    // astra::mcu.PrintLine("");
-
-    // etl::timeit<64>("c2c_roundtrip<float, 16, v3>      - ", c2c_roundtrip<float, 16, grit::fft::c2c_dit2_v3>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 32, v3>      - ", c2c_roundtrip<float, 32, grit::fft::c2c_dit2_v3>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 64, v3>      - ", c2c_roundtrip<float, 64, grit::fft::c2c_dit2_v3>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 128, v3>     - ", c2c_roundtrip<float, 128, grit::fft::c2c_dit2_v3>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 256, v3>     - ", c2c_roundtrip<float, 256, grit::fft::c2c_dit2_v3>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 512, v3>     - ", c2c_roundtrip<float, 512, grit::fft::c2c_dit2_v3>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 1024, v3>    - ", c2c_roundtrip<float, 1024, grit::fft::c2c_dit2_v3>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 2048, v3>    - ", c2c_roundtrip<float, 2048, grit::fft::c2c_dit2_v3>{});
-    // etl::timeit<64>("c2c_roundtrip<float, 4096, v3>    - ", c2c_roundtrip<float, 4096, grit::fft::c2c_dit2_v3>{});
+    etl::timeit<64>("ComplexRoundtrip<float, 16, v3>      - ", ComplexRoundtrip<float, 16, c2c_dit2_v3>{});
+    etl::timeit<64>("ComplexRoundtrip<float, 32, v3>      - ", ComplexRoundtrip<float, 32, c2c_dit2_v3>{});
+    etl::timeit<64>("ComplexRoundtrip<float, 64, v3>      - ", ComplexRoundtrip<float, 64, c2c_dit2_v3>{});
+    etl::timeit<64>("ComplexRoundtrip<float, 128, v3>     - ", ComplexRoundtrip<float, 128, c2c_dit2_v3>{});
+    etl::timeit<64>("ComplexRoundtrip<float, 256, v3>     - ", ComplexRoundtrip<float, 256, c2c_dit2_v3>{});
+    etl::timeit<64>("ComplexRoundtrip<float, 512, v3>     - ", ComplexRoundtrip<float, 512, c2c_dit2_v3>{});
+    etl::timeit<64>("ComplexRoundtrip<float, 1024, v3>    - ", ComplexRoundtrip<float, 1024, c2c_dit2_v3>{});
+    etl::timeit<64>("ComplexRoundtrip<float, 2048, v3>    - ", ComplexRoundtrip<float, 2048, c2c_dit2_v3>{});
+    etl::timeit<64>("ComplexRoundtrip<float, 4096, v3>    - ", ComplexRoundtrip<float, 4096, c2c_dit2_v3>{});
     daisy::patch_sm::DaisyPatchSM::PrintLine("");
 
-    // etl::timeit<64>("static_c2c_roundtrip<float, 64>   - ", StaticC2cRoundtrip<float, 64>{});
-    etl::timeit<64>("static_c2c_roundtrip<float, 128>  - ", StaticC2cRoundtrip<float, 128>{});
-    etl::timeit<64>("static_c2c_roundtrip<float, 256>  - ", StaticC2cRoundtrip<float, 256>{});
-    etl::timeit<64>("static_c2c_roundtrip<float, 512>  - ", StaticC2cRoundtrip<float, 512>{});
-    etl::timeit<64>("static_c2c_roundtrip<float, 1024> - ", StaticC2cRoundtrip<float, 1024>{});
-    etl::timeit<64>("static_c2c_roundtrip<float, 2048> - ", StaticC2cRoundtrip<float, 2048>{});
-    etl::timeit<64>("static_c2c_roundtrip<float, 4096> - ", StaticC2cRoundtrip<float, 4096>{});
-    daisy::patch_sm::DaisyPatchSM::PrintLine("");
+    // etl::timeit<64>("StaticComplexRoundtrip<float, 64>   - ", StaticComplexRoundtrip<float, 64>{});
+    // etl::timeit<64>("StaticComplexRoundtrip<float, 128>  - ", StaticComplexRoundtrip<float, 128>{});
+    // etl::timeit<64>("StaticComplexRoundtrip<float, 256>  - ", StaticComplexRoundtrip<float, 256>{});
+    // etl::timeit<64>("StaticComplexRoundtrip<float, 512>  - ", StaticComplexRoundtrip<float, 512>{});
+    // etl::timeit<64>("StaticComplexRoundtrip<float, 1024> - ", StaticComplexRoundtrip<float, 1024>{});
+    // etl::timeit<64>("StaticComplexRoundtrip<float, 2048> - ", StaticComplexRoundtrip<float, 2048>{});
+    // etl::timeit<64>("StaticComplexRoundtrip<float, 4096> - ", StaticComplexRoundtrip<float, 4096>{});
+    // daisy::patch_sm::DaisyPatchSM::PrintLine("");
 
     while (true) {}
 }
