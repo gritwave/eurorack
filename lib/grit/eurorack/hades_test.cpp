@@ -71,4 +71,13 @@ TEST_CASE("grit/audio/eurorack: Hades")
             REQUIRE(etl::isfinite(block(1, i)));
         }
     }
+
+    for (auto i{0}; i < 128; ++i) {
+        hades.nextDistortionAlgorithm();
+        [[maybe_unused]] auto const cv = hades.process(block, {});
+        for (auto i{0}; i < blockSize; ++i) {
+            REQUIRE(etl::isfinite(block(0, i)));
+            REQUIRE(etl::isfinite(block(1, i)));
+        }
+    }
 }
