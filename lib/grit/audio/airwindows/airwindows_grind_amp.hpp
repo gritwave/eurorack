@@ -1,5 +1,7 @@
 #pragma once
 
+#include <grit/math/static_lookup_table_transform.hpp>
+
 #include <etl/algorithm.hpp>
 #include <etl/cmath.hpp>
 #include <etl/concepts.hpp>
@@ -32,65 +34,71 @@ struct AirWindowsGrindAmp
     auto reset() -> void;
 
 private:
+    static constexpr auto sineLUT = StaticLookupTableTransform<Float, 255>{
+        [](auto x) { return etl::sin(x); },
+        Float(0),
+        Float(1.57079633),
+    };
+
     URNG _rng{42};
     etl::uniform_real_distribution<Float> _dist{Float(0), Float(1)};
 
     Parameter _parameter{};
     Float _sampleRate{};
 
-    Float smoothA;
-    Float smoothB;
-    Float smoothC;
-    Float smoothD;
-    Float smoothE;
-    Float smoothF;
-    Float smoothG;
-    Float smoothH;
-    Float smoothI;
-    Float smoothJ;
-    Float smoothK;
-    Float secondA;
-    Float secondB;
-    Float secondC;
-    Float secondD;
-    Float secondE;
-    Float secondF;
-    Float secondG;
-    Float secondH;
-    Float secondI;
-    Float secondJ;
-    Float secondK;
-    Float thirdA;
-    Float thirdB;
-    Float thirdC;
-    Float thirdD;
-    Float thirdE;
-    Float thirdF;
-    Float thirdG;
-    Float thirdH;
-    Float thirdI;
-    Float thirdJ;
-    Float thirdK;
-    Float iirSampleA;
-    Float iirSampleB;
-    Float iirSampleC;
-    Float iirSampleD;
-    Float iirSampleE;
-    Float iirSampleF;
-    Float iirSampleG;
-    Float iirSampleH;
-    Float iirSampleI;
-    Float iirLowpass;
-    Float iirSub;
-    Float storeSample;  // amp
+    Float smoothA{};
+    Float smoothB{};
+    Float smoothC{};
+    Float smoothD{};
+    Float smoothE{};
+    Float smoothF{};
+    Float smoothG{};
+    Float smoothH{};
+    Float smoothI{};
+    Float smoothJ{};
+    Float smoothK{};
+    Float secondA{};
+    Float secondB{};
+    Float secondC{};
+    Float secondD{};
+    Float secondE{};
+    Float secondF{};
+    Float secondG{};
+    Float secondH{};
+    Float secondI{};
+    Float secondJ{};
+    Float secondK{};
+    Float thirdA{};
+    Float thirdB{};
+    Float thirdC{};
+    Float thirdD{};
+    Float thirdE{};
+    Float thirdF{};
+    Float thirdG{};
+    Float thirdH{};
+    Float thirdI{};
+    Float thirdJ{};
+    Float thirdK{};
+    Float iirSampleA{};
+    Float iirSampleB{};
+    Float iirSampleC{};
+    Float iirSampleD{};
+    Float iirSampleE{};
+    Float iirSampleF{};
+    Float iirSampleG{};
+    Float iirSampleH{};
+    Float iirSampleI{};
+    Float iirLowpass{};
+    Float iirSub{};
+    Float storeSample{};  // amp
 
-    Float bL[90];
-    Float lastCabSample;
-    Float smoothCabA;
-    Float smoothCabB;  // cab
+    Float bL[90]{};
+    Float lastCabSample{};
+    Float smoothCabA{};
+    Float smoothCabB{};  // cab
 
-    Float lastRef[10];
-    int cycle;  // undersampling
+    Float lastRef[10]{};
+    int cycle{};  // undersampling
 
     // fixed frequency biquad filter for ultrasonics, stereo
     enum
@@ -107,12 +115,23 @@ private:
         fix_total
     };
 
-    Float fixA[fix_total];
-    Float fixB[fix_total];
-    Float fixC[fix_total];
-    Float fixD[fix_total];
-    Float fixE[fix_total];
-    Float fixF[fix_total];  // filtering
+    Float fixA[fix_total]{};
+    Float fixB[fix_total]{};
+    Float fixC[fix_total]{};
+    Float fixD[fix_total]{};
+    Float fixE[fix_total]{};
+    Float fixF[fix_total]{};  // filtering
+
+    // Parameter Temporary
+    Float inputlevel{};
+    Float EQ{};
+    Float BEQ{};
+    Float toneEQ{};
+    Float trimEQ{};
+    Float outputlevel{};
+    Float bassdrive{};
+    Float wet{};
+    int cycleEnd{};
 };
 
 template<etl::floating_point Float, typename URNG>
@@ -131,18 +150,7 @@ template<etl::floating_point Float, typename URNG>
 auto AirWindowsGrindAmp<Float, URNG>::setParameter(Parameter parameter) -> void
 {
     _parameter = parameter;
-}
 
-template<etl::floating_point Float, typename URNG>
-auto AirWindowsGrindAmp<Float, URNG>::setSampleRate(Float sampleRate) -> void
-{
-    _sampleRate = sampleRate;
-    reset();
-}
-
-template<etl::floating_point Float, typename URNG>
-auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
-{
     static constexpr auto const pi = static_cast<Float>(etl::numbers::pi);
 
     auto const A = _parameter.gain;
@@ -150,10 +158,9 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
     auto const C = _parameter.output;
     auto const D = _parameter.mix;
 
-    Float overallscale = Float(1);
-    overallscale /= 44100.0;
+    Float overallscale = Float(1) / Float(44100.0);
     overallscale *= _sampleRate;
-    int cycleEnd = etl::floor(overallscale);
+    cycleEnd = etl::floor(overallscale);
     if (cycleEnd < 1)
         cycleEnd = 1;
     if (cycleEnd > 4)
@@ -162,23 +169,23 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
     if (cycle > cycleEnd - 1)
         cycle = cycleEnd - 1;  // sanity check
 
-    Float inputlevel = etl::pow(A, Float(2));
+    inputlevel       = etl::pow(A, Float(2));
     Float samplerate = _sampleRate;
-    Float trimEQ     = 1.1 - B;
-    Float toneEQ     = trimEQ / 1.2;
-    trimEQ /= 50.0;
-    trimEQ += 0.165;
-    Float EQ          = ((trimEQ - (toneEQ / Float(6.1))) / samplerate) * Float(22050);
-    Float BEQ         = ((trimEQ + (toneEQ / Float(2.1))) / samplerate) * Float(22050);
-    Float outputlevel = C;
-    Float wet         = D;
-    Float bassdrive   = Float(1.57079633) * (Float(2.5) - toneEQ);
+    trimEQ           = Float(1.1) - B;
+    toneEQ           = trimEQ / Float(1.2);
+    trimEQ /= Float(50.0);
+    trimEQ += Float(0.165);
+    EQ          = ((trimEQ - (toneEQ / Float(6.1))) / samplerate) * Float(22050);
+    BEQ         = ((trimEQ + (toneEQ / Float(2.1))) / samplerate) * Float(22050);
+    outputlevel = C;
+    wet         = D;
+    bassdrive   = Float(1.57079633) * (Float(2.5) - toneEQ);
 
     Float cutoff = (Float(18000) + (B * Float(1000))) / _sampleRate;
-    if (cutoff > 0.49)
-        cutoff = 0.49;  // don't crash if run at 44.1k
-    if (cutoff < 0.001)
-        cutoff = 0.001;  // or if cutoff's too low
+    if (cutoff > Float(0.49))
+        cutoff = Float(0.49);  // don't crash if run at 44.1k
+    if (cutoff < Float(0.001))
+        cutoff = Float(0.001);  // or if cutoff's too low
 
     fixF[fix_freq] = fixE[fix_freq] = fixD[fix_freq] = fixC[fix_freq] = fixB[fix_freq] = fixA[fix_freq] = cutoff;
 
@@ -236,7 +243,19 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
     fixF[fix_a2] = fixF[fix_a0];
     fixF[fix_b1] = Float(2) * (K * K - Float(1)) * norm;
     fixF[fix_b2] = (Float(1) - K / fixF[fix_reso] + K * K) * norm;
+}
 
+template<etl::floating_point Float, typename URNG>
+auto AirWindowsGrindAmp<Float, URNG>::setSampleRate(Float sampleRate) -> void
+{
+    _sampleRate = sampleRate;
+    reset();
+    setParameter(_parameter);
+}
+
+template<etl::floating_point Float, typename URNG>
+auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
+{
     auto input    = x;
     auto dryInput = input;
 
@@ -246,15 +265,15 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
     input          = outSample;  // fixed biquad filtering ultrasonics
 
     input *= inputlevel;
-    iirSampleA = (iirSampleA * (1.0 - EQ)) + (input * EQ);
+    iirSampleA = (iirSampleA * (Float(1) - EQ)) + (input * EQ);
     input      = input - (iirSampleA * 0.92);
     // highpass
-    if (input > 1.0)
-        input = 1.0;
-    if (input < -1.0)
-        input = -1.0;
+    if (input > Float(1))
+        input = Float(1);
+    if (input < Float(-1))
+        input = Float(-1);
     auto bridgerectifier = etl::abs(input);
-    auto inverse         = (bridgerectifier + 1.0) / 2.0;
+    auto inverse         = (bridgerectifier + Float(1)) * Float(0.5);
     bridgerectifier      = (smoothA + (secondA * inverse) + (thirdA * bridgerectifier) + input);
     thirdA               = secondA;
     secondA              = smoothA;
@@ -268,16 +287,16 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
     input        = outSample;  // fixed biquad filtering ultrasonics
 
     input *= inputlevel;
-    iirSampleB = (iirSampleB * (1.0 - EQ)) + (input * EQ);
+    iirSampleB = (iirSampleB * (Float(1) - EQ)) + (input * EQ);
     input      = input - (iirSampleB * 0.79);
     // highpass
-    if (input > 1.0)
-        input = 1.0;
-    if (input < -1.0)
-        input = -1.0;
+    if (input > Float(1))
+        input = Float(1);
+    if (input < Float(-1))
+        input = Float(-1);
     // overdrive
     bridgerectifier = etl::abs(input);
-    inverse         = (bridgerectifier + 1.0) / 2.0;
+    inverse         = (bridgerectifier + Float(1)) * Float(0.5);
     bridgerectifier = (smoothB + (secondB * inverse) + (thirdB * bridgerectifier) + input);
     thirdB          = secondB;
     secondB         = smoothB;
@@ -285,22 +304,22 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
     input           = bridgerectifier;
     // three-sample averaging lowpass
 
-    iirSampleC      = (iirSampleC * (1.0 - BEQ)) + (basscatchL * BEQ);
+    iirSampleC      = (iirSampleC * (Float(1) - BEQ)) + (basscatchL * BEQ);
     basscatchL      = iirSampleC * bassdrive;
     bridgerectifier = etl::abs(basscatchL);
     if (bridgerectifier > 1.57079633)
         bridgerectifier = 1.57079633;
-    bridgerectifier = etl::sin(bridgerectifier);
+    bridgerectifier = sineLUT(bridgerectifier);
     if (basscatchL > 0.0)
         basscatchL = bridgerectifier;
     else
         basscatchL = -bridgerectifier;
-    if (input > 1.0)
-        input = 1.0;
-    if (input < -1.0)
-        input = -1.0;
+    if (input > Float(1))
+        input = Float(1);
+    if (input < Float(-1))
+        input = Float(-1);
     // overdrive
-    inverse         = (bridgerectifier + 1.0) / 2.0;
+    inverse         = (bridgerectifier + Float(1)) * Float(0.5);
     bridgerectifier = (smoothC + (secondC * inverse) + (thirdC * bridgerectifier) + input);
     thirdC          = secondC;
     secondC         = smoothC;
@@ -313,22 +332,22 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
     fixC[fix_s2] = (input * fixC[fix_a2]) - (outSample * fixC[fix_b2]);
     input        = outSample;  // fixed biquad filtering ultrasonics
 
-    iirSampleD      = (iirSampleD * (1.0 - BEQ)) + (basscatchL * BEQ);
+    iirSampleD      = (iirSampleD * (Float(1) - BEQ)) + (basscatchL * BEQ);
     basscatchL      = iirSampleD * bassdrive;
     bridgerectifier = etl::abs(basscatchL);
     if (bridgerectifier > 1.57079633)
         bridgerectifier = 1.57079633;
-    bridgerectifier = etl::sin(bridgerectifier);
-    if (basscatchL > 0.0)
+    bridgerectifier = sineLUT(bridgerectifier);
+    if (basscatchL > Float(0.0))
         basscatchL = bridgerectifier;
     else
         basscatchL = -bridgerectifier;
-    if (input > 1.0)
-        input = 1.0;
-    if (input < -1.0)
-        input = -1.0;
+    if (input > Float(1.0))
+        input = Float(1.0);
+    if (input < Float(-1.0))
+        input = Float(-1.0);
     // overdrive
-    inverse         = (bridgerectifier + 1.0) / 2.0;
+    inverse         = (bridgerectifier + Float(1.0)) * Float(0.5);
     bridgerectifier = (smoothD + (secondD * inverse) + (thirdD * bridgerectifier) + input);
     thirdD          = secondD;
     secondD         = smoothD;
@@ -346,7 +365,7 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
     bridgerectifier = etl::abs(basscatchL);
     if (bridgerectifier > 1.57079633)
         bridgerectifier = 1.57079633;
-    bridgerectifier = etl::sin(bridgerectifier);
+    bridgerectifier = sineLUT(bridgerectifier);
     if (basscatchL > 0.0)
         basscatchL = bridgerectifier;
     else
@@ -356,7 +375,7 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
     if (input < -1.0)
         input = -1.0;
     // overdrive
-    inverse         = (bridgerectifier + 1.0) / 2.0;
+    inverse         = (bridgerectifier + Float(1)) * Float(0.5);
     bridgerectifier = (smoothE + (secondE * inverse) + (thirdE * bridgerectifier) + input);
     thirdE          = secondE;
     secondE         = smoothE;
@@ -364,12 +383,12 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
     input           = bridgerectifier;
     // three-sample averaging lowpass
 
-    iirSampleF      = (iirSampleF * (1.0 - BEQ)) + (basscatchL * BEQ);
+    iirSampleF      = (iirSampleF * (Float(1) - BEQ)) + (basscatchL * BEQ);
     basscatchL      = iirSampleF * bassdrive;
     bridgerectifier = etl::abs(basscatchL);
     if (bridgerectifier > 1.57079633)
         bridgerectifier = 1.57079633;
-    bridgerectifier = etl::sin(bridgerectifier);
+    bridgerectifier = sineLUT(bridgerectifier);
     if (basscatchL > 0.0)
         basscatchL = bridgerectifier;
     else
@@ -379,7 +398,7 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
     if (input < -1.0)
         input = -1.0;
     // overdrive
-    inverse         = (bridgerectifier + 1.0) / 2.0;
+    inverse         = (bridgerectifier + Float(1)) * Float(0.5);
     bridgerectifier = (smoothF + (secondF * inverse) + (thirdF * bridgerectifier) + input);
     thirdF          = secondF;
     secondF         = smoothF;
@@ -397,7 +416,7 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
     bridgerectifier = etl::abs(basscatchL);
     if (bridgerectifier > 1.57079633)
         bridgerectifier = 1.57079633;
-    bridgerectifier = etl::sin(bridgerectifier);
+    bridgerectifier = sineLUT(bridgerectifier);
     if (basscatchL > 0.0)
         basscatchL = bridgerectifier;
     else
@@ -407,7 +426,7 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
     if (input < -1.0)
         input = -1.0;
     // overdrive
-    inverse         = (bridgerectifier + 1.0) / 2.0;
+    inverse         = (bridgerectifier + Float(1)) * Float(0.5);
     bridgerectifier = (smoothG + (secondG * inverse) + (thirdG * bridgerectifier) + input);
     thirdG          = secondG;
     secondG         = smoothG;
@@ -415,22 +434,22 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
     input           = bridgerectifier;
     // three-sample averaging lowpass
 
-    iirSampleH      = (iirSampleH * (1.0 - BEQ)) + (basscatchL * BEQ);
+    iirSampleH      = (iirSampleH * (Float(1) - BEQ)) + (basscatchL * BEQ);
     basscatchL      = iirSampleH * bassdrive;
     bridgerectifier = etl::abs(basscatchL);
     if (bridgerectifier > 1.57079633)
         bridgerectifier = 1.57079633;
-    bridgerectifier = etl::sin(bridgerectifier);
+    bridgerectifier = sineLUT(bridgerectifier);
     if (basscatchL > 0.0)
         basscatchL = bridgerectifier;
     else
         basscatchL = -bridgerectifier;
-    if (input > 1.0)
-        input = 1.0;
-    if (input < -1.0)
-        input = -1.0;
+    if (input > Float(1))
+        input = Float(1);
+    if (input < Float(-1))
+        input = Float(-1);
     // overdrive
-    inverse         = (bridgerectifier + 1.0) / 2.0;
+    inverse         = (bridgerectifier + Float(1)) * Float(0.5);
     bridgerectifier = (smoothH + (secondH * inverse) + (thirdH * bridgerectifier) + input);
     thirdH          = secondH;
     secondH         = smoothH;
@@ -443,22 +462,22 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
     fixF[fix_s2] = (input * fixF[fix_a2]) - (outSample * fixF[fix_b2]);
     input        = outSample;  // fixed biquad filtering ultrasonics
 
-    iirSampleI      = (iirSampleI * (1.0 - BEQ)) + (basscatchL * BEQ);
+    iirSampleI      = (iirSampleI * (Float(1) - BEQ)) + (basscatchL * BEQ);
     basscatchL      = iirSampleI * bassdrive;
     bridgerectifier = etl::abs(basscatchL);
     if (bridgerectifier > 1.57079633)
         bridgerectifier = 1.57079633;
-    bridgerectifier = etl::sin(bridgerectifier);
+    bridgerectifier = sineLUT(bridgerectifier);
     if (basscatchL > 0.0)
         basscatchL = bridgerectifier;
     else
         basscatchL = -bridgerectifier;
-    if (input > 1.0)
-        input = 1.0;
-    if (input < -1.0)
-        input = -1.0;
+    if (input > Float(1))
+        input = Float(1);
+    if (input < Float(-1))
+        input = Float(-1);
     // overdrive
-    inverse         = (bridgerectifier + 1.0) / 2.0;
+    inverse         = (bridgerectifier + Float(1)) * Float(0.5);
     bridgerectifier = (smoothI + (secondI * inverse) + (thirdI * bridgerectifier) + input);
     thirdI          = secondI;
     secondI         = smoothI;
@@ -466,7 +485,7 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
     input           = bridgerectifier;
     // three-sample averaging lowpass
     bridgerectifier = etl::abs(input);
-    inverse         = (bridgerectifier + 1.0) / 2.0;
+    inverse         = (bridgerectifier + Float(1)) * Float(0.5);
     bridgerectifier = (smoothJ + (secondJ * inverse) + (thirdJ * bridgerectifier) + input);
     thirdJ          = secondJ;
     secondJ         = smoothJ;
@@ -474,7 +493,7 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
     input           = bridgerectifier;
     // three-sample averaging lowpass
     bridgerectifier = etl::abs(input);
-    inverse         = (bridgerectifier + 1.0) / 2.0;
+    inverse         = (bridgerectifier + Float(1)) * Float(0.5);
     bridgerectifier = (smoothK + (secondK * inverse) + (thirdK * bridgerectifier) + input);
     thirdK          = secondK;
     secondK         = smoothK;
@@ -482,28 +501,28 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
     input           = bridgerectifier;
     // three-sample averaging lowpass
 
-    basscatchL /= 2.0;
+    basscatchL *= Float(0.5);
     input = (input * toneEQ) + basscatchL;
     // extra lowpass for 4*12" speakers
 
     bridgerectifier = etl::abs(input * outputlevel);
     if (bridgerectifier > 1.57079633)
         bridgerectifier = 1.57079633;
-    bridgerectifier = etl::sin(bridgerectifier);
+    bridgerectifier = sineLUT(bridgerectifier);
     if (input > 0.0)
         input = bridgerectifier;
     else
         input = -bridgerectifier;
     input += basscatchL;
     // split bass between overdrive and clean
-    input /= (1.0 + toneEQ);
+    input /= (Float(1) + toneEQ);
 
-    auto randy  = (_dist(_rng) * 0.061);
+    auto randy  = (_dist(_rng) * Float(0.061));
     input       = ((input * (1 - randy)) + (storeSample * randy)) * outputlevel;
     storeSample = input;
 
-    if (wet != 1.0) {
-        input = (input * wet) + (dryInput * (1.0 - wet));
+    if (wet != Float(1)) {
+        input = (input * wet) + (dryInput * (Float(1) - wet));
     }
     // Dry/Wet control, defaults to the last slider
     // amp
@@ -511,7 +530,7 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
     cycle++;
     if (cycle == cycleEnd) {
 
-        auto temp  = (input + smoothCabA) / 3.0;
+        auto temp  = (input + smoothCabA) / Float(3);
         smoothCabA = input;
         input      = temp;
 
@@ -599,96 +618,97 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
         bL[2]  = bL[1];
         bL[1]  = bL[0];
         bL[0]  = input;
-        input += (bL[1] * (1.29550481610475132 + (0.19713872057074355 * etl::abs(bL[1]))));
-        input += (bL[2] * (1.42302569895462616 + (0.30599505521284787 * etl::abs(bL[2]))));
-        input += (bL[3] * (1.28728195804197565 + (0.23168333460446133 * etl::abs(bL[3]))));
-        input += (bL[4] * (0.88553784290822690 + (0.14263256172918892 * etl::abs(bL[4]))));
-        input += (bL[5] * (0.37129054918432319 + (0.00150040944205920 * etl::abs(bL[5]))));
-        input -= (bL[6] * (0.12150959412556320 + (0.32776273620569107 * etl::abs(bL[6]))));
-        input -= (bL[7] * (0.44900065463203775 + (0.74101214925298819 * etl::abs(bL[7]))));
-        input -= (bL[8] * (0.54058781908186482 + (1.07821707459008387 * etl::abs(bL[8]))));
-        input -= (bL[9] * (0.49361966401791391 + (1.23540109014850508 * etl::abs(bL[9]))));
-        input -= (bL[10] * (0.39819495093078133 + (1.11247213730917749 * etl::abs(bL[10]))));
-        input -= (bL[11] * (0.31379279985435521 + (0.80330360359638298 * etl::abs(bL[11]))));
-        input -= (bL[12] * (0.30744359242808555 + (0.42132528876858205 * etl::abs(bL[12]))));
-        input -= (bL[13] * (0.33943170284673974 + (0.09183418349389982 * etl::abs(bL[13]))));
-        input -= (bL[14] * (0.33838775119286391 - (0.06453051658561271 * etl::abs(bL[14]))));
-        input -= (bL[15] * (0.30682305697961665 - (0.09549380253249232 * etl::abs(bL[15]))));
-        input -= (bL[16] * (0.23408741339295336 - (0.08083404732361277 * etl::abs(bL[16]))));
-        input -= (bL[17] * (0.10411746814025019 + (0.00253651281245780 * etl::abs(bL[17]))));
-        input += (bL[18] * (0.00133623776084696 - (0.04447267870865820 * etl::abs(bL[18]))));
-        input += (bL[19] * (0.02461903992114161 + (0.07530671732655550 * etl::abs(bL[19]))));
-        input += (bL[20] * (0.02086715842475373 + (0.22795860236804899 * etl::abs(bL[20]))));
-        input += (bL[21] * (0.02761433637100917 + (0.26108320417844094 * etl::abs(bL[21]))));
-        input += (bL[22] * (0.04475285369162533 + (0.19160705011061663 * etl::abs(bL[22]))));
-        input += (bL[23] * (0.09447338372862381 + (0.03681550508743799 * etl::abs(bL[23]))));
-        input += (bL[24] * (0.13445890343722280 - (0.13713036462146147 * etl::abs(bL[24]))));
-        input += (bL[25] * (0.13872868945088121 - (0.22401242373298191 * etl::abs(bL[25]))));
-        input += (bL[26] * (0.14915650097434549 - (0.26718804981526367 * etl::abs(bL[26]))));
-        input += (bL[27] * (0.12766643217091783 - (0.27745664795660430 * etl::abs(bL[27]))));
-        input += (bL[28] * (0.03675849788393101 - (0.18338278173550679 * etl::abs(bL[28]))));
-        input -= (bL[29] * (0.06307306864232835 + (0.06089480869040766 * etl::abs(bL[29]))));
-        input -= (bL[30] * (0.14947389348962944 + (0.04642103054798480 * etl::abs(bL[30]))));
-        input -= (bL[31] * (0.25235266566401526 + (0.08423062596460507 * etl::abs(bL[31]))));
-        input -= (bL[32] * (0.33496344048679683 + (0.09808328256677995 * etl::abs(bL[32]))));
-        input -= (bL[33] * (0.36590030482175445 + (0.10622650888958179 * etl::abs(bL[33]))));
-        input -= (bL[34] * (0.35015197011464372 + (0.08982043516016047 * etl::abs(bL[34]))));
-        input -= (bL[35] * (0.26808437585665090 + (0.00735561860229533 * etl::abs(bL[35]))));
-        input -= (bL[36] * (0.11624318543291220 - (0.07142484314510467 * etl::abs(bL[36]))));
-        input += (bL[37] * (0.05617084165377551 + (0.11785854050350089 * etl::abs(bL[37]))));
-        input += (bL[38] * (0.20540028692589385 + (0.20479174663329586 * etl::abs(bL[38]))));
-        input += (bL[39] * (0.30455415003043818 + (0.29074864580096849 * etl::abs(bL[39]))));
-        input += (bL[40] * (0.33810750937829476 + (0.29182307921316802 * etl::abs(bL[40]))));
-        input += (bL[41] * (0.31936133365277430 + (0.26535537727394987 * etl::abs(bL[41]))));
-        input += (bL[42] * (0.27388548321981876 + (0.19735049990538350 * etl::abs(bL[42]))));
-        input += (bL[43] * (0.21454597517994098 + (0.06415909270247236 * etl::abs(bL[43]))));
-        input += (bL[44] * (0.15001045817707717 - (0.03831118543404573 * etl::abs(bL[44]))));
-        input += (bL[45] * (0.07283437284653138 - (0.09281952429543777 * etl::abs(bL[45]))));
-        input -= (bL[46] * (0.03917872184241358 + (0.14306291461398810 * etl::abs(bL[46]))));
-        input -= (bL[47] * (0.16695932032148642 + (0.19138995946950504 * etl::abs(bL[47]))));
-        input -= (bL[48] * (0.27055854466909462 + (0.22531296466343192 * etl::abs(bL[48]))));
-        input -= (bL[49] * (0.33256357307578271 + (0.23305840475692102 * etl::abs(bL[49]))));
-        input -= (bL[50] * (0.33459770116834442 + (0.24091822618917569 * etl::abs(bL[50]))));
-        input -= (bL[51] * (0.27156687236338090 + (0.24062938573512443 * etl::abs(bL[51]))));
-        input -= (bL[52] * (0.17197093288412094 + (0.19083085091993421 * etl::abs(bL[52]))));
-        input -= (bL[53] * (0.06738628195910543 + (0.10268609751019808 * etl::abs(bL[53]))));
-        input += (bL[54] * (0.00222429218204290 + (0.01439664435720548 * etl::abs(bL[54]))));
-        input += (bL[55] * (0.01346992803494091 + (0.15947137113534526 * etl::abs(bL[55]))));
-        input -= (bL[56] * (0.02038911881377448 - (0.26763170752416160 * etl::abs(bL[56]))));
-        input -= (bL[57] * (0.08233579178189687 - (0.29415931086406055 * etl::abs(bL[57]))));
-        input -= (bL[58] * (0.15447855089824883 - (0.26489186990840807 * etl::abs(bL[58]))));
-        input -= (bL[59] * (0.20518281113362655 - (0.16135382257522859 * etl::abs(bL[59]))));
-        input -= (bL[60] * (0.22244686050232007 + (0.00847180390247432 * etl::abs(bL[60]))));
-        input -= (bL[61] * (0.21849243134998034 + (0.14460595245753741 * etl::abs(bL[61]))));
-        input -= (bL[62] * (0.20256105734574054 + (0.18932793221831667 * etl::abs(bL[62]))));
-        input -= (bL[63] * (0.18604070054295399 + (0.17250665610927965 * etl::abs(bL[63]))));
-        input -= (bL[64] * (0.17222844322058231 + (0.12992472027850357 * etl::abs(bL[64]))));
-        input -= (bL[65] * (0.14447856616566443 + (0.09089219002147308 * etl::abs(bL[65]))));
-        input -= (bL[66] * (0.10385520794251019 + (0.08600465834570559 * etl::abs(bL[66]))));
-        input -= (bL[67] * (0.07124435678265063 + (0.09071532210549428 * etl::abs(bL[67]))));
-        input -= (bL[68] * (0.05216857461197572 + (0.06794061706070262 * etl::abs(bL[68]))));
-        input -= (bL[69] * (0.05235381920184123 + (0.02818101717909346 * etl::abs(bL[69]))));
-        input -= (bL[70] * (0.07569701245553526 - (0.00634228544764946 * etl::abs(bL[70]))));
-        input -= (bL[71] * (0.10320125382718826 - (0.02751486906644141 * etl::abs(bL[71]))));
-        input -= (bL[72] * (0.12122120969079088 - (0.05434007312178933 * etl::abs(bL[72]))));
-        input -= (bL[73] * (0.13438969117200902 - (0.09135218559713874 * etl::abs(bL[73]))));
-        input -= (bL[74] * (0.13534390437529981 - (0.10437672041458675 * etl::abs(bL[74]))));
-        input -= (bL[75] * (0.11424128854188388 - (0.08693450726462598 * etl::abs(bL[75]))));
-        input -= (bL[76] * (0.08166894518596159 - (0.06949989431475120 * etl::abs(bL[76]))));
-        input -= (bL[77] * (0.04293976378555305 - (0.05718625137421843 * etl::abs(bL[77]))));
-        input += (bL[78] * (0.00933076320644409 + (0.01728285211520138 * etl::abs(bL[78]))));
-        input += (bL[79] * (0.06450430362918153 - (0.02492994833691022 * etl::abs(bL[79]))));
-        input += (bL[80] * (0.10187400687649277 - (0.03578455940532403 * etl::abs(bL[80]))));
-        input += (bL[81] * (0.11039763294094571 - (0.03995523517573508 * etl::abs(bL[81]))));
-        input += (bL[82] * (0.08557960776024547 - (0.03482514309492527 * etl::abs(bL[82]))));
-        input += (bL[83] * (0.02730881850805332 - (0.00514750108411127 * etl::abs(bL[83]))));
+        input += (bL[1] * (Float(1.29550481610475132) + (Float(0.19713872057074355) * etl::abs(bL[1]))));
+        input += (bL[2] * (Float(1.42302569895462616) + (Float(0.30599505521284787) * etl::abs(bL[2]))));
+        input += (bL[3] * (Float(1.28728195804197565) + (Float(0.23168333460446133) * etl::abs(bL[3]))));
+        input += (bL[4] * (Float(0.88553784290822690) + (Float(0.14263256172918892) * etl::abs(bL[4]))));
+        input += (bL[5] * (Float(0.37129054918432319) + (Float(0.00150040944205920) * etl::abs(bL[5]))));
+        input -= (bL[6] * (Float(0.12150959412556320) + (Float(0.32776273620569107) * etl::abs(bL[6]))));
+        input -= (bL[7] * (Float(0.44900065463203775) + (Float(0.74101214925298819) * etl::abs(bL[7]))));
+        input -= (bL[8] * (Float(0.54058781908186482) + (Float(1.07821707459008387) * etl::abs(bL[8]))));
+        input -= (bL[9] * (Float(0.49361966401791391) + (Float(1.23540109014850508) * etl::abs(bL[9]))));
+        input -= (bL[10] * (Float(0.39819495093078133) + (Float(1.11247213730917749) * etl::abs(bL[10]))));
+        input -= (bL[11] * (Float(0.31379279985435521) + (Float(0.80330360359638298) * etl::abs(bL[11]))));
+        input -= (bL[12] * (Float(0.30744359242808555) + (Float(0.42132528876858205) * etl::abs(bL[12]))));
+        input -= (bL[13] * (Float(0.33943170284673974) + (Float(0.09183418349389982) * etl::abs(bL[13]))));
+        input -= (bL[14] * (Float(0.33838775119286391) - (Float(0.06453051658561271) * etl::abs(bL[14]))));
+        input -= (bL[15] * (Float(0.30682305697961665) - (Float(0.09549380253249232) * etl::abs(bL[15]))));
+        input -= (bL[16] * (Float(0.23408741339295336) - (Float(0.08083404732361277) * etl::abs(bL[16]))));
+        input -= (bL[17] * (Float(0.10411746814025019) + (Float(0.00253651281245780) * etl::abs(bL[17]))));
+        input += (bL[18] * (Float(0.00133623776084696) - (Float(0.04447267870865820) * etl::abs(bL[18]))));
+        input += (bL[19] * (Float(0.02461903992114161) + (Float(0.07530671732655550) * etl::abs(bL[19]))));
+        input += (bL[20] * (Float(0.02086715842475373) + (Float(0.22795860236804899) * etl::abs(bL[20]))));
+        input += (bL[21] * (Float(0.02761433637100917) + (Float(0.26108320417844094) * etl::abs(bL[21]))));
+        input += (bL[22] * (Float(0.04475285369162533) + (Float(0.19160705011061663) * etl::abs(bL[22]))));
+        input += (bL[23] * (Float(0.09447338372862381) + (Float(0.03681550508743799) * etl::abs(bL[23]))));
+        input += (bL[24] * (Float(0.13445890343722280) - (Float(0.13713036462146147) * etl::abs(bL[24]))));
+        input += (bL[25] * (Float(0.13872868945088121) - (Float(0.22401242373298191) * etl::abs(bL[25]))));
+        input += (bL[26] * (Float(0.14915650097434549) - (Float(0.26718804981526367) * etl::abs(bL[26]))));
+        input += (bL[27] * (Float(0.12766643217091783) - (Float(0.27745664795660430) * etl::abs(bL[27]))));
+        input += (bL[28] * (Float(0.03675849788393101) - (Float(0.18338278173550679) * etl::abs(bL[28]))));
+        input -= (bL[29] * (Float(0.06307306864232835) + (Float(0.06089480869040766) * etl::abs(bL[29]))));
+        input -= (bL[30] * (Float(0.14947389348962944) + (Float(0.04642103054798480) * etl::abs(bL[30]))));
+        input -= (bL[31] * (Float(0.25235266566401526) + (Float(0.08423062596460507) * etl::abs(bL[31]))));
+        input -= (bL[32] * (Float(0.33496344048679683) + (Float(0.09808328256677995) * etl::abs(bL[32]))));
+        input -= (bL[33] * (Float(0.36590030482175445) + (Float(0.10622650888958179) * etl::abs(bL[33]))));
+        input -= (bL[34] * (Float(0.35015197011464372) + (Float(0.08982043516016047) * etl::abs(bL[34]))));
+        input -= (bL[35] * (Float(0.26808437585665090) + (Float(0.00735561860229533) * etl::abs(bL[35]))));
+        input -= (bL[36] * (Float(0.11624318543291220) - (Float(0.07142484314510467) * etl::abs(bL[36]))));
+        input += (bL[37] * (Float(0.05617084165377551) + (Float(0.11785854050350089) * etl::abs(bL[37]))));
+        input += (bL[38] * (Float(0.20540028692589385) + (Float(0.20479174663329586) * etl::abs(bL[38]))));
+        input += (bL[39] * (Float(0.30455415003043818) + (Float(0.29074864580096849) * etl::abs(bL[39]))));
+        input += (bL[40] * (Float(0.33810750937829476) + (Float(0.29182307921316802) * etl::abs(bL[40]))));
+        input += (bL[41] * (Float(0.31936133365277430) + (Float(0.26535537727394987) * etl::abs(bL[41]))));
+        input += (bL[42] * (Float(0.27388548321981876) + (Float(0.19735049990538350) * etl::abs(bL[42]))));
+        input += (bL[43] * (Float(0.21454597517994098) + (Float(0.06415909270247236) * etl::abs(bL[43]))));
+        input += (bL[44] * (Float(0.15001045817707717) - (Float(0.03831118543404573) * etl::abs(bL[44]))));
+        input += (bL[45] * (Float(0.07283437284653138) - (Float(0.09281952429543777) * etl::abs(bL[45]))));
+        input -= (bL[46] * (Float(0.03917872184241358) + (Float(0.14306291461398810) * etl::abs(bL[46]))));
+        input -= (bL[47] * (Float(0.16695932032148642) + (Float(0.19138995946950504) * etl::abs(bL[47]))));
+        input -= (bL[48] * (Float(0.27055854466909462) + (Float(0.22531296466343192) * etl::abs(bL[48]))));
+        input -= (bL[49] * (Float(0.33256357307578271) + (Float(0.23305840475692102) * etl::abs(bL[49]))));
+        input -= (bL[50] * (Float(0.33459770116834442) + (Float(0.24091822618917569) * etl::abs(bL[50]))));
+        input -= (bL[51] * (Float(0.27156687236338090) + (Float(0.24062938573512443) * etl::abs(bL[51]))));
+        input -= (bL[52] * (Float(0.17197093288412094) + (Float(0.19083085091993421) * etl::abs(bL[52]))));
+        input -= (bL[53] * (Float(0.06738628195910543) + (Float(0.10268609751019808) * etl::abs(bL[53]))));
+        input += (bL[54] * (Float(0.00222429218204290) + (Float(0.01439664435720548) * etl::abs(bL[54]))));
+        input += (bL[55] * (Float(0.01346992803494091) + (Float(0.15947137113534526) * etl::abs(bL[55]))));
+        input -= (bL[56] * (Float(0.02038911881377448) - (Float(0.26763170752416160) * etl::abs(bL[56]))));
+        input -= (bL[57] * (Float(0.08233579178189687) - (Float(0.29415931086406055) * etl::abs(bL[57]))));
+        input -= (bL[58] * (Float(0.15447855089824883) - (Float(0.26489186990840807) * etl::abs(bL[58]))));
+        input -= (bL[59] * (Float(0.20518281113362655) - (Float(0.16135382257522859) * etl::abs(bL[59]))));
+        input -= (bL[60] * (Float(0.22244686050232007) + (Float(0.00847180390247432) * etl::abs(bL[60]))));
+        input -= (bL[61] * (Float(0.21849243134998034) + (Float(0.14460595245753741) * etl::abs(bL[61]))));
+        input -= (bL[62] * (Float(0.20256105734574054) + (Float(0.18932793221831667) * etl::abs(bL[62]))));
+        input -= (bL[63] * (Float(0.18604070054295399) + (Float(0.17250665610927965) * etl::abs(bL[63]))));
+        input -= (bL[64] * (Float(0.17222844322058231) + (Float(0.12992472027850357) * etl::abs(bL[64]))));
+        input -= (bL[65] * (Float(0.14447856616566443) + (Float(0.09089219002147308) * etl::abs(bL[65]))));
+        input -= (bL[66] * (Float(0.10385520794251019) + (Float(0.08600465834570559) * etl::abs(bL[66]))));
+        input -= (bL[67] * (Float(0.07124435678265063) + (Float(0.09071532210549428) * etl::abs(bL[67]))));
+        input -= (bL[68] * (Float(0.05216857461197572) + (Float(0.06794061706070262) * etl::abs(bL[68]))));
+        input -= (bL[69] * (Float(0.05235381920184123) + (Float(0.02818101717909346) * etl::abs(bL[69]))));
+        input -= (bL[70] * (Float(0.07569701245553526) - (Float(0.00634228544764946) * etl::abs(bL[70]))));
+        input -= (bL[71] * (Float(0.10320125382718826) - (Float(0.02751486906644141) * etl::abs(bL[71]))));
+        input -= (bL[72] * (Float(0.12122120969079088) - (Float(0.05434007312178933) * etl::abs(bL[72]))));
+        input -= (bL[73] * (Float(0.13438969117200902) - (Float(0.09135218559713874) * etl::abs(bL[73]))));
+        input -= (bL[74] * (Float(0.13534390437529981) - (Float(0.10437672041458675) * etl::abs(bL[74]))));
+        input -= (bL[75] * (Float(0.11424128854188388) - (Float(0.08693450726462598) * etl::abs(bL[75]))));
+        input -= (bL[76] * (Float(0.08166894518596159) - (Float(0.06949989431475120) * etl::abs(bL[76]))));
+        input -= (bL[77] * (Float(0.04293976378555305) - (Float(0.05718625137421843) * etl::abs(bL[77]))));
+        input += (bL[78] * (Float(0.00933076320644409) + (Float(0.01728285211520138) * etl::abs(bL[78]))));
+        input += (bL[79] * (Float(0.06450430362918153) - (Float(0.02492994833691022) * etl::abs(bL[79]))));
+        input += (bL[80] * (Float(0.10187400687649277) - (Float(0.03578455940532403) * etl::abs(bL[80]))));
+        input += (bL[81] * (Float(0.11039763294094571) - (Float(0.03995523517573508) * etl::abs(bL[81]))));
+        input += (bL[82] * (Float(0.08557960776024547) - (Float(0.03482514309492527) * etl::abs(bL[82]))));
+        input += (bL[83] * (Float(0.02730881850805332) - (Float(0.00514750108411127) * etl::abs(bL[83]))));
 
-        temp       = (input + smoothCabB) / 3.0;
+        temp       = (input + smoothCabB) / Float(3);
         smoothCabB = input;
-        input      = temp / 4.0;
+        input      = temp / Float(4);
 
-        randy    = (_dist(_rng) * 0.044);
-        dryInput = ((((input * (1 - randy)) + (lastCabSample * randy)) * wet) + (dryInput * (1.0 - wet))) * outputlevel;
+        randy = (_dist(_rng) * Float(0.044));
+        dryInput
+            = ((((input * (1 - randy)) + (lastCabSample * randy)) * wet) + (dryInput * (Float(1) - wet))) * outputlevel;
         lastCabSample = input;
         input         = dryInput;  // cab L
 
@@ -723,17 +743,17 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
     {
         case 4:
             lastRef[8] = input;
-            input      = (input + lastRef[7]) * 0.5;
+            input      = (input + lastRef[7]) * Float(0.5);
             lastRef[7] = lastRef[8];  // continue, do not break
             [[fallthrough]];
         case 3:
             lastRef[8] = input;
-            input      = (input + lastRef[6]) * 0.5;
+            input      = (input + lastRef[6]) * Float(0.5);
             lastRef[6] = lastRef[8];  // continue, do not break
             [[fallthrough]];
         case 2:
             lastRef[8] = input;
-            input      = (input + lastRef[5]) * 0.5;
+            input      = (input + lastRef[5]) * Float(0.5);
             lastRef[5] = lastRef[8];  // continue, do not break
         case 1: break;                // no further averaging
     }

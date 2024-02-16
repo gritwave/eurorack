@@ -1,6 +1,6 @@
-#include <grit/audio/noise/dither.hpp>
+#include <grit/audio.hpp>
 #include <grit/core/benchmark.hpp>
-#include <grit/fft/fft.hpp>
+#include <grit/fft.hpp>
 
 #include <etl/algorithm.hpp>
 #include <etl/array.hpp>
@@ -13,15 +13,28 @@
 
 #include <daisy_patch_sm.h>
 
-namespace astra {
+template<typename RealOrComplex, unsigned N>
+[[nodiscard]] auto makeNoise(auto& rng) -> etl::array<RealOrComplex, N>
+{
+    if constexpr (etl::floating_point<RealOrComplex>) {
+        using Float = RealOrComplex;
+        auto buf    = etl::array<Float, N>{};
+        auto dist   = etl::uniform_real_distribution<Float>{Float(-1.0), Float(1.0)};
+        auto gen    = [&rng, &dist] { return dist(rng); };
+        etl::generate(buf.begin(), buf.end(), gen);
+        return buf;
+    } else {
+        using Float = RealOrComplex::value_type;
+        auto buf    = etl::array<RealOrComplex, N>{};
+        auto dist   = etl::uniform_real_distribution<Float>{Float(-1.0), Float(1.0)};
+        auto gen    = [&rng, &dist] { return RealOrComplex{dist(rng), dist(rng)}; };
+        etl::generate(buf.begin(), buf.end(), gen);
+        return buf;
+    }
+};
 
-auto mcu = daisy::patch_sm::DaisyPatchSM{};
-
-}  // namespace astra
-
-namespace etl {
 template<int N, typename Benchmark>
-auto timeit(char const* name, Benchmark bench)
+auto fftBench(char const* name, Benchmark bench)
 {
     using Microseconds = etl::chrono::duration<float, etl::micro>;
 
@@ -53,18 +66,55 @@ auto timeit(char const* name, Benchmark bench)
         mflops
     );
 }
-}  // namespace etl
 
-template<typename Complex, unsigned N>
-[[nodiscard]] auto makeNoise(auto& rng) -> etl::array<Complex, N>
+template<int BlockSize, typename Benchmark>
+auto audioBench(char const* name, Benchmark bench)
 {
-    using Float = Complex::value_type;
-    auto buf    = etl::array<Complex, N>{};
-    auto dist   = etl::uniform_real_distribution<Float>{Float(-0.5), Float(0.5)};
-    auto gen    = [&rng, &dist] { return Complex{dist(rng), dist(rng)}; };
-    etl::generate(buf.begin(), buf.end(), gen);
-    return buf;
-};
+    static constexpr auto Runs = 128;
+
+    using Microseconds = etl::chrono::duration<float, etl::micro>;
+
+    auto runs = etl::array<float, Runs>{};
+
+    auto rng              = etl::xoshiro128plusplus{14342};
+    auto const noiseLeft  = makeNoise<float, BlockSize>(rng);
+    auto const noiseRight = makeNoise<float, BlockSize>(rng);
+
+    auto const fillWithNoise = [&](auto& block) {
+        for (auto i{0U}; i < block.extent(1); ++i) {
+            block(0, i) = noiseLeft[i];
+            block(1, i) = noiseRight[i];
+        }
+    };
+
+    auto buffer = etl::array<float, BlockSize * 2>{};
+    auto block  = grit::StereoBlock<float>{buffer.data(), buffer.size() / 2};
+
+    for (auto i{0U}; i < Runs; ++i) {
+        fillWithNoise(block);
+
+        auto const start = daisy::System::GetUs();
+        bench(block);
+        auto const stop = daisy::System::GetUs();
+
+        grit::doNotOptimize(buffer.front());
+        grit::doNotOptimize(buffer.back());
+
+        runs[i] = etl::chrono::duration_cast<Microseconds>(etl::chrono::microseconds{stop - start}).count();
+    }
+
+    auto const average = int(etl::reduce(runs.begin(), end(runs), 0.0F) / static_cast<float>(runs.size()));
+
+    daisy::patch_sm::DaisyPatchSM::PrintLine(
+        "%30s Block: %d - Runs: %4d - Average: %4d us - Min: %4d us - Max: %4d us\n",
+        name,
+        BlockSize,
+        Runs,
+        average,
+        int(*etl::min_element(runs.begin(), runs.end())),
+        int(*etl::max_element(runs.begin(), runs.end()))
+    );
+}
 
 struct c2c_dit2_v3
 {
@@ -168,33 +218,76 @@ private:
     }()};
 };
 
+template<typename Processor>
+struct StereoProcessor
+{
+    explicit StereoProcessor(float sampleRate)
+    {
+        if constexpr (requires { _left.setSampleRate(sampleRate); }) {
+            _left.setSampleRate(sampleRate);
+            _right.setSampleRate(sampleRate);
+        }
+    }
+
+    auto operator()(grit::StereoBlock<float> const& block) -> void
+    {
+        for (auto i{0U}; i < block.extent(1); ++i) {
+            block(0, i) = _left(block(0, i));
+            block(1, i) = _right(block(1, i));
+        }
+    }
+
+private:
+    Processor _left;
+    Processor _right;
+};
+
+namespace mcu {
+
+auto patch = daisy::patch_sm::DaisyPatchSM{};
+
+}  // namespace mcu
+
 auto main() -> int
 {
-    using namespace astra;
-
-    astra::mcu.Init();
+    mcu::patch.Init();
 
     daisy::patch_sm::DaisyPatchSM::StartLog(true);
     daisy::patch_sm::DaisyPatchSM::PrintLine("Daisy Patch SM started. Test Beginning");
 
-    etl::timeit<64>("ComplexRoundtrip<float, 16, v3>      - ", ComplexRoundtrip<float, 16, c2c_dit2_v3>{});
-    etl::timeit<64>("ComplexRoundtrip<float, 32, v3>      - ", ComplexRoundtrip<float, 32, c2c_dit2_v3>{});
-    etl::timeit<64>("ComplexRoundtrip<float, 64, v3>      - ", ComplexRoundtrip<float, 64, c2c_dit2_v3>{});
-    etl::timeit<64>("ComplexRoundtrip<float, 128, v3>     - ", ComplexRoundtrip<float, 128, c2c_dit2_v3>{});
-    etl::timeit<64>("ComplexRoundtrip<float, 256, v3>     - ", ComplexRoundtrip<float, 256, c2c_dit2_v3>{});
-    etl::timeit<64>("ComplexRoundtrip<float, 512, v3>     - ", ComplexRoundtrip<float, 512, c2c_dit2_v3>{});
-    etl::timeit<64>("ComplexRoundtrip<float, 1024, v3>    - ", ComplexRoundtrip<float, 1024, c2c_dit2_v3>{});
-    etl::timeit<64>("ComplexRoundtrip<float, 2048, v3>    - ", ComplexRoundtrip<float, 2048, c2c_dit2_v3>{});
-    etl::timeit<64>("ComplexRoundtrip<float, 4096, v3>    - ", ComplexRoundtrip<float, 4096, c2c_dit2_v3>{});
+    audioBench<16>("AirWindowsFireAmp:     ", StereoProcessor<grit::AirWindowsFireAmp<float>>{96'000.0F});
+    audioBench<16>("AirWindowsGrindAmp:    ", StereoProcessor<grit::AirWindowsGrindAmp<float>>{96'000.0F});
+    audioBench<16>("AirWindowsVinylDither: ", StereoProcessor<grit::AirWindowsVinylDither<float>>{96'000.0F});
     daisy::patch_sm::DaisyPatchSM::PrintLine("");
 
-    // etl::timeit<64>("StaticComplexRoundtrip<float, 64>   - ", StaticComplexRoundtrip<float, 64>{});
-    // etl::timeit<64>("StaticComplexRoundtrip<float, 128>  - ", StaticComplexRoundtrip<float, 128>{});
-    // etl::timeit<64>("StaticComplexRoundtrip<float, 256>  - ", StaticComplexRoundtrip<float, 256>{});
-    // etl::timeit<64>("StaticComplexRoundtrip<float, 512>  - ", StaticComplexRoundtrip<float, 512>{});
-    // etl::timeit<64>("StaticComplexRoundtrip<float, 1024> - ", StaticComplexRoundtrip<float, 1024>{});
-    // etl::timeit<64>("StaticComplexRoundtrip<float, 2048> - ", StaticComplexRoundtrip<float, 2048>{});
-    // etl::timeit<64>("StaticComplexRoundtrip<float, 4096> - ", StaticComplexRoundtrip<float, 4096>{});
+    audioBench<32>("AirWindowsFireAmp:     ", StereoProcessor<grit::AirWindowsFireAmp<float>>{96'000.0F});
+    audioBench<32>("AirWindowsGrindAmp:    ", StereoProcessor<grit::AirWindowsGrindAmp<float>>{96'000.0F});
+    audioBench<32>("AirWindowsVinylDither: ", StereoProcessor<grit::AirWindowsVinylDither<float>>{96'000.0F});
+    daisy::patch_sm::DaisyPatchSM::PrintLine("");
+
+    audioBench<64>("AirWindowsFireAmp:     ", StereoProcessor<grit::AirWindowsFireAmp<float>>{96'000.0F});
+    audioBench<64>("AirWindowsGrindAmp:    ", StereoProcessor<grit::AirWindowsGrindAmp<float>>{96'000.0F});
+    audioBench<64>("AirWindowsVinylDither: ", StereoProcessor<grit::AirWindowsVinylDither<float>>{96'000.0F});
+    daisy::patch_sm::DaisyPatchSM::PrintLine("");
+
+    // fftBench<64>("ComplexRoundtrip<float, 16, v3>      - ", ComplexRoundtrip<float, 16, c2c_dit2_v3>{});
+    // fftBench<64>("ComplexRoundtrip<float, 32, v3>      - ", ComplexRoundtrip<float, 32, c2c_dit2_v3>{});
+    // fftBench<64>("ComplexRoundtrip<float, 64, v3>      - ", ComplexRoundtrip<float, 64, c2c_dit2_v3>{});
+    // fftBench<64>("ComplexRoundtrip<float, 128, v3>     - ", ComplexRoundtrip<float, 128, c2c_dit2_v3>{});
+    // fftBench<64>("ComplexRoundtrip<float, 256, v3>     - ", ComplexRoundtrip<float, 256, c2c_dit2_v3>{});
+    // fftBench<64>("ComplexRoundtrip<float, 512, v3>     - ", ComplexRoundtrip<float, 512, c2c_dit2_v3>{});
+    // fftBench<64>("ComplexRoundtrip<float, 1024, v3>    - ", ComplexRoundtrip<float, 1024, c2c_dit2_v3>{});
+    // fftBench<64>("ComplexRoundtrip<float, 2048, v3>    - ", ComplexRoundtrip<float, 2048, c2c_dit2_v3>{});
+    // fftBench<64>("ComplexRoundtrip<float, 4096, v3>    - ", ComplexRoundtrip<float, 4096, c2c_dit2_v3>{});
+    // daisy::patch_sm::DaisyPatchSM::PrintLine("");
+
+    // fftBench<64>("StaticComplexRoundtrip<float, 64>   - ", StaticComplexRoundtrip<float, 64>{});
+    // fftBench<64>("StaticComplexRoundtrip<float, 128>  - ", StaticComplexRoundtrip<float, 128>{});
+    // fftBench<64>("StaticComplexRoundtrip<float, 256>  - ", StaticComplexRoundtrip<float, 256>{});
+    // fftBench<64>("StaticComplexRoundtrip<float, 512>  - ", StaticComplexRoundtrip<float, 512>{});
+    // fftBench<64>("StaticComplexRoundtrip<float, 1024> - ", StaticComplexRoundtrip<float, 1024>{});
+    // fftBench<64>("StaticComplexRoundtrip<float, 2048> - ", StaticComplexRoundtrip<float, 2048>{});
+    // fftBench<64>("StaticComplexRoundtrip<float, 4096> - ", StaticComplexRoundtrip<float, 4096>{});
     // daisy::patch_sm::DaisyPatchSM::PrintLine("");
 
     while (true) {}

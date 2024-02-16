@@ -49,6 +49,8 @@ struct StaticLookupTableTransform
 
     [[nodiscard]] constexpr auto operator[](Float value) const -> Float { return at(value); }
 
+    [[nodiscard]] constexpr auto operator()(Float value) const -> Float { return at(value); }
+
     [[nodiscard]] static constexpr auto size() -> etl::size_t { return Size; }
 
 private:
