@@ -1,9 +1,8 @@
 #pragma once
 
+#include <etl/algorithm.hpp>
 #include <etl/cmath.hpp>
 #include <etl/concepts.hpp>
-
-#include <cmath>
 
 namespace grit {
 
@@ -22,7 +21,7 @@ auto fromDecibels(Float decibels, Float minusInfinityDb = defaultMinusInfinityDb
 template<etl::floating_point Float>
 auto toDecibels(Float gain, Float minusInfinityDb = defaultMinusInfinityDb<Float>) -> Float
 {
-    return gain > Float() ? std::fmax(minusInfinityDb, static_cast<Float>(std::log10(gain)) * Float(20.0))
+    return gain > Float() ? etl::max(minusInfinityDb, static_cast<Float>(etl::log10(gain)) * Float(20.0))
                           : minusInfinityDb;
 }
 

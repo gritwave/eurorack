@@ -1,5 +1,7 @@
 #include "stereo_frame.hpp"
 
+#include <etl/concepts.hpp>
+
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_template_test_macros.hpp>
 
@@ -8,7 +10,7 @@ using namespace grit;
 TEMPLATE_TEST_CASE("grit/audio/stereo: StereoFrame", "[stereo]", float, double)
 {
     using T = TestType;
-    STATIC_REQUIRE(std::is_same_v<typename StereoFrame<T>::value_type, T>);
+    STATIC_REQUIRE(etl::same_as<typename StereoFrame<T>::value_type, T>);
 }
 
 TEMPLATE_TEST_CASE("grit/audio/stereo: operator+(StereoFrame)", "[stereo]", float, double)

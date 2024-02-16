@@ -8,8 +8,6 @@
 #include <etl/numbers.hpp>
 #include <etl/optional.hpp>
 
-#include <cmath>
-
 namespace grit {
 
 /// \ingroup grit-audio-dynamic
@@ -71,7 +69,7 @@ auto Compressor<Float>::operator()(Float signal, Float sideChain) -> Float
     auto const alphaR    = calculateTimeAlpha(_parameter.release);
 
     auto const in  = sideChain * sideChain;
-    auto const env = in <= static_cast<Float>(1e-6) ? -Float(60) : Float(10) * std::log10(in);
+    auto const env = in <= static_cast<Float>(1e-6) ? -Float(60) : Float(10) * etl::log10(in);
 
     auto const halfKneeRange  = -(knee * (-Float(60) - threshold) / Float(4));
     auto const fullKneeRange  = halfKneeRange + halfKneeRange / ratio;
