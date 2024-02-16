@@ -22,9 +22,19 @@ auto test() -> void
 
     SECTION("check for nans")
     {
-        for (auto i{0}; i < 100'000; ++i) {
-            auto out = proc(dist(rng));
-            REQUIRE(etl::isfinite(out));
+        for (auto p{0}; p < 10; ++p) {
+            proc.reset();
+
+            if constexpr (requires { proc.setParameter({dist(rng), dist(rng), dist(rng), dist(rng)}); }) {
+                proc.setParameter({dist(rng), dist(rng), dist(rng), dist(rng)});
+            } else if constexpr (requires { proc.setDeRez(dist(rng)); }) {
+                proc.setDeRez(dist(rng));
+            }
+
+            for (auto i{0}; i < static_cast<int>(sampleRate); ++i) {
+                auto out = proc(dist(rng));
+                REQUIRE(etl::isfinite(out));
+            }
         }
     }
 }
