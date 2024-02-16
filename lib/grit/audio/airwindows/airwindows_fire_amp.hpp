@@ -1,5 +1,7 @@
 #pragma once
 
+#include <grit/math/static_lookup_table_transform.hpp>
+
 #include <etl/algorithm.hpp>
 #include <etl/cmath.hpp>
 #include <etl/concepts.hpp>
@@ -32,6 +34,12 @@ struct AirWindowsFireAmp
     auto reset() -> void;
 
 private:
+    static constexpr auto sineLUT = StaticLookupTableTransform<Float, 255>{
+        [](auto x) { return etl::sin(x); },
+        Float(0),
+        Float(1.57079633),
+    };
+
     URNG _rng{42};
     etl::uniform_real_distribution<Float> _dist{Float(0), Float(1)};
 
@@ -102,6 +110,20 @@ private:
     Float fixD[fix_total]{0};
     Float fixE[fix_total]{0};
     Float fixF[fix_total]{0};  // filtering
+
+    Float startlevel{0};
+    Float bassfill{0};
+    Float outputlevel{0};
+    Float toneEQ{0};
+    Float EQ{0};
+    Float bleed{0};
+    Float bassfactor{0};
+    Float BEQ{0};
+    Float wet{0};
+    int cycleEnd{0};
+    int diagonal{0};
+    int down{0};
+    int side{0};
 };
 
 template<etl::floating_point Float, typename URNG>
@@ -114,18 +136,7 @@ template<etl::floating_point Float, typename URNG>
 auto AirWindowsFireAmp<Float, URNG>::setParameter(Parameter parameter) -> void
 {
     _parameter = parameter;
-}
 
-template<etl::floating_point Float, typename URNG>
-auto AirWindowsFireAmp<Float, URNG>::setSampleRate(Float sampleRate) -> void
-{
-    _sampleRate = sampleRate;
-    reset();
-}
-
-template<etl::floating_point Float, typename URNG>
-auto AirWindowsFireAmp<Float, URNG>::operator()(Float const x) -> Float
-{
     static constexpr auto const pi = static_cast<Float>(etl::numbers::pi);
 
     auto const A = _parameter.gain;
@@ -133,14 +144,15 @@ auto AirWindowsFireAmp<Float, URNG>::operator()(Float const x) -> Float
     auto const C = _parameter.output;
     auto const D = _parameter.mix;
 
-    Float bassfill    = A;
-    Float outputlevel = C;
-    Float wet         = D;
+    bassfill    = A;
+    outputlevel = C;
+    wet         = D;
 
     Float overallscale = Float(1);
     overallscale /= 44100.0;
     overallscale *= _sampleRate;
-    int cycleEnd = etl::floor(overallscale);
+
+    cycleEnd = etl::floor(overallscale);
     if (cycleEnd < 1)
         cycleEnd = 1;
     if (cycleEnd > 4)
@@ -149,19 +161,20 @@ auto AirWindowsFireAmp<Float, URNG>::operator()(Float const x) -> Float
     if (cycle > cycleEnd - 1)
         cycle = cycleEnd - 1;  // sanity check
 
-    Float startlevel = bassfill;
+    startlevel       = bassfill;
     Float samplerate = _sampleRate;
     Float basstrim   = bassfill / 16.0;
-    Float toneEQ     = (B / samplerate) * 22050.0;
-    Float EQ         = (basstrim / samplerate) * 22050.0;
-    Float bleed      = outputlevel / 16.0;
-    Float bassfactor = Float(1) - (basstrim * basstrim);
-    Float BEQ        = (bleed / samplerate) * 22050.0;
-    int diagonal     = (int)(0.000861678 * samplerate);
+    toneEQ           = (B / samplerate) * 22050.0;
+    EQ               = (basstrim / samplerate) * 22050.0;
+    bleed            = outputlevel / 16.0;
+    bassfactor       = Float(1) - (basstrim * basstrim);
+    BEQ              = (bleed / samplerate) * 22050.0;
+
+    diagonal = (int)(0.000861678 * samplerate);
     if (diagonal > 127)
         diagonal = 127;
-    int side = (int)(diagonal / 1.4142135623730951);
-    int down = (side + diagonal) / 2;
+    side = (int)(diagonal / 1.4142135623730951);
+    down = (side + diagonal) / 2;
     // now we've got down, side and diagonal as offsets and we also use three successive samples upfront
 
     Float cutoff = (15000.0 + (B * 10000.0)) / _sampleRate;
@@ -226,7 +239,19 @@ auto AirWindowsFireAmp<Float, URNG>::operator()(Float const x) -> Float
     fixF[fix_a2] = fixF[fix_a0];
     fixF[fix_b1] = Float(2) * (K * K - Float(1)) * norm;
     fixF[fix_b2] = (Float(1) - K / fixF[fix_reso] + K * K) * norm;
+}
 
+template<etl::floating_point Float, typename URNG>
+auto AirWindowsFireAmp<Float, URNG>::setSampleRate(Float sampleRate) -> void
+{
+    _sampleRate = sampleRate;
+    reset();
+    setParameter(_parameter);
+}
+
+template<etl::floating_point Float, typename URNG>
+auto AirWindowsFireAmp<Float, URNG>::operator()(Float const x) -> Float
+{
     auto inputSampleL = x;
     auto drySampleL   = inputSampleL;
 
@@ -239,11 +264,11 @@ auto AirWindowsFireAmp<Float, URNG>::operator()(Float const x) -> Float
         inputSampleL = Float(1);
     if (inputSampleL < -Float(1))
         inputSampleL = -Float(1);
-    auto basscutL = 0.98;
+    auto basscutL = Float(0.98);
     // we're going to be shifting this as the stages progress
     auto inputlevelL = startlevel;
     inputSampleL *= inputlevelL;
-    inputlevelL = ((inputlevelL * Float(7)) + Float(1)) / Float(8);
+    inputlevelL = ((inputlevelL * Float(7)) + Float(1)) * Float(0.125);
     iirSampleAL = (iirSampleAL * (Float(1) - EQ)) + (inputSampleL * EQ);
     basscutL *= bassfactor;
     inputSampleL = inputSampleL - (iirSampleAL * basscutL);
@@ -255,7 +280,7 @@ auto AirWindowsFireAmp<Float, URNG>::operator()(Float const x) -> Float
     inputSampleL         = bridgerectifier;
     // two-sample averaging lowpass
     inputSampleL *= inputlevelL;
-    inputlevelL = ((inputlevelL * Float(7)) + Float(1)) / Float(8);
+    inputlevelL = ((inputlevelL * Float(7)) + Float(1)) * Float(0.125);
     iirSampleBL = (iirSampleBL * (Float(1) - EQ)) + (inputSampleL * EQ);
     basscutL *= bassfactor;
     inputSampleL = inputSampleL - (iirSampleBL * basscutL);
@@ -273,7 +298,7 @@ auto AirWindowsFireAmp<Float, URNG>::operator()(Float const x) -> Float
     inputSampleL  = outSample;  // fixed biquad filtering ultrasonics
 
     inputSampleL *= inputlevelL;
-    inputlevelL = ((inputlevelL * Float(7)) + Float(1)) / Float(8);
+    inputlevelL = ((inputlevelL * Float(7)) + Float(1)) * Float(0.125);
     iirSampleCL = (iirSampleCL * (Float(1) - EQ)) + (inputSampleL * EQ);
     basscutL *= bassfactor;
     inputSampleL = inputSampleL - (iirSampleCL * basscutL);
@@ -285,7 +310,7 @@ auto AirWindowsFireAmp<Float, URNG>::operator()(Float const x) -> Float
     inputSampleL    = bridgerectifier;
     // two-sample averaging lowpass
     inputSampleL *= inputlevelL;
-    inputlevelL = ((inputlevelL * Float(7)) + Float(1)) / Float(8);
+    inputlevelL = ((inputlevelL * Float(7)) + Float(1)) * Float(0.125);
     iirSampleDL = (iirSampleDL * (Float(1) - EQ)) + (inputSampleL * EQ);
     basscutL *= bassfactor;
     inputSampleL = inputSampleL - (iirSampleDL * basscutL);
@@ -303,7 +328,7 @@ auto AirWindowsFireAmp<Float, URNG>::operator()(Float const x) -> Float
     inputSampleL  = outSample;  // fixed biquad filtering ultrasonics
 
     inputSampleL *= inputlevelL;
-    inputlevelL = ((inputlevelL * Float(7)) + Float(1)) / Float(8);
+    inputlevelL = ((inputlevelL * Float(7)) + Float(1)) * Float(0.125);
     iirSampleEL = (iirSampleEL * (Float(1) - EQ)) + (inputSampleL * EQ);
     basscutL *= bassfactor;
     inputSampleL = inputSampleL - (iirSampleEL * basscutL);
@@ -315,7 +340,7 @@ auto AirWindowsFireAmp<Float, URNG>::operator()(Float const x) -> Float
     inputSampleL    = bridgerectifier;
     // two-sample averaging lowpass
     inputSampleL *= inputlevelL;
-    inputlevelL = ((inputlevelL * Float(7)) + Float(1)) / Float(8);
+    inputlevelL = ((inputlevelL * Float(7)) + Float(1)) * Float(0.125);
     iirSampleFL = (iirSampleFL * (Float(1) - EQ)) + (inputSampleL * EQ);
     basscutL *= bassfactor;
     inputSampleL = inputSampleL - (iirSampleFL * basscutL);
@@ -333,7 +358,7 @@ auto AirWindowsFireAmp<Float, URNG>::operator()(Float const x) -> Float
     inputSampleL  = outSample;  // fixed biquad filtering ultrasonics
 
     inputSampleL *= inputlevelL;
-    inputlevelL = ((inputlevelL * Float(7)) + Float(1)) / Float(8);
+    inputlevelL = ((inputlevelL * Float(7)) + Float(1)) * Float(0.125);
     iirSampleGL = (iirSampleGL * (Float(1) - EQ)) + (inputSampleL * EQ);
     basscutL *= bassfactor;
     inputSampleL = inputSampleL - (iirSampleGL * basscutL);
@@ -345,7 +370,7 @@ auto AirWindowsFireAmp<Float, URNG>::operator()(Float const x) -> Float
     inputSampleL    = bridgerectifier;
     // two-sample averaging lowpass
     inputSampleL *= inputlevelL;
-    inputlevelL = ((inputlevelL * Float(7)) + Float(1)) / Float(8);
+    inputlevelL = ((inputlevelL * Float(7)) + Float(1)) * Float(0.125);
     iirSampleHL = (iirSampleHL * (Float(1) - EQ)) + (inputSampleL * EQ);
     basscutL *= bassfactor;
     inputSampleL = inputSampleL - (iirSampleHL * basscutL);
@@ -363,7 +388,7 @@ auto AirWindowsFireAmp<Float, URNG>::operator()(Float const x) -> Float
     inputSampleL  = outSample;  // fixed biquad filtering ultrasonics
 
     inputSampleL *= inputlevelL;
-    inputlevelL = ((inputlevelL * Float(7)) + Float(1)) / Float(8);
+    inputlevelL = ((inputlevelL * Float(7)) + Float(1)) * Float(0.125);
     iirSampleIL = (iirSampleIL * (Float(1) - EQ)) + (inputSampleL * EQ);
     basscutL *= bassfactor;
     inputSampleL = inputSampleL - (iirSampleIL * basscutL);
@@ -375,7 +400,7 @@ auto AirWindowsFireAmp<Float, URNG>::operator()(Float const x) -> Float
     inputSampleL    = bridgerectifier;
     // two-sample averaging lowpass
     inputSampleL *= inputlevelL;
-    inputlevelL = ((inputlevelL * Float(7)) + Float(1)) / Float(8);
+    inputlevelL = ((inputlevelL * Float(7)) + Float(1)) * Float(0.125);
     iirSampleJL = (iirSampleJL * (Float(1) - EQ)) + (inputSampleL * EQ);
     basscutL *= bassfactor;
     inputSampleL = inputSampleL - (iirSampleJL * basscutL);
@@ -393,7 +418,7 @@ auto AirWindowsFireAmp<Float, URNG>::operator()(Float const x) -> Float
     inputSampleL  = outSample;  // fixed biquad filtering ultrasonics
 
     inputSampleL *= inputlevelL;
-    inputlevelL = ((inputlevelL * Float(7)) + Float(1)) / Float(8);
+    inputlevelL = ((inputlevelL * Float(7)) + Float(1)) * Float(0.125);
     iirSampleKL = (iirSampleKL * (Float(1) - EQ)) + (inputSampleL * EQ);
     basscutL *= bassfactor;
     inputSampleL = inputSampleL - (iirSampleKL * basscutL);
@@ -405,7 +430,7 @@ auto AirWindowsFireAmp<Float, URNG>::operator()(Float const x) -> Float
     inputSampleL    = bridgerectifier;
     // two-sample averaging lowpass
     inputSampleL *= inputlevelL;
-    inputlevelL = ((inputlevelL * Float(7)) + Float(1)) / Float(8);
+    inputlevelL = ((inputlevelL * Float(7)) + Float(1)) * Float(0.125);
     iirSampleLL = (iirSampleLL * (Float(1) - EQ)) + (inputSampleL * EQ);
     basscutL *= bassfactor;
     inputSampleL = inputSampleL - (iirSampleLL * basscutL);
@@ -446,7 +471,7 @@ auto AirWindowsFireAmp<Float, URNG>::operator()(Float const x) -> Float
     bridgerectifier = etl::abs(inputSampleL * outputlevel);
     if (bridgerectifier > Float(1.57079633))
         bridgerectifier = Float(1.57079633);
-    bridgerectifier = etl::sin(bridgerectifier);
+    bridgerectifier = sineLUT(bridgerectifier);
     if (inputSampleL > 0)
         inputSampleL = bridgerectifier;
     else
@@ -454,16 +479,16 @@ auto AirWindowsFireAmp<Float, URNG>::operator()(Float const x) -> Float
 
     if (bridgerectifier > Float(1.57079633))
         bridgerectifier = Float(1.57079633);
-    bridgerectifier = etl::sin(bridgerectifier);
+    bridgerectifier = sineLUT(bridgerectifier);
 
     iirSubL = (iirSubL * (Float(1) - BEQ)) + (inputSampleL * BEQ);
     inputSampleL += (iirSubL * bassfill * outputlevel);
 
-    auto randy   = (_dist(_rng) * 0.053);
+    auto randy   = (_dist(_rng) * Float(0.053));
     inputSampleL = ((inputSampleL * (Float(1) - randy)) + (storeSampleL * randy)) * outputlevel;
     storeSampleL = inputSampleL;
 
-    randy = (_dist(_rng) * 0.053);
+    randy = (_dist(_rng) * Float(0.053));
 
     flip = !flip;
 
@@ -475,7 +500,7 @@ auto AirWindowsFireAmp<Float, URNG>::operator()(Float const x) -> Float
 
     cycle++;
     if (cycle == cycleEnd) {
-        auto temp    = (inputSampleL + smoothCabAL) / Float(3);
+        auto temp    = (inputSampleL + smoothCabAL) * (Float(1) / Float(3));
         smoothCabAL  = inputSampleL;
         inputSampleL = temp;
 
@@ -649,11 +674,11 @@ auto AirWindowsFireAmp<Float, URNG>::operator()(Float const x) -> Float
         inputSampleL -= (bL[83] * (Float(0.15201914054931515) + (Float(0.04424903493886839) * etl::abs(bL[83]))));
         inputSampleL -= (bL[84] * (Float(0.15454370641307855) + (Float(0.04223203797913008) * etl::abs(bL[84]))));
 
-        temp         = (inputSampleL + smoothCabBL) / Float(3);
+        temp         = (inputSampleL + smoothCabBL) * (Float(1) / Float(3));
         smoothCabBL  = inputSampleL;
-        inputSampleL = temp / 4.0;
+        inputSampleL = temp * Float(0.25);
 
-        randy = (_dist(_rng) * 0.057);
+        randy = (_dist(_rng) * Float(0.057));
         drySampleL
             = ((((inputSampleL * (1 - randy)) + (lastCabSampleL * randy)) * wet) + (drySampleL * (Float(1) - wet)))
             * outputlevel;
