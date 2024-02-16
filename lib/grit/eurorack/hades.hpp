@@ -76,7 +76,7 @@ private:
             HalfWaveIndex,
             DiodeIndex,
             FireAmpIndex,
-            GrindAmpIndex,
+            // GrindAmpIndex,
             MaxIndex,
         };
 
@@ -87,7 +87,7 @@ private:
         HalfWaveRectifier<float> _halfWave{};
         DiodeRectifier<float> _diode{};
         AirWindowsFireAmp<float> _fireAmp{42};
-        AirWindowsGrindAmp<float> _grindAmp{143};
+        // AirWindowsGrindAmp<float> _grindAmp{143};
     };
 
     struct Channel
