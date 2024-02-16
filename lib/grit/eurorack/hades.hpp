@@ -1,5 +1,6 @@
 #pragma once
 
+#include <grit/audio/airwindows/airwindows_grind_amp.hpp>
 #include <grit/audio/airwindows/airwindows_vinyl_dither.hpp>
 #include <grit/audio/dynamic/compressor.hpp>
 #include <grit/audio/envelope/envelope_follower.hpp>
@@ -57,11 +58,12 @@ struct Hades
     [[nodiscard]] auto process(StereoBlock<float> const& buffer, ControlInput const& inputs) -> ControlOutput;
 
 private:
-    struct Distortion
+    struct Amp
     {
-        Distortion() = default;
+        Amp() = default;
 
         auto next() -> void;
+        auto prepare(float sampleRate) -> void;
         [[nodiscard]] auto operator()(float sample) -> float;
 
     private:
@@ -72,6 +74,7 @@ private:
             FullWaveIndex,
             HalfWaveIndex,
             DiodeIndex,
+            GrindAmpIndex,
             MaxIndex,
         };
 
@@ -81,6 +84,7 @@ private:
         FullWaveRectifier<float> _fullWave{};
         HalfWaveRectifier<float> _halfWave{};
         DiodeRectifier<float> _diode{};
+        AirWindowsGrindAmp<float> _grindAmp{};
     };
 
     struct Channel
@@ -113,7 +117,7 @@ private:
         EnvelopeFollower<float> _envelope{};
         WhiteNoise<float> _whiteNoise{};
         AirWindowsVinylDither<float> _vinyl{};
-        Distortion _distortion{};
+        Amp _distortion{};
         Compressor<float> _compressor{};
     };
 

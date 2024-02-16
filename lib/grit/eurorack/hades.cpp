@@ -74,7 +74,7 @@ auto Hades::process(StereoBlock<float> const& buffer, ControlInput const& inputs
     };
 }
 
-auto Hades::Distortion::next() -> void
+auto Hades::Amp::next() -> void
 {
     _index = Index{int(_index) + 1};
     if (_index == MaxIndex) {
@@ -82,7 +82,9 @@ auto Hades::Distortion::next() -> void
     }
 }
 
-auto Hades::Distortion::operator()(float sample) -> float
+auto Hades::Amp::prepare(float sampleRate) -> void { _grindAmp.setSampleRate(sampleRate); }
+
+auto Hades::Amp::operator()(float sample) -> float
 {
     switch (_index) {
         case TanhIndex: return _tanh(sample);
@@ -90,6 +92,7 @@ auto Hades::Distortion::operator()(float sample) -> float
         case FullWaveIndex: return _fullWave(sample);
         case HalfWaveIndex: return _halfWave(sample);
         case DiodeIndex: return _diode(sample);
+        case GrindAmpIndex: return _grindAmp(sample);
         default: break;
     }
     return sample;
