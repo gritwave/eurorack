@@ -70,22 +70,22 @@ private:
     private:
         enum Index : int
         {
-            TanhIndex = 0,
-            HardIndex,
-            FullWaveIndex,
-            HalfWaveIndex,
-            DiodeIndex,
+            // TanhIndex = 0,
+            // HardIndex,
+            // FullWaveIndex,
+            // HalfWaveIndex,
+            // DiodeIndex,
             FireAmpIndex,
             GrindAmpIndex,
             MaxIndex,
         };
 
-        Index _index{TanhIndex};
-        TanhClipper<float> _tanh{};
-        HardClipper<float> _hard{};
-        FullWaveRectifier<float> _fullWave{};
-        HalfWaveRectifier<float> _halfWave{};
-        DiodeRectifier<float> _diode{};
+        Index _index{FireAmpIndex};
+        // TanhClipper<float> _tanh{};
+        // HardClipper<float> _hard{};
+        // FullWaveRectifier<float> _fullWave{};
+        // HalfWaveRectifier<float> _halfWave{};
+        // DiodeRectifier<float> _diode{};
         AirWindowsFireAmp<float> _fireAmp{};
         AirWindowsGrindAmp<float> _grindAmp{};
     };
