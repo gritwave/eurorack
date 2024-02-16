@@ -11,7 +11,6 @@ set(CMAKE_AR            "arm-none-eabi-gcc-ar")
 set(CMAKE_RANLIB        "arm-none-eabi-gcc-ranlib")
 set(CMAKE_OBJCOPY       "arm-none-eabi-objcopy")
 
-set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
