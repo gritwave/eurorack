@@ -41,6 +41,11 @@ TEST_CASE("grit/audio/eurorack: Hades")
         auto const cv = hades.process(block, controls);
         REQUIRE(cv.gate1 == false);
         REQUIRE(cv.gate2 == true);
+
+        for (auto i{0}; i < blockSize; ++i) {
+            REQUIRE(etl::isfinite(block(0, i)));
+            REQUIRE(etl::isfinite(block(1, i)));
+        }
     }
 
     {
@@ -61,5 +66,9 @@ TEST_CASE("grit/audio/eurorack: Hades")
         auto const cv = hades.process(block, controls);
         REQUIRE(cv.gate1 == true);
         REQUIRE(cv.gate2 == false);
+        for (auto i{0}; i < blockSize; ++i) {
+            REQUIRE(etl::isfinite(block(0, i)));
+            REQUIRE(etl::isfinite(block(1, i)));
+        }
     }
 }

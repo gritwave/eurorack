@@ -91,11 +91,11 @@ auto Hades::Amp::prepare(float sampleRate) -> void
 auto Hades::Amp::operator()(float sample) -> float
 {
     switch (_index) {
-        case TanhIndex: return _tanh(sample);
-        case HardIndex: return _hard(sample);
-        case FullWaveIndex: return _fullWave(sample);
-        case HalfWaveIndex: return _halfWave(sample);
-        case DiodeIndex: return _diode(sample);
+        // case TanhIndex: return _tanh(sample);
+        // case HardIndex: return _hard(sample);
+        // case FullWaveIndex: return _fullWave(sample);
+        // case HalfWaveIndex: return _halfWave(sample);
+        // case DiodeIndex: return _diode(sample);
         case FireAmpIndex: return _fireAmp(sample);
         case GrindAmpIndex: return _grindAmp(sample);
         default: break;
