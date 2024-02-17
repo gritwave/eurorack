@@ -32,6 +32,8 @@ private:
     etl::mdspan<Float const, etl::extents<etl::size_t, TableSize>> _wavetable;
 };
 
+/// \relates WavetableOscillator
+/// \ingroup grit-audio-oscillator
 template<typename Float, etl::size_t Size>
 [[nodiscard]] constexpr auto makeSineWavetable() -> etl::array<Float, Size>;
 

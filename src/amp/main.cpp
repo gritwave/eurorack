@@ -33,14 +33,14 @@ struct Amp
     {
         auto const blockRate = sampleRate / static_cast<float>(blockSize);
 
-        _gainKnob.prepare(blockRate);
-        _toneKnob.prepare(blockRate);
-        _outputKnob.prepare(blockRate);
-        _mixKnob.prepare(blockRate);
-        _gainCV.prepare(blockRate);
-        _toneCV.prepare(blockRate);
-        _outputCV.prepare(blockRate);
-        _mixCV.prepare(blockRate);
+        _gainKnob.setSampleRate(blockRate);
+        _toneKnob.setSampleRate(blockRate);
+        _outputKnob.setSampleRate(blockRate);
+        _mixKnob.setSampleRate(blockRate);
+        _gainCV.setSampleRate(blockRate);
+        _toneCV.setSampleRate(blockRate);
+        _outputCV.setSampleRate(blockRate);
+        _mixCV.setSampleRate(blockRate);
 
         _channels[0].setSampleRate(sampleRate);
         _channels[1].setSampleRate(sampleRate);

@@ -8,7 +8,7 @@ TEMPLATE_TEST_CASE("grit/audio/envelope: EnvelopeFollower", "", float, double)
     using Float = TestType;
 
     auto follower = grit::EnvelopeFollower<Float>{};
-    follower.prepare(Float(44'100));
+    follower.setSampleRate(Float(44'100));
     REQUIRE(follower(Float(0)) == Catch::Approx(Float(0)));
     REQUIRE(follower(Float(0)) == Catch::Approx(Float(0)));
 

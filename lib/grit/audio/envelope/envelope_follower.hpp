@@ -23,7 +23,7 @@ struct EnvelopeFollower
     auto setParameter(Parameter const& parameter) -> void;
 
     auto reset() -> void;
-    auto prepare(Float sampleRate) -> void;
+    auto setSampleRate(Float sampleRate) -> void;
     [[nodiscard]] auto operator()(Float in) -> Float;
 
 private:
@@ -44,7 +44,7 @@ auto EnvelopeFollower<Float>::setParameter(Parameter const& parameter) -> void
 }
 
 template<etl::floating_point Float>
-auto EnvelopeFollower<Float>::prepare(Float sampleRate) -> void
+auto EnvelopeFollower<Float>::setSampleRate(Float sampleRate) -> void
 {
     _sampleRate = sampleRate;
     update();

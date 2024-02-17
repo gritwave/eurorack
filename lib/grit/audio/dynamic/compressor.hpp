@@ -32,7 +32,7 @@ struct Compressor
     auto setParameter(Parameter const& parameter) -> void;
 
     auto reset() -> void;
-    auto prepare(Float sampleRate) -> void;
+    auto setSampleRate(Float sampleRate) -> void;
     [[nodiscard]] auto operator()(Float signal, Float sideChain) -> Float;
 
     [[nodiscard]] auto getGainReduction() const -> Float;
@@ -53,7 +53,7 @@ auto Compressor<Float>::setParameter(Parameter const& parameter) -> void
 }
 
 template<etl::floating_point Float>
-auto Compressor<Float>::prepare(Float sampleRate) -> void
+auto Compressor<Float>::setSampleRate(Float sampleRate) -> void
 {
     _sampleRate = sampleRate;
     reset();

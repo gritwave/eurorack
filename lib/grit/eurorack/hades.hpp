@@ -64,7 +64,7 @@ private:
         Amp() = default;
 
         auto next() -> void;
-        auto prepare(float sampleRate) -> void;
+        auto setSampleRate(float sampleRate) -> void;
         [[nodiscard]] auto operator()(float sample) -> float;
 
     private:
@@ -108,7 +108,7 @@ private:
         auto setParameter(Parameter const& parameter) -> void;
         auto nextDistortionAlgorithm() -> void;
 
-        auto prepare(float sampleRate) -> void;
+        auto setSampleRate(float sampleRate) -> void;
         [[nodiscard]] auto operator()(float sample) -> etl::pair<float, float>;
 
     private:

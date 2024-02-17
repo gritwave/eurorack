@@ -19,6 +19,8 @@ enum struct CrossFadeCurve
 template<etl::floating_point Float>
 struct CrossFade
 {
+    using Curve = CrossFadeCurve;
+
     struct Parameter
     {
         Float mix{0.5};

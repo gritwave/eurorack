@@ -22,7 +22,7 @@ struct TransientShaper
     auto setParameter(Parameter const& parameter) -> void;
 
     auto reset() -> void;
-    auto prepare(Float sampleRate) -> void;
+    auto setSampleRate(Float sampleRate) -> void;
     [[nodiscard]] auto operator()(Float x) -> Float;
 
 private:
@@ -54,14 +54,14 @@ auto TransientShaper<Float>::setParameter(Parameter const& parameter) -> void
 }
 
 template<etl::floating_point Float>
-auto TransientShaper<Float>::prepare(Float sampleRate) -> void
+auto TransientShaper<Float>::setSampleRate(Float sampleRate) -> void
 {
     _sampleRate = sampleRate;
 
-    _attack1.prepare(sampleRate);
-    _attack2.prepare(sampleRate);
-    _sustain1.prepare(sampleRate);
-    _sustain2.prepare(sampleRate);
+    _attack1.setSampleRate(sampleRate);
+    _attack2.setSampleRate(sampleRate);
+    _sustain1.setSampleRate(sampleRate);
+    _sustain2.setSampleRate(sampleRate);
 
     reset();
 }

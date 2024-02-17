@@ -17,7 +17,7 @@ struct DynamicSmoothing
 {
     DynamicSmoothing() = default;
 
-    auto prepare(Float sampleRate) -> void;
+    auto setSampleRate(Float sampleRate) -> void;
     auto process(Float input) -> Float;
     auto reset() -> void;
 
@@ -31,7 +31,7 @@ private:
 };
 
 template<etl::floating_point Float>
-auto DynamicSmoothing<Float>::prepare(Float sampleRate) -> void
+auto DynamicSmoothing<Float>::setSampleRate(Float sampleRate) -> void
 {
     auto const wc = _baseFrequency / sampleRate;
     _wc           = wc;

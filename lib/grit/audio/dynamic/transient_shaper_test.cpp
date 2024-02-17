@@ -8,7 +8,7 @@ TEMPLATE_TEST_CASE("grit/audio/dynamic: TransientShaper", "", float, double)
     using Float = TestType;
 
     auto shaper = grit::TransientShaper<Float>{};
-    shaper.prepare(Float(44'100));
+    shaper.setSampleRate(Float(44'100));
     REQUIRE(shaper(Float(0)) == Catch::Approx(Float(0)));
     REQUIRE(shaper(Float(0)) == Catch::Approx(Float(0)));
     REQUIRE(shaper(Float(0.25)) == Catch::Approx(Float(0.25)));

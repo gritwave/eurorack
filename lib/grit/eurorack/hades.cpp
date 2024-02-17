@@ -15,17 +15,17 @@ auto Hades::prepare(float sampleRate, etl::size_t blockSize) -> void
 {
     auto const blockRate = sampleRate / static_cast<float>(blockSize);
 
-    _textureKnob.prepare(blockRate);
-    _morphKnob.prepare(blockRate);
-    _ampKnob.prepare(blockRate);
-    _compressorKnob.prepare(blockRate);
-    _morphCv.prepare(blockRate);
-    _sideChainCv.prepare(blockRate);
-    _attackCv.prepare(blockRate);
-    _releaseCv.prepare(blockRate);
+    _textureKnob.setSampleRate(blockRate);
+    _morphKnob.setSampleRate(blockRate);
+    _ampKnob.setSampleRate(blockRate);
+    _compressorKnob.setSampleRate(blockRate);
+    _morphCv.setSampleRate(blockRate);
+    _sideChainCv.setSampleRate(blockRate);
+    _attackCv.setSampleRate(blockRate);
+    _releaseCv.setSampleRate(blockRate);
 
-    _channels[0].prepare(sampleRate);
-    _channels[1].prepare(sampleRate);
+    _channels[0].setSampleRate(sampleRate);
+    _channels[1].setSampleRate(sampleRate);
 }
 
 auto Hades::process(StereoBlock<float> const& buffer, ControlInput const& inputs) -> ControlOutput
@@ -82,7 +82,7 @@ auto Hades::Amp::next() -> void
     }
 }
 
-auto Hades::Amp::prepare(float sampleRate) -> void
+auto Hades::Amp::setSampleRate(float sampleRate) -> void
 {
     _fireAmp.setSampleRate(sampleRate);
     _grindAmp.setSampleRate(sampleRate);
@@ -128,11 +128,11 @@ auto Hades::Channel::setParameter(Parameter const& parameter) -> void
 
 auto Hades::Channel::nextDistortionAlgorithm() -> void { _distortion.next(); }
 
-auto Hades::Channel::prepare(float sampleRate) -> void
+auto Hades::Channel::setSampleRate(float sampleRate) -> void
 {
-    _envelope.prepare(sampleRate);
-    _compressor.prepare(sampleRate);
-    _distortion.prepare(sampleRate);
+    _envelope.setSampleRate(sampleRate);
+    _compressor.setSampleRate(sampleRate);
+    _distortion.setSampleRate(sampleRate);
 }
 
 auto Hades::Channel::operator()(float sample) -> etl::pair<float, float>
