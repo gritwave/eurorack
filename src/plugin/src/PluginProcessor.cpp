@@ -99,6 +99,11 @@ void PluginProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiB
         .gate2          = false,
     };
 
+    if (_next.load()) {
+        _next.store(false);
+        _hades->nextDistortionAlgorithm();
+    }
+
     auto const cv = _hades->process(io, controls);
     juce::ignoreUnused(cv);
 
@@ -115,10 +120,7 @@ auto PluginProcessor::parameterChanged(juce::String const& parameterID, float ne
 
 auto PluginProcessor::hasEditor() const -> bool { return true; }
 
-auto PluginProcessor::createEditor() -> juce::AudioProcessorEditor*
-{
-    return new juce::GenericAudioProcessorEditor(*this);
-}
+auto PluginProcessor::createEditor() -> juce::AudioProcessorEditor* { return new PluginEditor(*this); }
 
 auto PluginProcessor::getStateInformation(juce::MemoryBlock& destData) -> void
 {

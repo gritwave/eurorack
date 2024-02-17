@@ -44,12 +44,15 @@ struct PluginProcessor final
     auto getState() noexcept -> juce::AudioProcessorValueTreeState&;
     auto getState() const noexcept -> juce::AudioProcessorValueTreeState const&;
 
+    auto triggerNext() -> void { _next.store(true); }
+
 private:
     juce::UndoManager _undoManager{};
     juce::AudioProcessorValueTreeState _valueTree;
 
     std::vector<float> _buffer{};
     std::unique_ptr<grit::Hades> _hades{nullptr};
+    std::atomic<bool> _next{false};
 
     juce::AudioParameterFloat& _cv1;
     juce::AudioParameterFloat& _cv2;
