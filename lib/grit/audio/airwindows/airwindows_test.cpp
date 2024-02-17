@@ -39,17 +39,17 @@ auto test() -> void
     }
 }
 
-TEMPLATE_TEST_CASE("grit/audio/airwindows: AirWindowsFireAmp", "", float, double)
+TEMPLATE_TEST_CASE("audio/airwindows: AirWindowsFireAmp", "", float, double)
 {
     test<grit::AirWindowsFireAmp<TestType>>();
 }
 
-TEMPLATE_TEST_CASE("grit/audio/airwindows: AirWindowsGrindAmp", "", float, double)
+TEMPLATE_TEST_CASE("audio/airwindows: AirWindowsGrindAmp", "", float, double)
 {
     test<grit::AirWindowsGrindAmp<TestType>>();
 }
 
-TEMPLATE_TEST_CASE("grit/audio/airwindows: AirWindowsVinylDither", "", float, double)
+TEMPLATE_TEST_CASE("audio/airwindows: AirWindowsVinylDither", "", float, double)
 {
     using Float = TestType;
 

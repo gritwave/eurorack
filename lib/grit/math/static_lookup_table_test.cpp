@@ -7,7 +7,7 @@
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_template_test_macros.hpp>
 
-TEMPLATE_TEST_CASE("grit/math: StaticLookupTable", "", float, double)
+TEMPLATE_TEST_CASE("math: StaticLookupTable", "", float, double)
 {
     using Float = TestType;
 
@@ -23,7 +23,7 @@ TEMPLATE_TEST_CASE("grit/math: StaticLookupTable", "", float, double)
     REQUIRE(lut.at(Float(128)) == Catch::Approx(126.0));
 }
 
-TEMPLATE_TEST_CASE("grit/math: StaticLookupTableTransform", "", float, double)
+TEMPLATE_TEST_CASE("math: StaticLookupTableTransform", "", float, double)
 {
     using Float = TestType;
 

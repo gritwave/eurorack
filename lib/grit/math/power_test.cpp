@@ -31,7 +31,7 @@ TEMPLATE_TEST_CASE(
     REQUIRE(grit::power<3>(Int(3)) == 27);
 }
 
-TEMPLATE_TEST_CASE("grit/math: power", "", float, double)
+TEMPLATE_TEST_CASE("math: power", "", float, double)
 {
     using Float = TestType;
 

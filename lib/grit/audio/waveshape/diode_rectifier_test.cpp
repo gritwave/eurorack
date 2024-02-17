@@ -3,7 +3,7 @@
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_template_test_macros.hpp>
 
-TEMPLATE_TEST_CASE("grit/audio/waveshape: DiodeRectifier", "", double)
+TEMPLATE_TEST_CASE("audio/waveshape: DiodeRectifier", "", double)
 {
     using Float = TestType;
 
@@ -16,7 +16,7 @@ TEMPLATE_TEST_CASE("grit/audio/waveshape: DiodeRectifier", "", double)
     REQUIRE(shaper(Float(+1.0)) == Catch::Approx(+0.9978904933));
 }
 
-TEMPLATE_TEST_CASE("grit/audio/waveshape: DiodeRectifierADAA1", "", float, double)
+TEMPLATE_TEST_CASE("audio/waveshape: DiodeRectifierADAA1", "", float, double)
 {
     using Float = TestType;
 

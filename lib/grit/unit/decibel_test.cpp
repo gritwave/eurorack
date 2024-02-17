@@ -3,7 +3,7 @@
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_template_test_macros.hpp>
 
-TEMPLATE_TEST_CASE("grit/unit: toDecibels/fromDecibels", "", float, double)
+TEMPLATE_TEST_CASE("unit: toDecibels/fromDecibels", "", float, double)
 {
     using Float = TestType;
 
@@ -18,7 +18,7 @@ TEMPLATE_TEST_CASE("grit/unit: toDecibels/fromDecibels", "", float, double)
     REQUIRE(grit::toDecibels(grit::fromDecibels(Float(-12))) == Catch::Approx(Float(-12)));
 }
 
-TEMPLATE_TEST_CASE("grit/unit: Decibels", "", float, double)
+TEMPLATE_TEST_CASE("unit: Decibels", "", float, double)
 {
     using Float = TestType;
 

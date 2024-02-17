@@ -30,7 +30,7 @@ auto testComplexPlan() -> void
     }
 }
 
-TEMPLATE_TEST_CASE("grit/fft: ComplexPlan", "", etl::complex<float>, etl::complex<double>)
+TEMPLATE_TEST_CASE("fft: ComplexPlan", "", etl::complex<float>, etl::complex<double>)
 {
     testComplexPlan<grit::fft::ComplexPlan<TestType, 64>>();
     testComplexPlan<grit::fft::ComplexPlan<TestType, 128>>();
@@ -39,7 +39,7 @@ TEMPLATE_TEST_CASE("grit/fft: ComplexPlan", "", etl::complex<float>, etl::comple
     testComplexPlan<grit::fft::ComplexPlan<TestType, 1024>>();
 }
 
-TEMPLATE_TEST_CASE("grit/fft: ComplexPlanV2", "", etl::complex<float>, etl::complex<double>)
+TEMPLATE_TEST_CASE("fft: ComplexPlanV2", "", etl::complex<float>, etl::complex<double>)
 {
     testComplexPlan<grit::fft::ComplexPlanV2<TestType, 64>>();
     testComplexPlan<grit::fft::ComplexPlanV2<TestType, 128>>();

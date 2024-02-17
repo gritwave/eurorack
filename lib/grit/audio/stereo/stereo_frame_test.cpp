@@ -7,13 +7,13 @@
 
 using namespace grit;
 
-TEMPLATE_TEST_CASE("grit/audio/stereo: StereoFrame", "[stereo]", float, double)
+TEMPLATE_TEST_CASE("audio/stereo: StereoFrame", "[stereo]", float, double)
 {
     using T = TestType;
     STATIC_REQUIRE(etl::same_as<typename StereoFrame<T>::value_type, T>);
 }
 
-TEMPLATE_TEST_CASE("grit/audio/stereo: operator+(StereoFrame)", "[stereo]", float, double)
+TEMPLATE_TEST_CASE("audio/stereo: operator+(StereoFrame)", "[stereo]", float, double)
 {
     using T           = TestType;
     auto const result = StereoFrame<T>{T(1), T(2)} + T(1);
@@ -21,7 +21,7 @@ TEMPLATE_TEST_CASE("grit/audio/stereo: operator+(StereoFrame)", "[stereo]", floa
     REQUIRE(result.right == Catch::Approx(3));
 }
 
-TEMPLATE_TEST_CASE("grit/audio/stereo: operator-(StereoFrame)", "[stereo]", float, double)
+TEMPLATE_TEST_CASE("audio/stereo: operator-(StereoFrame)", "[stereo]", float, double)
 {
     using T           = TestType;
     auto const result = StereoFrame<T>{T(1), T(2)} - T(1);
@@ -29,7 +29,7 @@ TEMPLATE_TEST_CASE("grit/audio/stereo: operator-(StereoFrame)", "[stereo]", floa
     REQUIRE(result.right == Catch::Approx(1));
 }
 
-TEMPLATE_TEST_CASE("grit/audio/stereo: operator*(StereoFrame)", "[stereo]", float, double)
+TEMPLATE_TEST_CASE("audio/stereo: operator*(StereoFrame)", "[stereo]", float, double)
 {
     using T           = TestType;
     auto const result = StereoFrame<T>{T(1), T(2)} * T(2);
@@ -37,7 +37,7 @@ TEMPLATE_TEST_CASE("grit/audio/stereo: operator*(StereoFrame)", "[stereo]", floa
     REQUIRE(result.right == Catch::Approx(4));
 }
 
-TEMPLATE_TEST_CASE("grit/audio/stereo: operator/(StereoFrame)", "[stereo]", float, double)
+TEMPLATE_TEST_CASE("audio/stereo: operator/(StereoFrame)", "[stereo]", float, double)
 {
     using T           = TestType;
     auto const result = StereoFrame<T>{T(1), T(2)} / T(2);
@@ -45,7 +45,7 @@ TEMPLATE_TEST_CASE("grit/audio/stereo: operator/(StereoFrame)", "[stereo]", floa
     REQUIRE(result.right == Catch::Approx(1));
 }
 
-TEMPLATE_TEST_CASE("grit/audio/stereo: operator+=(StereoFrame)", "[stereo]", float, double)
+TEMPLATE_TEST_CASE("audio/stereo: operator+=(StereoFrame)", "[stereo]", float, double)
 {
     using T     = TestType;
     auto result = StereoFrame<T>{T(1), T(2)};
@@ -54,7 +54,7 @@ TEMPLATE_TEST_CASE("grit/audio/stereo: operator+=(StereoFrame)", "[stereo]", flo
     REQUIRE(result.right == Catch::Approx(3));
 }
 
-TEMPLATE_TEST_CASE("grit/audio/stereo: operator-=(StereoFrame)", "[stereo]", float, double)
+TEMPLATE_TEST_CASE("audio/stereo: operator-=(StereoFrame)", "[stereo]", float, double)
 {
     using T     = TestType;
     auto result = StereoFrame<T>{T(1), T(2)};
@@ -63,7 +63,7 @@ TEMPLATE_TEST_CASE("grit/audio/stereo: operator-=(StereoFrame)", "[stereo]", flo
     REQUIRE(result.right == Catch::Approx(1));
 }
 
-TEMPLATE_TEST_CASE("grit/audio/stereo: operator*=(StereoFrame)", "[stereo]", float, double)
+TEMPLATE_TEST_CASE("audio/stereo: operator*=(StereoFrame)", "[stereo]", float, double)
 {
     using T     = TestType;
     auto result = StereoFrame<T>{T(1), T(2)};
@@ -72,7 +72,7 @@ TEMPLATE_TEST_CASE("grit/audio/stereo: operator*=(StereoFrame)", "[stereo]", flo
     REQUIRE(result.right == Catch::Approx(4));
 }
 
-TEMPLATE_TEST_CASE("grit/audio/stereo: operator/=(StereoFrame)", "[stereo]", float, double)
+TEMPLATE_TEST_CASE("audio/stereo: operator/=(StereoFrame)", "[stereo]", float, double)
 {
     using T     = TestType;
     auto result = StereoFrame<T>{T(1), T(2)};
