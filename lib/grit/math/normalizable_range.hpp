@@ -6,6 +6,9 @@
 
 namespace grit {
 
+/// \brief Mapping between a range of values and a normalized 0 to 1 range.
+/// \warning This is **not** a drop-in replacement for juce::NormalisableRange. The 3rd
+///          constructor parameter is the skew midpoint and symmetric skew is **not** supported.
 /// \ingroup grit-math
 template<etl::floating_point Float>
 struct NormalizableRange
@@ -16,10 +19,10 @@ struct NormalizableRange
 
     constexpr NormalizableRange(Float start, Float end) noexcept : _start{start}, _end{end} {}
 
-    constexpr NormalizableRange(Float start, Float end, Float center) noexcept
+    constexpr NormalizableRange(Float start, Float end, Float midpoint) noexcept
         : _start{start}
         , _end{end}
-        , _skew{skewForCenter(start, end, center)}
+        , _skew{skewForMidpoint(start, end, midpoint)}
     {}
 
     [[nodiscard]] constexpr auto getStart() const -> Float { return _start; }
@@ -49,9 +52,9 @@ struct NormalizableRange
     }
 
 private:
-    [[nodiscard]] static constexpr auto skewForCenter(Float start, Float end, Float center) -> Float
+    [[nodiscard]] static constexpr auto skewForMidpoint(Float start, Float end, Float midpoint) -> Float
     {
-        return etl::log(Float(0.5)) / etl::log((center - start) / (end - start));
+        return etl::log(Float(0.5)) / etl::log((midpoint - start) / (end - start));
     }
 
     Float _start{0};
