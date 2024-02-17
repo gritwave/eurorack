@@ -48,15 +48,15 @@ struct Amp
 
     [[nodiscard]] auto process(grit::StereoBlock<float> const& buffer, ControlInput const& inputs) -> void
     {
-        auto const gainKnob   = _gainKnob.process(inputs.gainKnob);
-        auto const toneKnob   = _toneKnob.process(inputs.toneKnob);
-        auto const outputKnob = _outputKnob.process(inputs.outputKnob);
-        auto const mixKnob    = _mixKnob.process(inputs.mixKnob);
+        auto const gainKnob   = _gainKnob(inputs.gainKnob);
+        auto const toneKnob   = _toneKnob(inputs.toneKnob);
+        auto const outputKnob = _outputKnob(inputs.outputKnob);
+        auto const mixKnob    = _mixKnob(inputs.mixKnob);
 
-        auto const gainCV   = _gainCV.process(inputs.gainCV);
-        auto const toneCV   = _toneCV.process(inputs.toneCV);
-        auto const outputCV = _outputCV.process(inputs.outputCV);
-        auto const mixCV    = _mixCV.process(inputs.mixCV);
+        auto const gainCV   = _gainCV(inputs.gainCV);
+        auto const toneCV   = _toneCV(inputs.toneCV);
+        auto const outputCV = _outputCV(inputs.outputCV);
+        auto const mixCV    = _mixCV(inputs.mixCV);
 
         auto const parameter = Channel::Parameter{
             .mode   = inputs.mode,

@@ -18,7 +18,7 @@ struct DynamicSmoothing
     DynamicSmoothing() = default;
 
     auto setSampleRate(Float sampleRate) -> void;
-    auto process(Float input) -> Float;
+    auto operator()(Float input) -> Float;
     auto reset() -> void;
 
 private:
@@ -38,7 +38,7 @@ auto DynamicSmoothing<Float>::setSampleRate(Float sampleRate) -> void
 }
 
 template<etl::floating_point Float>
-auto DynamicSmoothing<Float>::process(Float input) -> Float
+auto DynamicSmoothing<Float>::operator()(Float input) -> Float
 {
     auto const low1z = _low1;
     auto const low2z = _low2;

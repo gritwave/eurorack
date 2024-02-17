@@ -78,7 +78,7 @@ auto VariableShapeOscillator<Float>::addPhaseOffset(Float offset) -> void
 template<etl::floating_point Float>
 auto VariableShapeOscillator<Float>::operator()() -> Float
 {
-    return _crossFade.process(_oscA(), _oscB());
+    return _crossFade(_oscA(), _oscB());
 }
 
 }  // namespace grit

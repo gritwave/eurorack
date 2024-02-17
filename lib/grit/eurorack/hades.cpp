@@ -30,14 +30,14 @@ auto Hades::prepare(float sampleRate, etl::size_t blockSize) -> void
 
 auto Hades::process(StereoBlock<float> const& buffer, ControlInput const& inputs) -> ControlOutput
 {
-    auto const textureKnob    = _textureKnob.process(inputs.textureKnob);
-    auto const morphKnob      = _morphKnob.process(inputs.morphKnob);
-    auto const ampKnob        = _ampKnob.process(inputs.ampKnob);
-    auto const compressorKnob = _compressorKnob.process(inputs.compressorKnob);
-    auto const morphCv        = _morphCv.process(inputs.morphCV);
-    auto const sideChainCv    = _sideChainCv.process(inputs.sideChainCV);
-    auto const attackCv       = _attackCv.process(inputs.attackCV);
-    auto const releaseCv      = _releaseCv.process(inputs.releaseCV);
+    auto const textureKnob    = _textureKnob(inputs.textureKnob);
+    auto const morphKnob      = _morphKnob(inputs.morphKnob);
+    auto const ampKnob        = _ampKnob(inputs.ampKnob);
+    auto const compressorKnob = _compressorKnob(inputs.compressorKnob);
+    auto const morphCv        = _morphCv(inputs.morphCV);
+    auto const sideChainCv    = _sideChainCv(inputs.sideChainCV);
+    auto const attackCv       = _attackCv(inputs.attackCV);
+    auto const releaseCv      = _releaseCv(inputs.releaseCV);
 
     auto const channelParameter = Hades::Channel::Parameter{
         .texture    = textureKnob,

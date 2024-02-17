@@ -32,7 +32,7 @@ struct CrossFade
     auto setParameter(Parameter parameter) -> void;
     [[nodiscard]] auto getParameter() const -> Parameter;
 
-    auto process(Float left, Float right) -> Float;
+    auto operator()(Float left, Float right) -> Float;
 
 private:
     auto update() -> void;
@@ -56,7 +56,7 @@ auto CrossFade<Float>::getParameter() const -> Parameter
 }
 
 template<etl::floating_point Float>
-auto CrossFade<Float>::process(Float left, Float right) -> Float
+auto CrossFade<Float>::operator()(Float left, Float right) -> Float
 {
     return (left * _gainL) + (right * _gainR);
 }
