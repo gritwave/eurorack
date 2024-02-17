@@ -4,6 +4,7 @@
 #include <catch2/catch_get_random_seed.hpp>
 #include <catch2/catch_template_test_macros.hpp>
 
+#include <cstddef>
 #include <etl/algorithm.hpp>
 #include <etl/random.hpp>
 
@@ -13,7 +14,7 @@ TEST_CASE("grit/audio/eurorack: Hades")
     static constexpr auto blockSize  = 32;
 
     auto buffer = [] {
-        auto buf  = etl::array<float, 2 * blockSize>{};
+        auto buf  = etl::array<float, static_cast<size_t>(2 * blockSize)>{};
         auto rng  = etl::xoshiro128plusplus{Catch::getSeed()};
         auto dist = etl::uniform_real_distribution<float>{-1.0F, 1.0F};
         etl::generate(buf.begin(), buf.end(), [&] { return dist(rng); });
