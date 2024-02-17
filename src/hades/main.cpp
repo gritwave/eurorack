@@ -37,8 +37,8 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
 
     auto const controls = grit::Hades::ControlInput{
         .textureKnob    = patch.GetAdcValue(daisy::patch_sm::CV_1),
-        .morphKnob      = patch.GetAdcValue(daisy::patch_sm::CV_3),
-        .ampKnob        = patch.GetAdcValue(daisy::patch_sm::CV_2),
+        .morphKnob      = patch.GetAdcValue(daisy::patch_sm::CV_2),
+        .ampKnob        = patch.GetAdcValue(daisy::patch_sm::CV_3),
         .compressorKnob = patch.GetAdcValue(daisy::patch_sm::CV_4),
         .morphCV        = patch.GetAdcValue(daisy::patch_sm::CV_5),
         .sideChainCV    = patch.GetAdcValue(daisy::patch_sm::CV_6),
