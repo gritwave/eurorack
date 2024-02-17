@@ -13,3 +13,4 @@
 #include <grit/math/sign.hpp>
 #include <grit/math/static_lookup_table.hpp>
 #include <grit/math/static_lookup_table_transform.hpp>
+#include <grit/math/trigonometry.hpp>

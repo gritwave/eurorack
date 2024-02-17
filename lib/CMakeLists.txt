@@ -78,6 +78,7 @@ target_sources(gritwave-grit INTERFACE
         "grit/math/sign.hpp"
         "grit/math/static_lookup_table.hpp"
         "grit/math/static_lookup_table_transform.hpp"
+        "grit/math/trigonometry.hpp"
 
         "grit/unit.hpp"
         "grit/unit/decibel.hpp"
