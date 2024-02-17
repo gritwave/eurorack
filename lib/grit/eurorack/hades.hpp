@@ -81,7 +81,7 @@ private:
         };
 
         Index _index{TanhIndex};
-        TanhClipper<float> _tanh{};
+        TanhClipperADAA1<float> _tanh{};
         HardClipper<float> _hard{};
         FullWaveRectifier<float> _fullWave{};
         HalfWaveRectifier<float> _halfWave{};
