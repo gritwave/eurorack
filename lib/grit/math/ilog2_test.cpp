@@ -4,7 +4,7 @@
 #include <catch2/catch_template_test_macros.hpp>
 
 TEMPLATE_TEST_CASE(
-    "grit/math: ilog2",
+    "math: ilog2",
     "",
     short,
     int,

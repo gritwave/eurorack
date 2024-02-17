@@ -6,7 +6,7 @@
 #include <catch2/catch_template_test_macros.hpp>
 
 TEMPLATE_PRODUCT_TEST_CASE(
-    "grit/audio/waveshape: WaveShaperADAA1",
+    "audio/waveshape: WaveShaperADAA1",
     "",
     (grit::FullWaveRectifierADAA1, grit::HalfWaveRectifierADAA1, grit::HardClipperADAA1),
     (float, double)

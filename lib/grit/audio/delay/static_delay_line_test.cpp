@@ -4,7 +4,7 @@
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
 
 TEMPLATE_TEST_CASE(
-    "grit/audio/delay: StaticDelayLine",
+    "audio/delay: StaticDelayLine",
     "",
     grit::BufferInterpolation::None,
     grit::BufferInterpolation::Linear,
