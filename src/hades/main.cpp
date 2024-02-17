@@ -11,7 +11,7 @@ auto processor = grit::Hades{};
 auto patch     = daisy::patch_sm::DaisyPatchSM{};
 auto button    = daisy::Switch{};
 auto toggle    = daisy::Switch{};
-auto io_buffer = etl::array<float, blockSize * 2U>{};
+auto buffer    = etl::array<float, blockSize * 2U>{};
 
 auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::OutputBuffer out, size_t size) -> void
 {
@@ -29,7 +29,7 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
     }
 
     // Copy to interleaved
-    auto io = grit::StereoBlock<float>{io_buffer.data(), size};
+    auto io = grit::StereoBlock<float>{buffer.data(), size};
     for (auto i{0U}; i < size; ++i) {
         io(0, i) = in[0][i];
         io(1, i) = in[1][i];
@@ -66,8 +66,8 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
 auto main() -> int
 {
     hades::patch.Init();
-    hades::button.Init(hades::patch.B7);
-    hades::toggle.Init(hades::patch.B8);
+    hades::button.Init(daisy::patch_sm::DaisyPatchSM::B7);
+    hades::toggle.Init(daisy::patch_sm::DaisyPatchSM::B8);
 
     hades::processor.prepare(hades::sampleRate, hades::blockSize);
 
