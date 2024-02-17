@@ -1,5 +1,5 @@
 #include <grit/audio/delay/static_delay_line.hpp>
-#include <grit/audio/envelope/adsr.hpp>
+#include <grit/audio/envelope/envelope_adsr.hpp>
 #include <grit/audio/filter/dynamic_smoothing.hpp>
 #include <grit/audio/music/note.hpp>
 #include <grit/audio/oscillator/variable_shape_oscillator.hpp>
@@ -23,7 +23,7 @@ auto envTriggerButton = daisy::Switch{};
 auto patch            = daisy::patch_sm::DaisyPatchSM{};
 auto& envelopeGate    = patch.gate_in_1;
 
-auto adsr          = grit::ADSR{};
+auto adsr          = grit::EnvelopeADSR{};
 auto oscillator    = grit::WavetableOscillator<float, wavetableSine.size()>{sineWavetable};
 auto subOscillator = grit::WavetableOscillator<float, wavetableSine.size()>{sineWavetable};
 

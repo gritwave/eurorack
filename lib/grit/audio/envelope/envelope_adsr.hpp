@@ -9,9 +9,9 @@ namespace grit {
 /// https://github.com/fdeste/ADSR
 /// http://www.earlevel.com/main/2013/06/03/envelope-generators-adsr-code
 /// \ingroup grit-audio-envelope
-struct ADSR
+struct EnvelopeADSR
 {
-    ADSR();
+    EnvelopeADSR();
 
     auto setAttack(float rate) -> void;
     auto setDecay(float rate) -> void;
@@ -61,7 +61,7 @@ private:
     float _targetRatioDr{};
 };
 
-inline ADSR::ADSR()
+inline EnvelopeADSR::EnvelopeADSR()
 {
     reset();
 
@@ -73,34 +73,34 @@ inline ADSR::ADSR()
     setTargetRatioDr(0.0001F);
 }
 
-inline auto ADSR::setAttack(float rate) -> void
+inline auto EnvelopeADSR::setAttack(float rate) -> void
 {
     _attackRate = rate;
     _attackCoef = calcCoef(rate, _targetRatioA);
     _attackBase = (1.0F + _targetRatioA) * (1.0F - _attackCoef);
 }
 
-inline auto ADSR::setDecay(float rate) -> void
+inline auto EnvelopeADSR::setDecay(float rate) -> void
 {
     _decayRate = rate;
     _decayCoef = calcCoef(rate, _targetRatioDr);
     _decayBase = (_sustainLevel - _targetRatioDr) * (1.0F - _decayCoef);
 }
 
-inline auto ADSR::setSustain(float level) -> void
+inline auto EnvelopeADSR::setSustain(float level) -> void
 {
     _sustainLevel = level;
     _decayBase    = (_sustainLevel - _targetRatioDr) * (1.0F - _decayCoef);
 }
 
-inline auto ADSR::setRelease(float rate) -> void
+inline auto EnvelopeADSR::setRelease(float rate) -> void
 {
     _releaseRate = rate;
     _releaseCoef = calcCoef(rate, _targetRatioDr);
     _releaseBase = -_targetRatioDr * (1.0F - _releaseCoef);
 }
 
-inline auto ADSR::setTargetRatioA(float ratio) -> void
+inline auto EnvelopeADSR::setTargetRatioA(float ratio) -> void
 {
     if (ratio < float(0.000000001)) {
         ratio = float(0.000000001);  // -180 dB
@@ -109,7 +109,7 @@ inline auto ADSR::setTargetRatioA(float ratio) -> void
     _attackBase   = (float(1) + _targetRatioA) * (float(1) - _attackCoef);
 }
 
-inline auto ADSR::setTargetRatioDr(float ratio) -> void
+inline auto EnvelopeADSR::setTargetRatioDr(float ratio) -> void
 {
     if (ratio < float(0.000000001)) {
         ratio = float(0.000000001);  // -180 dB
@@ -119,7 +119,7 @@ inline auto ADSR::setTargetRatioDr(float ratio) -> void
     _releaseBase   = -_targetRatioDr * (float(1) - _releaseCoef);
 }
 
-inline auto ADSR::gate(bool isOn) -> void
+inline auto EnvelopeADSR::gate(bool isOn) -> void
 {
     if (isOn) {
         _state = State::Attack;
@@ -128,13 +128,13 @@ inline auto ADSR::gate(bool isOn) -> void
     }
 }
 
-inline auto ADSR::reset() -> void
+inline auto EnvelopeADSR::reset() -> void
 {
     _state  = State::Idle;
     _output = float(0);
 }
 
-inline auto ADSR::operator()() -> float
+inline auto EnvelopeADSR::operator()() -> float
 {
     switch (_state) {
         case State::Idle: {

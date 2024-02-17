@@ -25,7 +25,7 @@ target_sources(gritwave-grit INTERFACE
         "grit/audio/dynamic/transient_shaper.hpp"
 
         "grit/audio/envelope.hpp"
-        "grit/audio/envelope/adsr.hpp"
+        "grit/audio/envelope/envelope_adsr.hpp"
         "grit/audio/envelope/envelope_follower.hpp"
 
         "grit/audio/filter.hpp"
@@ -90,7 +90,7 @@ target_link_libraries(gritwave-eurorack PUBLIC gritwave::grit)
 target_sources(gritwave-eurorack
     PRIVATE
         "grit/eurorack.hpp"
-        
+
         "grit/eurorack/amp.cpp"
         "grit/eurorack/amp.hpp"
         "grit/eurorack/hades.cpp"
