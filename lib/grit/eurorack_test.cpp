@@ -1,4 +1,4 @@
-#include "hades.hpp"
+#include "eurorack.hpp"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_get_random_seed.hpp>

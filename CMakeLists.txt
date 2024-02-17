@@ -52,6 +52,7 @@ if(NOT CMAKE_CROSSCOMPILING)
     target_sources(grit-eurorack-tests
         PRIVATE
             "lib/grit/audio_test.cpp"
+            "lib/grit/eurorack_test.cpp"
             "lib/grit/fft_test.cpp"
             "lib/grit/math_test.cpp"
             "lib/grit/unit_test.cpp"
@@ -71,7 +72,6 @@ if(NOT CMAKE_CROSSCOMPILING)
             "lib/grit/audio/waveshape/tanh_clipper_test.cpp"
             "lib/grit/audio/waveshape/wave_shaper_test.cpp"
             "lib/grit/audio/waveshape/wave_shaper_adaa1_test.cpp"
-            "lib/grit/eurorack/hades_test.cpp"
             "lib/grit/fft/fft_test.cpp"
             "lib/grit/math/ilog2_test.cpp"
             "lib/grit/math/ipow_test.cpp"
