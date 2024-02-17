@@ -1,5 +1,6 @@
 #pragma once
 
+#include <grit/math/sign.hpp>
 #include <grit/math/static_lookup_table_transform.hpp>
 
 #include <etl/algorithm.hpp>
@@ -34,7 +35,7 @@ struct AirWindowsGrindAmp
     auto reset() -> void;
 
 private:
-    static constexpr auto sineLUT = StaticLookupTableTransform<Float, 255>{
+    static constexpr auto sineLUT = StaticLookupTableTransform<Float, 511>{
         [](auto x) { return etl::sin(x); },
         Float(0),
         Float(1.57079633),
@@ -158,42 +159,29 @@ auto AirWindowsGrindAmp<Float, URNG>::setParameter(Parameter parameter) -> void
     auto const c = _parameter.output;
     auto const d = _parameter.mix;
 
-    Float overallscale = Float(1) / Float(44100.0);
-    overallscale *= _sampleRate;
-    _cycleEnd = etl::floor(overallscale);
-    if (_cycleEnd < 1) {
-        _cycleEnd = 1;
-    }
-    if (_cycleEnd > 4) {
-        _cycleEnd = 4;
-    }
+    auto const overallscale = Float(1) / Float(44100.0) * _sampleRate;
+
+    _cycleEnd = etl::clamp(static_cast<int>(etl::floor(overallscale)), 1, 4);
     // this is going to be 2 for 88.1 or 96k, 3 for silly people, 4 for 176 or 192k
     if (_cycle > _cycleEnd - 1) {
         _cycle = _cycleEnd - 1;  // sanity check
     }
 
-    _inputlevel      = etl::pow(a, Float(2));
-    Float samplerate = _sampleRate;
-    _trimEq          = Float(1.1) - b;
-    _toneEq          = _trimEq / Float(1.2);
+    _trimEq = Float(1.1) - b;
+    _toneEq = _trimEq / Float(1.2);
     _trimEq /= Float(50.0);
     _trimEq += Float(0.165);
-    _eq          = ((_trimEq - (_toneEq / Float(6.1))) / samplerate) * Float(22050);
-    _beq         = ((_trimEq + (_toneEq / Float(2.1))) / samplerate) * Float(22050);
+    _eq  = ((_trimEq - (_toneEq / Float(6.1))) / _sampleRate) * Float(22050);
+    _beq = ((_trimEq + (_toneEq / Float(2.1))) / _sampleRate) * Float(22050);
+
+    _inputlevel  = etl::pow(a, Float(2));
     _outputlevel = c;
     _wet         = d;
     _bassdrive   = Float(1.57079633) * (Float(2.5) - _toneEq);
 
-    Float cutoff = (Float(18000) + (b * Float(1000))) / _sampleRate;
-    if (cutoff > Float(0.49)) {
-        cutoff = Float(0.49);  // don't crash if run at 44.1k
-    }
-    if (cutoff < Float(0.001)) {
-        cutoff = Float(0.001);  // or if cutoff's too low
-    }
+    auto const cutoff = etl::clamp((Float(18000) + (b * Float(1000))) / _sampleRate, Float(0.001), Float(0.49));
 
     _fixF[FixFreq] = _fixE[FixFreq] = _fixD[FixFreq] = _fixC[FixFreq] = _fixB[FixFreq] = _fixA[FixFreq] = cutoff;
-
     _fixA[FixReso] = Float(4.46570214);
     _fixB[FixReso] = Float(1.51387132);
     _fixC[FixReso] = Float(0.93979296);
@@ -271,14 +259,8 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
 
     input *= _inputlevel;
     _iirSampleA = (_iirSampleA * (Float(1) - _eq)) + (input * _eq);
-    input       = input - (_iirSampleA * 0.92);
-    // highpass
-    if (input > Float(1)) {
-        input = Float(1);
-    }
-    if (input < Float(-1)) {
-        input = Float(-1);
-    }
+    input       = etl::clamp(input - (_iirSampleA * Float(0.92)), Float(-1), Float(+1));
+
     auto bridgerectifier = etl::abs(input);
     auto inverse         = (bridgerectifier + Float(1)) * Float(0.5);
     bridgerectifier      = (_smoothA + (_secondA * inverse) + (_thirdA * bridgerectifier) + input);
@@ -295,14 +277,9 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
 
     input *= _inputlevel;
     _iirSampleB = (_iirSampleB * (Float(1) - _eq)) + (input * _eq);
-    input       = input - (_iirSampleB * 0.79);
+    input       = etl::clamp(input - (_iirSampleB * Float(0.79)), Float(-1), Float(+1));
     // highpass
-    if (input > Float(1)) {
-        input = Float(1);
-    }
-    if (input < Float(-1)) {
-        input = Float(-1);
-    }
+
     // overdrive
     bridgerectifier = etl::abs(input);
     inverse         = (bridgerectifier + Float(1)) * Float(0.5);
@@ -315,22 +292,11 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
 
     _iirSampleC     = (_iirSampleC * (Float(1) - _beq)) + (basscatchL * _beq);
     basscatchL      = _iirSampleC * _bassdrive;
-    bridgerectifier = etl::abs(basscatchL);
-    if (bridgerectifier > 1.57079633) {
-        bridgerectifier = 1.57079633;
-    }
-    bridgerectifier = sineLUT(bridgerectifier);
-    if (basscatchL > 0.0) {
-        basscatchL = bridgerectifier;
-    } else {
-        basscatchL = -bridgerectifier;
-    }
-    if (input > Float(1)) {
-        input = Float(1);
-    }
-    if (input < Float(-1)) {
-        input = Float(-1);
-    }
+    bridgerectifier = etl::clamp(etl::abs(basscatchL), Float(0), Float(1.57079633));
+
+    bridgerectifier = sineLUT(bridgerectifier) * sign(basscatchL);
+
+    input = etl::clamp(input, Float(-1), Float(+1));
     // overdrive
     inverse         = (bridgerectifier + Float(1)) * Float(0.5);
     bridgerectifier = (_smoothC + (_secondC * inverse) + (_thirdC * bridgerectifier) + input);
@@ -347,22 +313,11 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
 
     _iirSampleD     = (_iirSampleD * (Float(1) - _beq)) + (basscatchL * _beq);
     basscatchL      = _iirSampleD * _bassdrive;
-    bridgerectifier = etl::abs(basscatchL);
-    if (bridgerectifier > 1.57079633) {
-        bridgerectifier = 1.57079633;
-    }
-    bridgerectifier = sineLUT(bridgerectifier);
-    if (basscatchL > Float(0.0)) {
-        basscatchL = bridgerectifier;
-    } else {
-        basscatchL = -bridgerectifier;
-    }
-    if (input > Float(1.0)) {
-        input = Float(1.0);
-    }
-    if (input < Float(-1.0)) {
-        input = Float(-1.0);
-    }
+    bridgerectifier = etl::clamp(etl::abs(basscatchL), Float(0), Float(1.57079633));
+
+    bridgerectifier = sineLUT(bridgerectifier) * sign(basscatchL);
+
+    input = etl::clamp(input, Float(-1), Float(+1));
     // overdrive
     inverse         = (bridgerectifier + Float(1.0)) * Float(0.5);
     bridgerectifier = (_smoothD + (_secondD * inverse) + (_thirdD * bridgerectifier) + input);
@@ -379,22 +334,12 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
 
     _iirSampleE     = (_iirSampleE * (1.0 - _beq)) + (basscatchL * _beq);
     basscatchL      = _iirSampleE * _bassdrive;
-    bridgerectifier = etl::abs(basscatchL);
-    if (bridgerectifier > 1.57079633) {
-        bridgerectifier = 1.57079633;
-    }
-    bridgerectifier = sineLUT(bridgerectifier);
-    if (basscatchL > 0.0) {
-        basscatchL = bridgerectifier;
-    } else {
-        basscatchL = -bridgerectifier;
-    }
-    if (input > 1.0) {
-        input = 1.0;
-    }
-    if (input < -1.0) {
-        input = -1.0;
-    }
+    bridgerectifier = etl::clamp(etl::abs(basscatchL), Float(0), Float(1.57079633));
+
+    bridgerectifier = sineLUT(bridgerectifier) * sign(basscatchL);
+
+    input = etl::clamp(input, Float(-1), Float(+1));
+
     // overdrive
     inverse         = (bridgerectifier + Float(1)) * Float(0.5);
     bridgerectifier = (_smoothE + (_secondE * inverse) + (_thirdE * bridgerectifier) + input);
@@ -406,22 +351,12 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
 
     _iirSampleF     = (_iirSampleF * (Float(1) - _beq)) + (basscatchL * _beq);
     basscatchL      = _iirSampleF * _bassdrive;
-    bridgerectifier = etl::abs(basscatchL);
-    if (bridgerectifier > 1.57079633) {
-        bridgerectifier = 1.57079633;
-    }
-    bridgerectifier = sineLUT(bridgerectifier);
-    if (basscatchL > 0.0) {
-        basscatchL = bridgerectifier;
-    } else {
-        basscatchL = -bridgerectifier;
-    }
-    if (input > 1.0) {
-        input = 1.0;
-    }
-    if (input < -1.0) {
-        input = -1.0;
-    }
+    bridgerectifier = etl::clamp(etl::abs(basscatchL), Float(0), Float(1.57079633));
+
+    bridgerectifier = sineLUT(bridgerectifier) * sign(basscatchL);
+
+    input = etl::clamp(input, Float(-1), Float(+1));
+
     // overdrive
     inverse         = (bridgerectifier + Float(1)) * Float(0.5);
     bridgerectifier = (_smoothF + (_secondF * inverse) + (_thirdF * bridgerectifier) + input);
@@ -436,24 +371,14 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
     _fixE[FixS2] = (input * _fixE[FixA2]) - (outSample * _fixE[FixB2]);
     input        = outSample;  // fixed biquad filtering ultrasonics
 
-    _iirSampleG     = (_iirSampleG * (1.0 - _beq)) + (basscatchL * _beq);
+    _iirSampleG     = (_iirSampleG * (Float(1) - _beq)) + (basscatchL * _beq);
     basscatchL      = _iirSampleG * _bassdrive;
-    bridgerectifier = etl::abs(basscatchL);
-    if (bridgerectifier > 1.57079633) {
-        bridgerectifier = 1.57079633;
-    }
-    bridgerectifier = sineLUT(bridgerectifier);
-    if (basscatchL > 0.0) {
-        basscatchL = bridgerectifier;
-    } else {
-        basscatchL = -bridgerectifier;
-    }
-    if (input > 1.0) {
-        input = 1.0;
-    }
-    if (input < -1.0) {
-        input = -1.0;
-    }
+    bridgerectifier = etl::clamp(etl::abs(basscatchL), Float(0), Float(1.57079633));
+
+    bridgerectifier = sineLUT(bridgerectifier) * sign(basscatchL);
+
+    input = etl::clamp(input, Float(-1), Float(+1));
+
     // overdrive
     inverse         = (bridgerectifier + Float(1)) * Float(0.5);
     bridgerectifier = (_smoothG + (_secondG * inverse) + (_thirdG * bridgerectifier) + input);
@@ -465,22 +390,11 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
 
     _iirSampleH     = (_iirSampleH * (Float(1) - _beq)) + (basscatchL * _beq);
     basscatchL      = _iirSampleH * _bassdrive;
-    bridgerectifier = etl::abs(basscatchL);
-    if (bridgerectifier > 1.57079633) {
-        bridgerectifier = 1.57079633;
-    }
-    bridgerectifier = sineLUT(bridgerectifier);
-    if (basscatchL > 0.0) {
-        basscatchL = bridgerectifier;
-    } else {
-        basscatchL = -bridgerectifier;
-    }
-    if (input > Float(1)) {
-        input = Float(1);
-    }
-    if (input < Float(-1)) {
-        input = Float(-1);
-    }
+    bridgerectifier = etl::clamp(etl::abs(basscatchL), Float(0), Float(1.57079633));
+
+    bridgerectifier = sineLUT(bridgerectifier) * sign(basscatchL);
+
+    input = etl::clamp(input, Float(-1), Float(+1));
     // overdrive
     inverse         = (bridgerectifier + Float(1)) * Float(0.5);
     bridgerectifier = (_smoothH + (_secondH * inverse) + (_thirdH * bridgerectifier) + input);
@@ -497,22 +411,11 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
 
     _iirSampleI     = (_iirSampleI * (Float(1) - _beq)) + (basscatchL * _beq);
     basscatchL      = _iirSampleI * _bassdrive;
-    bridgerectifier = etl::abs(basscatchL);
-    if (bridgerectifier > 1.57079633) {
-        bridgerectifier = 1.57079633;
-    }
-    bridgerectifier = sineLUT(bridgerectifier);
-    if (basscatchL > 0.0) {
-        basscatchL = bridgerectifier;
-    } else {
-        basscatchL = -bridgerectifier;
-    }
-    if (input > Float(1)) {
-        input = Float(1);
-    }
-    if (input < Float(-1)) {
-        input = Float(-1);
-    }
+    bridgerectifier = etl::clamp(etl::abs(basscatchL), Float(0), Float(1.57079633));
+
+    bridgerectifier = sineLUT(bridgerectifier) * sign(basscatchL);
+
+    input = etl::clamp(input, Float(-1), Float(+1));
     // overdrive
     inverse         = (bridgerectifier + Float(1)) * Float(0.5);
     bridgerectifier = (_smoothI + (_secondI * inverse) + (_thirdI * bridgerectifier) + input);
@@ -542,16 +445,9 @@ auto AirWindowsGrindAmp<Float, URNG>::operator()(Float const x) -> Float
     input = (input * _toneEq) + basscatchL;
     // extra lowpass for 4*12" speakers
 
-    bridgerectifier = etl::abs(input * _outputlevel);
-    if (bridgerectifier > 1.57079633) {
-        bridgerectifier = 1.57079633;
-    }
-    bridgerectifier = sineLUT(bridgerectifier);
-    if (input > 0.0) {
-        input = bridgerectifier;
-    } else {
-        input = -bridgerectifier;
-    }
+    bridgerectifier = etl::clamp(etl::abs(input * _outputlevel), Float(0), Float(1.57079633));
+    bridgerectifier = sineLUT(bridgerectifier) * sign(input);
+
     input += basscatchL;
     // split bass between overdrive and clean
     input /= (Float(1) + _toneEq);
