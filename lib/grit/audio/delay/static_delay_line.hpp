@@ -23,8 +23,8 @@ struct StaticDelayLine
 
 private:
     etl::array<Float, MaxDelay> _buffer{};
-    NonOwningDelayLine<Float, Interpolation> _delayLine{
-        etl::mdspan(_buffer.data(), etl::dextents<etl::size_t, 1>{MaxDelay})
+    NonOwningDelayLine<Float, etl::extents<etl::size_t, MaxDelay>, Interpolation> _delayLine{
+        etl::mdspan(_buffer.data(), etl::extents<etl::size_t, MaxDelay>{})
     };
 };
 
