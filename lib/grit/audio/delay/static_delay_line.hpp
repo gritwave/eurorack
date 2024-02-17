@@ -1,6 +1,6 @@
 #pragma once
 
-#include <grit/audio/delay/delay_line.hpp>
+#include <grit/audio/delay/non_owning_delay_line.hpp>
 #include <grit/math/buffer_interpolation.hpp>
 
 #include <etl/array.hpp>
@@ -23,7 +23,9 @@ struct StaticDelayLine
 
 private:
     etl::array<Float, MaxDelay> _buffer{};
-    DelayLine<Float, Interpolation> _delayLine{etl::mdspan(_buffer.data(), etl::dextents<etl::size_t, 1>{MaxDelay})};
+    NonOwningDelayLine<Float, Interpolation> _delayLine{
+        etl::mdspan(_buffer.data(), etl::dextents<etl::size_t, 1>{MaxDelay})
+    };
 };
 
 template<etl::floating_point Float, etl::size_t MaxDelay, typename Interpolation>

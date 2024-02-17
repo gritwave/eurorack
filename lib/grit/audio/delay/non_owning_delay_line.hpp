@@ -10,9 +10,9 @@ namespace grit {
 
 /// \ingroup grit-audio-delay
 template<etl::floating_point Float, typename Interpolation = BufferInterpolation::Hermite>
-struct DelayLine
+struct NonOwningDelayLine
 {
-    explicit DelayLine(etl::mdspan<Float, etl::dextents<etl::size_t, 1>> buffer);
+    explicit NonOwningDelayLine(etl::mdspan<Float, etl::dextents<etl::size_t, 1>> buffer);
 
     auto setDelay(Float delayInSamples) -> void;
 
@@ -30,11 +30,12 @@ private:
 };
 
 template<etl::floating_point Float, typename Interpolation>
-DelayLine<Float, Interpolation>::DelayLine(etl::mdspan<Float, etl::dextents<etl::size_t, 1>> buffer) : _buffer{buffer}
+NonOwningDelayLine<Float, Interpolation>::NonOwningDelayLine(etl::mdspan<Float, etl::dextents<etl::size_t, 1>> buffer)
+    : _buffer{buffer}
 {}
 
 template<etl::floating_point Float, typename Interpolation>
-auto DelayLine<Float, Interpolation>::setDelay(Float delayInSamples) -> void
+auto NonOwningDelayLine<Float, Interpolation>::setDelay(Float delayInSamples) -> void
 {
     auto const delay = static_cast<etl::size_t>(delayInSamples);
     _frac            = delayInSamples - static_cast<Float>(delay);
@@ -42,21 +43,21 @@ auto DelayLine<Float, Interpolation>::setDelay(Float delayInSamples) -> void
 }
 
 template<etl::floating_point Float, typename Interpolation>
-auto DelayLine<Float, Interpolation>::pushSample(Float sample) -> void
+auto NonOwningDelayLine<Float, Interpolation>::pushSample(Float sample) -> void
 {
     _buffer(_writePos) = sample;
     _writePos          = (_writePos - 1 + _buffer.extent(0)) % _buffer.extent(0);
 }
 
 template<etl::floating_point Float, typename Interpolation>
-auto DelayLine<Float, Interpolation>::popSample() -> Float
+auto NonOwningDelayLine<Float, Interpolation>::popSample() -> Float
 {
     auto const readPos = _writePos + _delay;
     return _interpolator(_buffer, readPos, _frac);
 }
 
 template<etl::floating_point Float, typename Interpolation>
-auto DelayLine<Float, Interpolation>::reset() -> void
+auto NonOwningDelayLine<Float, Interpolation>::reset() -> void
 {
     _writePos = 0;
     for (auto i{0}; etl::cmp_less(i, _buffer.extent(0)); ++i) {

@@ -17,7 +17,7 @@ target_sources(gritwave-grit INTERFACE
         "grit/audio/airwindows/airwindows_vinyl_dither.hpp"
 
         "grit/audio/delay.hpp"
-        "grit/audio/delay/delay_line.hpp"
+        "grit/audio/delay/non_owning_delay_line.hpp"
         "grit/audio/delay/static_delay_line.hpp"
 
         "grit/audio/dynamic.hpp"
