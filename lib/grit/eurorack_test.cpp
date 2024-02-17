@@ -3,6 +3,7 @@
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_get_random_seed.hpp>
 #include <catch2/catch_template_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
 
 #include <cstddef>
 #include <etl/algorithm.hpp>
@@ -10,8 +11,9 @@
 
 TEST_CASE("grit/audio/eurorack: Hades")
 {
-    static constexpr auto sampleRate = 96'000.0F;
-    static constexpr auto blockSize  = 32;
+    static constexpr auto blockSize = 32;
+
+    auto const sampleRate = GENERATE(44100.0F, 48000.0F, 88200.0F, 96000.0F);
 
     auto buffer = [] {
         auto buf  = etl::array<float, static_cast<size_t>(2 * blockSize)>{};
@@ -79,6 +81,60 @@ TEST_CASE("grit/audio/eurorack: Hades")
         for (auto i{0}; i < blockSize; ++i) {
             REQUIRE(etl::isfinite(block(0, i)));
             REQUIRE(etl::isfinite(block(1, i)));
+        }
+    }
+}
+
+TEST_CASE("grit/audio/eurorack: Amp")
+{
+    static constexpr auto blockSize = 32;
+
+    auto const sampleRate = GENERATE(44100.0F, 48000.0F, 88200.0F, 96000.0F);
+
+    auto rng  = etl::xoshiro128plusplus{Catch::getSeed()};
+    auto dist = etl::uniform_real_distribution<float>{-1.0F, 1.0F};
+
+    auto amp = grit::Amp{};
+    amp.prepare(sampleRate, blockSize);
+
+    SECTION("fire")
+    {
+        for (auto i{0}; i < 100; ++i) {
+            auto buffer = [&] {
+                auto buf = etl::array<float, static_cast<size_t>(2 * blockSize)>{};
+                etl::generate(buf.begin(), buf.end(), [&] { return dist(rng); });
+                return buf;
+            }();
+            auto block = grit::StereoBlock<float>{buffer.data(), blockSize};
+
+            amp.process(block, {});
+
+            for (auto i{0}; i < blockSize; ++i) {
+                REQUIRE(etl::isfinite(block(0, i)));
+                REQUIRE(etl::isfinite(block(1, i)));
+            }
+        }
+    }
+
+    SECTION("grind")
+    {
+
+        for (auto i{0}; i < 100; ++i) {
+            auto buffer = [&] {
+                auto buf = etl::array<float, static_cast<size_t>(2 * blockSize)>{};
+                etl::generate(buf.begin(), buf.end(), [&] { return dist(rng); });
+                return buf;
+            }();
+            auto block = grit::StereoBlock<float>{buffer.data(), blockSize};
+
+            auto controls = grit::Amp::ControlInput{};
+            controls.mode = grit::Amp::Mode::Grind;
+            amp.process(block, controls);
+
+            for (auto i{0}; i < blockSize; ++i) {
+                REQUIRE(etl::isfinite(block(0, i)));
+                REQUIRE(etl::isfinite(block(1, i)));
+            }
         }
     }
 }
