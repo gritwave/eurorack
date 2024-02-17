@@ -89,6 +89,8 @@ add_library(gritwave::eurorack ALIAS gritwave-eurorack)
 target_link_libraries(gritwave-eurorack PUBLIC gritwave::grit)
 target_sources(gritwave-eurorack
     PRIVATE
+        "grit/eurorack/amp.cpp"
+        "grit/eurorack/amp.hpp"
         "grit/eurorack/hades.cpp"
         "grit/eurorack/hades.hpp"
 )
