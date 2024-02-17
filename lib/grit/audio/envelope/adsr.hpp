@@ -102,21 +102,21 @@ inline auto ADSR::setRelease(float rate) -> void
 
 inline auto ADSR::setTargetRatioA(float ratio) -> void
 {
-    if (ratio < 0.000000001) {
-        ratio = 0.000000001;  // -180 dB
+    if (ratio < float(0.000000001)) {
+        ratio = float(0.000000001);  // -180 dB
     }
     _targetRatioA = ratio;
-    _attackBase   = (1.0 + _targetRatioA) * (1.0 - _attackCoef);
+    _attackBase   = (float(1) + _targetRatioA) * (float(1) - _attackCoef);
 }
 
 inline auto ADSR::setTargetRatioDr(float ratio) -> void
 {
-    if (ratio < 0.000000001) {
-        ratio = 0.000000001;  // -180 dB
+    if (ratio < float(0.000000001)) {
+        ratio = float(0.000000001);  // -180 dB
     }
     _targetRatioDr = ratio;
-    _decayBase     = (_sustainLevel - _targetRatioDr) * (1.0 - _decayCoef);
-    _releaseBase   = -_targetRatioDr * (1.0 - _releaseCoef);
+    _decayBase     = (_sustainLevel - _targetRatioDr) * (float(1) - _decayCoef);
+    _releaseBase   = -_targetRatioDr * (float(1) - _releaseCoef);
 }
 
 inline auto ADSR::gate(bool isOn) -> void
@@ -131,7 +131,7 @@ inline auto ADSR::gate(bool isOn) -> void
 inline auto ADSR::reset() -> void
 {
     _state  = State::Idle;
-    _output = 0.0;
+    _output = float(0);
 }
 
 inline auto ADSR::operator()() -> float

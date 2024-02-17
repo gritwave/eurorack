@@ -1,6 +1,7 @@
 #pragma once
 
 #include <etl/concepts.hpp>
+#include <etl/type_traits.hpp>
 
 namespace grit {
 
@@ -20,9 +21,11 @@ template<auto Base>
     requires(etl::integral<decltype(Base)> and Base > 0)
 [[nodiscard]] constexpr auto ipow(decltype(Base) exponent) -> decltype(Base)
 {
-    using Int = decltype(Base);
+    using Int  = decltype(Base);
+    using UInt = etl::make_unsigned_t<Int>;
+
     if constexpr (Base == Int{2}) {
-        return static_cast<Int>(1U << static_cast<unsigned>(exponent));
+        return static_cast<Int>(UInt(1) << static_cast<UInt>(exponent));
     } else {
         return ipow(Base, exponent);
     }
