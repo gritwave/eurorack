@@ -9,6 +9,7 @@
 
 namespace grit {
 
+/// \ingroup grit-eurorack
 struct Amp
 {
     enum struct Mode

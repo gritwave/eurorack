@@ -26,6 +26,7 @@
 
 namespace grit {
 
+/// \ingroup grit-eurorack
 struct Hades
 {
     struct ControlInput
