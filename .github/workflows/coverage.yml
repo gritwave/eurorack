@@ -37,7 +37,7 @@ jobs:
 
       - name: CTest
         shell: bash
-        run: ctest --test-dir build -C Debug --output-on-failure
+        run: ctest --test-dir build -C Debug --output-on-failure -j 3
 
       - name: Coverage report
         shell: bash

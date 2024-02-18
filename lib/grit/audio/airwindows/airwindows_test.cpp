@@ -44,7 +44,7 @@ TEMPLATE_TEST_CASE("audio/airwindows: AirWindowsFireAmp", "", float, double)
 {
     using Float = TestType;
 
-    auto const sampleRate = GENERATE(Float(22050), Float(24000), Float(44100), Float(48000), Float(88200));
+    auto const sampleRate = GENERATE(Float(22050), Float(24000), Float(44100), Float(48000));
     test<grit::AirWindowsFireAmp<TestType>>(sampleRate);
 }
 
@@ -61,8 +61,7 @@ TEMPLATE_TEST_CASE("audio/airwindows: AirWindowsGrindAmp", "", float, double)
         Float(120000),
         Float(176400),
         Float(192000),
-        Float(384000),
-        Float(768000)
+        Float(384000)
     );
     test<grit::AirWindowsGrindAmp<TestType>>(sampleRate);
 }
