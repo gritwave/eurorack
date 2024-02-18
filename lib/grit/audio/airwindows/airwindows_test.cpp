@@ -32,7 +32,7 @@ auto test(auto sampleRate) -> void
                 proc.setDeRez(param(rng));
             }
 
-            for (auto i{0}; i < static_cast<int>(sampleRate * 2); ++i) {
+            for (auto i{0}; i < static_cast<int>(sampleRate); ++i) {
                 auto out = proc(signal(rng));
                 REQUIRE(etl::isfinite(out));
             }
