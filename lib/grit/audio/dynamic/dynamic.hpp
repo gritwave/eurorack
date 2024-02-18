@@ -12,8 +12,9 @@ struct Dynamic
     struct Parameter
     {
         Decibels<Float> threshold{0.0};
-        Decibels<Float> ratio{1.0};
         Decibels<Float> knee{0.0};
+        Float ratio{1.0};
+
         Milliseconds<Float> attack{50};
         Milliseconds<Float> release{50};
     };
@@ -22,7 +23,7 @@ struct Dynamic
 
     auto setParameter(Parameter param) -> void
     {
-        _gainComputer.setParameter({param.threshold, param.ratio, param.knee});
+        _gainComputer.setParameter({param.threshold, param.knee, param.ratio});
         _ballistics.setParameter({param.attack, param.release});
     }
 
