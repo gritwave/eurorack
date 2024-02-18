@@ -50,13 +50,8 @@ if(NOT CMAKE_CROSSCOMPILING)
     target_link_libraries(grit-eurorack-tests PRIVATE gritwave::eurorack Catch2::Catch2WithMain)
     target_compile_options(grit-eurorack-tests PRIVATE "-Wall" "-Wextra" "-Wpedantic")
     target_sources(grit-eurorack-tests
-        PRIVATE
+        PRIVATE       
             "lib/grit/audio_test.cpp"
-            "lib/grit/eurorack_test.cpp"
-            "lib/grit/fft_test.cpp"
-            "lib/grit/math_test.cpp"
-            "lib/grit/unit_test.cpp"
-
             "lib/grit/audio/airwindows/airwindows_test.cpp"
             "lib/grit/audio/delay/static_delay_line_test.cpp"
             "lib/grit/audio/dynamic/gain_computer_test.cpp"
@@ -73,7 +68,10 @@ if(NOT CMAKE_CROSSCOMPILING)
             "lib/grit/audio/waveshape/tanh_clipper_test.cpp"
             "lib/grit/audio/waveshape/wave_shaper_test.cpp"
             "lib/grit/audio/waveshape/wave_shaper_adaa1_test.cpp"
+            "lib/grit/eurorack_test.cpp"
+            "lib/grit/fft_test.cpp"
             "lib/grit/fft/fft_test.cpp"
+            "lib/grit/math_test.cpp"
             "lib/grit/math/ilog2_test.cpp"
             "lib/grit/math/ipow_test.cpp"
             "lib/grit/math/power_test.cpp"
@@ -81,6 +79,7 @@ if(NOT CMAKE_CROSSCOMPILING)
             "lib/grit/math/normalizable_range_test.cpp"
             "lib/grit/math/static_lookup_table_test.cpp"
             "lib/grit/math/trigonometry_test.cpp"
+            "lib/grit/unit_test.cpp"
             "lib/grit/unit/decibel_test.cpp"
     )
 

@@ -9,7 +9,7 @@
 #include <etl/algorithm.hpp>
 #include <etl/random.hpp>
 
-TEST_CASE("audio/eurorack: Hades")
+TEST_CASE("eurorack: Hades")
 {
     static constexpr auto blockSize = 32;
 
@@ -85,7 +85,7 @@ TEST_CASE("audio/eurorack: Hades")
     }
 }
 
-TEST_CASE("audio/eurorack: Amp")
+TEST_CASE("eurorack: Amp")
 {
     static constexpr auto blockSize = 32;
 
