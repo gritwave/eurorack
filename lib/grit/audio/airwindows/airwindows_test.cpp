@@ -6,15 +6,16 @@
 #include <catch2/generators/catch_generators.hpp>
 
 template<typename Processor>
-auto test() -> void
+auto test(auto sampleRate) -> void
 {
     using Float = typename Processor::value_type;
 
-    auto const sampleRate = GENERATE(Float(44100), Float(48000), Float(88200), Float(96000));
+    CAPTURE(sampleRate);
 
-    auto rng  = etl::xoshiro128plusplus{Catch::getSeed()};
-    auto dist = etl::uniform_real_distribution<Float>{Float(0), Float(1)};
-    auto proc = Processor{rng()};
+    auto rng    = etl::xoshiro128plusplus{Catch::getSeed()};
+    auto param  = etl::uniform_real_distribution<Float>{Float(0), Float(1)};
+    auto signal = etl::uniform_real_distribution<Float>{Float(-1), Float(+1)};
+    auto proc   = Processor{rng()};
 
     if constexpr (requires { proc.setSampleRate(sampleRate); }) {
         proc.setSampleRate(sampleRate);
@@ -25,14 +26,14 @@ auto test() -> void
         for (auto p{0}; p < 10; ++p) {
             proc.reset();
 
-            if constexpr (requires { proc.setParameter({dist(rng), dist(rng), dist(rng), dist(rng)}); }) {
-                proc.setParameter({dist(rng), dist(rng), dist(rng), dist(rng)});
-            } else if constexpr (requires { proc.setDeRez(dist(rng)); }) {
-                proc.setDeRez(dist(rng));
+            if constexpr (requires { proc.setParameter({param(rng), param(rng), param(rng), param(rng)}); }) {
+                proc.setParameter({param(rng), param(rng), param(rng), param(rng)});
+            } else if constexpr (requires { proc.setDeRez(param(rng)); }) {
+                proc.setDeRez(param(rng));
             }
 
             for (auto i{0}; i < static_cast<int>(sampleRate); ++i) {
-                auto out = proc(dist(rng));
+                auto out = proc(signal(rng));
                 REQUIRE(etl::isfinite(out));
             }
         }
@@ -41,12 +42,18 @@ auto test() -> void
 
 TEMPLATE_TEST_CASE("audio/airwindows: AirWindowsFireAmp", "", float, double)
 {
-    test<grit::AirWindowsFireAmp<TestType>>();
+    using Float = TestType;
+
+    auto const sampleRate = GENERATE(Float(22050), Float(44100), Float(48000), Float(88200), Float(96000));
+    test<grit::AirWindowsFireAmp<TestType>>(sampleRate);
 }
 
 TEMPLATE_TEST_CASE("audio/airwindows: AirWindowsGrindAmp", "", float, double)
 {
-    test<grit::AirWindowsGrindAmp<TestType>>();
+    using Float = TestType;
+    auto const sampleRate
+        = GENERATE(Float(22050), Float(44100), Float(48000), Float(88200), Float(96000), Float(192000));
+    test<grit::AirWindowsGrindAmp<TestType>>(sampleRate);
 }
 
 TEMPLATE_TEST_CASE("audio/airwindows: AirWindowsVinylDither", "", float, double)
@@ -60,5 +67,5 @@ TEMPLATE_TEST_CASE("audio/airwindows: AirWindowsVinylDither", "", float, double)
     proc.setDeRez(Float(0.5));
     REQUIRE(proc.getDeRez() == Catch::Approx(Float(0.5)));
 
-    test<grit::AirWindowsVinylDither<Float>>();
+    test<grit::AirWindowsVinylDither<Float>>(Float(44'100));
 }
