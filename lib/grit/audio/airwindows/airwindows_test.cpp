@@ -32,7 +32,7 @@ auto test(auto sampleRate) -> void
                 proc.setDeRez(param(rng));
             }
 
-            for (auto i{0}; i < static_cast<int>(sampleRate); ++i) {
+            for (auto i{0}; i < static_cast<int>(sampleRate * 2); ++i) {
                 auto out = proc(signal(rng));
                 REQUIRE(etl::isfinite(out));
             }
@@ -44,15 +44,26 @@ TEMPLATE_TEST_CASE("audio/airwindows: AirWindowsFireAmp", "", float, double)
 {
     using Float = TestType;
 
-    auto const sampleRate = GENERATE(Float(22050), Float(44100), Float(48000), Float(88200), Float(96000));
+    auto const sampleRate = GENERATE(Float(22050), Float(24000), Float(44100), Float(48000), Float(88200));
     test<grit::AirWindowsFireAmp<TestType>>(sampleRate);
 }
 
 TEMPLATE_TEST_CASE("audio/airwindows: AirWindowsGrindAmp", "", float, double)
 {
-    using Float = TestType;
-    auto const sampleRate
-        = GENERATE(Float(22050), Float(44100), Float(48000), Float(88200), Float(96000), Float(192000));
+    using Float           = TestType;
+    auto const sampleRate = GENERATE(
+        Float(22050),
+        Float(24000),
+        Float(44100),
+        Float(48000),
+        Float(88200),
+        Float(96000),
+        Float(120000),
+        Float(176400),
+        Float(192000),
+        Float(384000),
+        Float(768000)
+    );
     test<grit::AirWindowsGrindAmp<TestType>>(sampleRate);
 }
 
