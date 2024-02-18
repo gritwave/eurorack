@@ -152,13 +152,7 @@ auto AirWindowsFireAmp<Float, URNG>::setParameter(Parameter parameter) -> void
     overallscale /= 44100.0;
     overallscale *= _sampleRate;
 
-    _cycleEnd = etl::floor(overallscale);
-    if (_cycleEnd < 1) {
-        _cycleEnd = 1;
-    }
-    if (_cycleEnd > 4) {
-        _cycleEnd = 4;
-    }
+    _cycleEnd = etl::clamp(static_cast<int>(etl::floor(overallscale)), 1, 4);
     // this is going to be 2 for 88.1 or 96k, 3 for silly people, 4 for 176 or 192k
     if (_cycle > _cycleEnd - 1) {
         _cycle = _cycleEnd - 1;  // sanity check
@@ -173,21 +167,12 @@ auto AirWindowsFireAmp<Float, URNG>::setParameter(Parameter parameter) -> void
     _bassfactor      = Float(1) - (basstrim * basstrim);
     _beq             = (_bleed / samplerate) * 22050.0;
 
-    _diagonal = (int)(0.000861678 * samplerate);
-    if (_diagonal > 127) {
-        _diagonal = 127;
-    }
-    _side = (int)(_diagonal / 1.4142135623730951);
-    _down = (_side + _diagonal) / 2;
+    _diagonal = etl::clamp((int)(0.000861678 * samplerate), 0, 127);
+    _side     = (int)(_diagonal / 1.4142135623730951);
+    _down     = (_side + _diagonal) / 2;
     // now we've got down, side and diagonal as offsets and we also use three successive samples upfront
 
-    Float cutoff = (15000.0 + (b * 10000.0)) / _sampleRate;
-    if (cutoff > 0.49) {
-        cutoff = 0.49;  // don't crash if run at 44.1k
-    }
-    if (cutoff < 0.001) {
-        cutoff = 0.001;  // or if cutoff's too low
-    }
+    auto const cutoff = etl::clamp((Float(15000) + (b * Float(10000))) / _sampleRate, Float(0.001), Float(0.49));
 
     _fixF[FixFreq] = _fixE[FixFreq] = _fixD[FixFreq] = _fixC[FixFreq] = _fixB[FixFreq] = _fixA[FixFreq] = cutoff;
 
@@ -264,14 +249,8 @@ auto AirWindowsFireAmp<Float, URNG>::operator()(Float const x) -> Float
     auto outSample = (inputSampleL * _fixA[FixA0]) + _fixA[FixSL1];
     _fixA[FixSL1]  = (inputSampleL * _fixA[FixA1]) - (outSample * _fixA[FixB1]) + _fixA[FixSL2];
     _fixA[FixSL2]  = (inputSampleL * _fixA[FixA2]) - (outSample * _fixA[FixB2]);
-    inputSampleL   = outSample;  // fixed biquad filtering ultrasonics
+    inputSampleL   = etl::clamp(outSample, Float(-1), Float(+1));  // fixed biquad filtering ultrasonics
 
-    if (inputSampleL > Float(1)) {
-        inputSampleL = Float(1);
-    }
-    if (inputSampleL < -Float(1)) {
-        inputSampleL = -Float(1);
-    }
     auto basscutL = Float(0.98);
     // we're going to be shifting this as the stages progress
     auto inputlevelL = _startlevel;

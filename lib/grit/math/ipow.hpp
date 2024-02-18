@@ -17,8 +17,8 @@ template<etl::integral Int>
 }
 
 /// \ingroup grit-math
-template<auto Base>
-    requires(etl::integral<decltype(Base)> and Base > 0)
+template<etl::integral auto Base>
+    requires(Base > 0)
 [[nodiscard]] constexpr auto ipow(decltype(Base) exponent) -> decltype(Base)
 {
     using Int  = decltype(Base);
