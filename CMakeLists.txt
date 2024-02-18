@@ -59,6 +59,7 @@ if(NOT CMAKE_CROSSCOMPILING)
 
             "lib/grit/audio/airwindows/airwindows_test.cpp"
             "lib/grit/audio/delay/static_delay_line_test.cpp"
+            "lib/grit/audio/dynamic/gain_computer_test.cpp"
             "lib/grit/audio/dynamic/transient_shaper_test.cpp"
             "lib/grit/audio/envelope/envelope_follower_test.cpp"
             "lib/grit/audio/music/note_test.cpp"

@@ -17,7 +17,8 @@ struct GainComputerParameter
 template<etl::floating_point Float>
 struct HardKneeGainComputer
 {
-    using Parameter = GainComputerParameter<Float>;
+    using value_type = Float;
+    using Parameter  = GainComputerParameter<Float>;
 
     HardKneeGainComputer() = default;
 
@@ -43,7 +44,8 @@ private:
 template<etl::floating_point Float>
 struct SoftKneeGainComputer
 {
-    using Parameter = GainComputerParameter<Float>;
+    using value_type = Float;
+    using Parameter  = GainComputerParameter<Float>;
 
     SoftKneeGainComputer() = default;
 
@@ -57,7 +59,7 @@ struct SoftKneeGainComputer
 
         if (W < Float(2) * T - Float(2) * x) {
             return x;
-        } else if (W >= Float(2) * etl::abs(T - x)) {
+        } else if (W > Float(2) * etl::abs(T - x)) {
             auto const tmp = -T + Float(0.5) * W + x;
             return x + Float(0.5) * (Float(-1.0F) + Float(1.0F) / R) * (tmp * tmp) / W;
         }
