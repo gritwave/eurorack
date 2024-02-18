@@ -24,4 +24,10 @@ TEMPLATE_TEST_CASE("unit: Decibels", "", float, double)
 
     auto const infinity = grit::defaultMinusInfinityDb<Float>;
     REQUIRE(grit::Decibels<float>::fromGain(Float(0)).value() == Catch::Approx(infinity));
+
+    REQUIRE((grit::Decibels{Float(1)} + grit::Decibels{Float(1)}).value() == Catch::Approx(2));
+    REQUIRE((grit::Decibels{Float(1)} - grit::Decibels{Float(1)}).value() == Catch::Approx(0));
+
+    REQUIRE((grit::Decibels{Float(1)} / Float(2)).value() == Catch::Approx(0.5));
+    REQUIRE((grit::Decibels{Float(1)} * Float(2)).value() == Catch::Approx(2));
 }

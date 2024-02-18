@@ -43,6 +43,40 @@ struct Decibels
 
     [[nodiscard]] static constexpr auto fromGain(Float gain) -> Decibels { return Decibels{toDecibels(gain)}; }
 
+    friend constexpr auto operator+(Decibels x) -> Decibels { return x; }
+
+    friend constexpr auto operator-(Decibels x) -> Decibels { return Decibels{-x.value()}; }
+
+    friend constexpr auto operator+(Decibels lhs, Decibels rhs) -> Decibels
+    {
+        return Decibels{lhs.value() + rhs.value()};
+    }
+
+    friend constexpr auto operator-(Decibels lhs, Decibels rhs) -> Decibels
+    {
+        return Decibels{lhs.value() - rhs.value()};
+    }
+
+    friend constexpr auto operator*(Decibels lhs, Float rhs) -> Decibels { return Decibels{lhs.value() * rhs}; }
+
+    friend constexpr auto operator/(Decibels lhs, Float rhs) -> Decibels { return Decibels{lhs.value() / rhs}; }
+
+    friend constexpr auto operator*(Float lhs, Decibels rhs) -> Decibels { return Decibels{rhs.value() * lhs}; }
+
+    friend constexpr auto operator/(Float lhs, Decibels rhs) -> Decibels { return Decibels{rhs.value() / lhs}; }
+
+    friend constexpr auto operator==(Decibels lhs, Decibels rhs) -> bool { return lhs.value() == rhs.value(); }
+
+    friend constexpr auto operator!=(Decibels lhs, Decibels rhs) -> bool { return lhs.value() != rhs.value(); }
+
+    friend constexpr auto operator<(Decibels lhs, Decibels rhs) -> bool { return lhs.value() < rhs.value(); }
+
+    friend constexpr auto operator<=(Decibels lhs, Decibels rhs) -> bool { return lhs.value() <= rhs.value(); }
+
+    friend constexpr auto operator>(Decibels lhs, Decibels rhs) -> bool { return lhs.value() > rhs.value(); }
+
+    friend constexpr auto operator>=(Decibels lhs, Decibels rhs) -> bool { return lhs.value() >= rhs.value(); }
+
 private:
     Float _dB{0};
 };
