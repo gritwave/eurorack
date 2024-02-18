@@ -1,5 +1,6 @@
 #pragma once
 
+#include <grit/unit/decibel.hpp>
 #include <grit/unit/time.hpp>
 
 #include <etl/algorithm.hpp>
@@ -16,15 +17,15 @@ struct Compressor
 {
     struct Parameter
     {
-        Float threshold{0};
-        Float ratio{1};
-        Float knee{0};
+        Decibels<Float> threshold{0};
+        Decibels<Float> ratio{1};
+        Decibels<Float> knee{0};
 
         Milliseconds<Float> attack{0};
         Milliseconds<Float> release{0};
 
-        Float makeUp{0};
-        Float wet{0};
+        Float makeUp{1};
+        Float wet{1};
     };
 
     Compressor() = default;
@@ -62,9 +63,9 @@ auto Compressor<Float>::setSampleRate(Float sampleRate) -> void
 template<etl::floating_point Float>
 auto Compressor<Float>::operator()(Float signal, Float sideChain) -> Float
 {
-    auto const threshold = _parameter.threshold;
-    auto const ratio     = _parameter.ratio;
-    auto const knee      = _parameter.knee;
+    auto const threshold = _parameter.threshold.value();
+    auto const ratio     = _parameter.ratio.value();
+    auto const knee      = _parameter.knee.value();
     auto const alphaA    = calculateTimeAlpha(_parameter.attack);
     auto const alphaR    = calculateTimeAlpha(_parameter.release);
 

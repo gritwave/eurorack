@@ -116,13 +116,11 @@ auto Hades::Channel::setParameter(Parameter const& parameter) -> void
     });
 
     _compressor.setParameter({
-        .threshold = remap(parameter.compressor, -6.0F, -12.0F),
-        .ratio     = remap(parameter.compressor, +1.0F, +8.0F),
-        .knee      = 2.0F,
+        .threshold = Decibels<float>{remap(parameter.compressor, -6.0F, -12.0F)},
+        .ratio     = Decibels<float>{remap(parameter.compressor, +1.0F, +8.0F)},
+        .knee      = Decibels<float>{2.0F},
         .attack    = attack,
         .release   = release,
-        .makeUp    = 1.0F,
-        .wet       = 1.0F,
     });
 }
 
