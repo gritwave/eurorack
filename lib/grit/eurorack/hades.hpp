@@ -122,7 +122,7 @@ private:
         WhiteNoise<float> _whiteNoise{};
         AirWindowsVinylDither<float> _vinyl{};
         Amp _distortion{};
-        Compressor<float> _compressor{};
+        SoftKneeCompressor<float> _compressor{};
     };
 
     DynamicSmoothing<float> _textureKnob{};
