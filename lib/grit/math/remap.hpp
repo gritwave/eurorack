@@ -7,16 +7,16 @@ namespace grit {
 
 /// \ingroup grit-math
 template<etl::floating_point Float>
-[[nodiscard]] constexpr auto remap(Float in, Float min, Float max) -> Float
+[[nodiscard]] constexpr auto remap(Float normalized, Float min, Float max) -> Float
 {
-    return etl::clamp(min + in * (max - min), min, max);
+    return min + normalized * (max - min);
 }
 
 /// \ingroup grit-math
 template<etl::floating_point Float>
-[[nodiscard]] constexpr auto remap(Float in, Float srcMin, Float srcMax, Float destMin, Float destMax) -> Float
+[[nodiscard]] constexpr auto remap(Float src, Float srcMin, Float srcMax, Float destMin, Float destMax) -> Float
 {
-    return destMin + ((destMax - destMin) * (in - srcMin)) / (srcMax - srcMin);
+    return destMin + ((destMax - destMin) * (src - srcMin)) / (srcMax - srcMin);
 }
 
 }  // namespace grit
