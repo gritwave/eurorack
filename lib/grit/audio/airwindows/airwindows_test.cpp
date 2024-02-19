@@ -58,7 +58,8 @@ TEMPLATE_TEST_CASE("audio/airwindows: AirWindowsGrindAmp", "", float, double)
         Float(48000),
         Float(88200),
         Float(96000),
-        Float(120000),
+        Float(132300),
+        Float(144000),
         Float(176400),
         Float(192000),
         Float(384000)
