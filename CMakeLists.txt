@@ -31,7 +31,7 @@ add_subdirectory(lib)
 
 if(CMAKE_CROSSCOMPILING)
     add_subdirectory(${LIBDAISY_DIR})
-    add_subdirectory(src/amp)
+    add_subdirectory(src/ares)
     add_subdirectory(src/astra)
     add_subdirectory(src/benchmark)
     add_subdirectory(src/hades)

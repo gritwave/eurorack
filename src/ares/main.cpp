@@ -1,13 +1,13 @@
-#include <grit/eurorack/amp.hpp>
+#include <grit/eurorack/ares.hpp>
 
 #include <daisy_patch_sm.h>
 
-namespace amp {
+namespace ares {
 
 static constexpr auto blockSize  = 32U;
 static constexpr auto sampleRate = 96'000.0F;
 
-auto processor = grit::Amp{};
+auto processor = grit::Ares{};
 auto patch     = daisy::patch_sm::DaisyPatchSM{};
 auto button    = daisy::Switch{};
 auto toggle    = daisy::Switch{};
@@ -27,8 +27,8 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
         block(1, i) = in[1][i];
     }
 
-    auto const controls = grit::Amp::ControlInput{
-        .mode       = toggle.Pressed() ? grit::Amp::Mode::Fire : grit::Amp::Mode::Grind,
+    auto const controls = grit::Ares::ControlInput{
+        .mode       = toggle.Pressed() ? grit::Ares::Mode::Fire : grit::Ares::Mode::Grind,
         .gainKnob   = patch.GetAdcValue(daisy::patch_sm::CV_1),
         .toneKnob   = patch.GetAdcValue(daisy::patch_sm::CV_2),
         .outputKnob = patch.GetAdcValue(daisy::patch_sm::CV_3),
@@ -48,19 +48,19 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
     }
 }
 
-}  // namespace amp
+}  // namespace ares
 
 auto main() -> int
 {
-    amp::patch.Init();
-    amp::button.Init(amp::patch.B7);
-    amp::toggle.Init(amp::patch.B8);
+    ares::patch.Init();
+    ares::button.Init(ares::patch.B7);
+    ares::toggle.Init(ares::patch.B8);
 
-    amp::processor.prepare(amp::sampleRate, amp::blockSize);
+    ares::processor.prepare(ares::sampleRate, ares::blockSize);
 
-    amp::patch.SetAudioSampleRate(amp::sampleRate);
-    amp::patch.SetAudioBlockSize(amp::blockSize);
-    amp::patch.StartAudio(amp::audioCallback);
+    ares::patch.SetAudioSampleRate(ares::sampleRate);
+    ares::patch.SetAudioBlockSize(ares::blockSize);
+    ares::patch.StartAudio(ares::audioCallback);
 
     while (true) {}
 }

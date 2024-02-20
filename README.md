@@ -10,7 +10,7 @@
 
 |         Name          |         Description         |                                  Hardware                                  |
 | :-------------------: | :-------------------------: | :------------------------------------------------------------------------: |
-|   [Amp](./src/amp)    |  Multi-Mono Amp Simulation  | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
+|  [Ares](./src/ares)   |  Multi-Mono Amp Simulation  | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
 | [Astra](./src/astra)  | Multi-Effect Mono to Stereo | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
 | [Hades](./src/hades)  | Multi-Mono Noise/Distortion | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
 | [Hermas](./src/hades) | Multi-Mono Transient Shaper | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |

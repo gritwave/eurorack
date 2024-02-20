@@ -10,7 +10,7 @@
 namespace grit {
 
 /// \ingroup grit-eurorack
-struct Amp
+struct Ares
 {
     enum struct Mode
     {
@@ -33,7 +33,7 @@ struct Amp
         float mixCV{0};
     };
 
-    Amp() = default;
+    Ares() = default;
 
     auto prepare(float sampleRate, etl::size_t blockSize) -> void;
     auto process(StereoBlock<float> const& buffer, ControlInput const& inputs) -> void;

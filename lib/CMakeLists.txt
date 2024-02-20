@@ -92,8 +92,8 @@ target_sources(gritwave-eurorack
     PRIVATE
         "grit/eurorack.hpp"
 
-        "grit/eurorack/amp.cpp"
-        "grit/eurorack/amp.hpp"
+        "grit/eurorack/ares.cpp"
+        "grit/eurorack/ares.hpp"
         "grit/eurorack/hades.cpp"
         "grit/eurorack/hades.hpp"
 )

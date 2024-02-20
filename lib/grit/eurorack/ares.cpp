@@ -1,11 +1,11 @@
-#include "amp.hpp"
+#include "ares.hpp"
 
 #include <etl/algorithm.hpp>
 #include <etl/functional.hpp>
 
 namespace grit {
 
-auto Amp::prepare(float sampleRate, etl::size_t blockSize) -> void
+auto Ares::prepare(float sampleRate, etl::size_t blockSize) -> void
 {
     auto const blockRate = sampleRate / static_cast<float>(blockSize);
 
@@ -22,7 +22,7 @@ auto Amp::prepare(float sampleRate, etl::size_t blockSize) -> void
     _channels[1].setSampleRate(sampleRate);
 }
 
-auto Amp::process(StereoBlock<float> const& buffer, ControlInput const& inputs) -> void
+auto Ares::process(StereoBlock<float> const& buffer, ControlInput const& inputs) -> void
 {
     auto const gainKnob   = _gainKnob(inputs.gainKnob);
     auto const toneKnob   = _toneKnob(inputs.toneKnob);
@@ -52,7 +52,7 @@ auto Amp::process(StereoBlock<float> const& buffer, ControlInput const& inputs) 
     }
 }
 
-auto Amp::Channel::setParameter(Parameter const& parameter) -> void
+auto Ares::Channel::setParameter(Parameter const& parameter) -> void
 {
     if (parameter.mode != _mode) {
         _fire.reset();
@@ -68,13 +68,13 @@ auto Amp::Channel::setParameter(Parameter const& parameter) -> void
     }
 }
 
-auto Amp::Channel::setSampleRate(float sampleRate) -> void
+auto Ares::Channel::setSampleRate(float sampleRate) -> void
 {
     _fire.setSampleRate(sampleRate);
     _grind.setSampleRate(sampleRate);
 }
 
-auto Amp::Channel::operator()(float sample) -> float
+auto Ares::Channel::operator()(float sample) -> float
 {
     if (_mode == Mode::Fire) {
         return _fire(sample);

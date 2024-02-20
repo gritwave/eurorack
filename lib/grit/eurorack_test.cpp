@@ -85,7 +85,7 @@ TEST_CASE("eurorack: Hades")
     }
 }
 
-TEST_CASE("eurorack: Amp")
+TEST_CASE("eurorack: Ares")
 {
     static constexpr auto blockSize = 32;
 
@@ -94,8 +94,8 @@ TEST_CASE("eurorack: Amp")
     auto rng  = etl::xoshiro128plusplus{Catch::getSeed()};
     auto dist = etl::uniform_real_distribution<float>{-1.0F, 1.0F};
 
-    auto amp = grit::Amp{};
-    amp.prepare(sampleRate, blockSize);
+    auto ares = grit::Ares{};
+    ares.prepare(sampleRate, blockSize);
 
     SECTION("fire")
     {
@@ -107,7 +107,7 @@ TEST_CASE("eurorack: Amp")
             }();
             auto block = grit::StereoBlock<float>{buffer.data(), blockSize};
 
-            amp.process(block, {});
+            ares.process(block, {});
 
             for (auto i{0}; i < blockSize; ++i) {
                 REQUIRE(etl::isfinite(block(0, i)));
@@ -127,9 +127,9 @@ TEST_CASE("eurorack: Amp")
             }();
             auto block = grit::StereoBlock<float>{buffer.data(), blockSize};
 
-            auto controls = grit::Amp::ControlInput{};
-            controls.mode = grit::Amp::Mode::Grind;
-            amp.process(block, controls);
+            auto controls = grit::Ares::ControlInput{};
+            controls.mode = grit::Ares::Mode::Grind;
+            ares.process(block, controls);
 
             for (auto i{0}; i < blockSize; ++i) {
                 REQUIRE(etl::isfinite(block(0, i)));
