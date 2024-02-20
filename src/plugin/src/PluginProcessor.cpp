@@ -50,8 +50,8 @@ auto PluginProcessor::changeProgramName(int index, juce::String const& newName) 
 
 auto PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) -> void
 {
-    _hades = std::make_unique<grit::Hades>();
-    _hades->prepare(sampleRate, static_cast<std::size_t>(samplesPerBlock));
+    _poseidon = std::make_unique<grit::Poseidon>();
+    _poseidon->prepare(sampleRate, static_cast<std::size_t>(samplesPerBlock));
 
     _buffer.resize(2U * static_cast<std::size_t>(samplesPerBlock));
 }
@@ -86,7 +86,7 @@ void PluginProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiB
         io(1, i) = buffer.getSample(1, i);
     }
 
-    auto const controls = grit::Hades::ControlInput{
+    auto const controls = grit::Poseidon::ControlInput{
         .textureKnob    = _cv1,
         .morphKnob      = _cv2,
         .ampKnob        = _cv3,
@@ -101,10 +101,10 @@ void PluginProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiB
 
     if (_next.load()) {
         _next.store(false);
-        _hades->nextDistortionAlgorithm();
+        _poseidon->nextDistortionAlgorithm();
     }
 
-    auto const cv = _hades->process(io, controls);
+    auto const cv = _poseidon->process(io, controls);
     juce::ignoreUnused(cv);
 
     for (auto i = 0; i < buffer.getNumSamples(); ++i) {

@@ -1,17 +1,17 @@
-#include "hades.hpp"
+#include "poseidon.hpp"
 
 namespace grit {
 
-auto Hades::nextTextureAlgorithm() -> void {}
+auto Poseidon::nextTextureAlgorithm() -> void {}
 
-auto Hades::nextDistortionAlgorithm() -> void
+auto Poseidon::nextDistortionAlgorithm() -> void
 {
     for (auto& channel : _channels) {
         channel.nextDistortionAlgorithm();
     }
 }
 
-auto Hades::prepare(float sampleRate, etl::size_t blockSize) -> void
+auto Poseidon::prepare(float sampleRate, etl::size_t blockSize) -> void
 {
     auto const blockRate = sampleRate / static_cast<float>(blockSize);
 
@@ -28,7 +28,7 @@ auto Hades::prepare(float sampleRate, etl::size_t blockSize) -> void
     _channels[1].setSampleRate(sampleRate);
 }
 
-auto Hades::process(StereoBlock<float> const& buffer, ControlInput const& inputs) -> ControlOutput
+auto Poseidon::process(StereoBlock<float> const& buffer, ControlInput const& inputs) -> ControlOutput
 {
     auto const textureKnob    = _textureKnob(inputs.textureKnob);
     auto const morphKnob      = _morphKnob(inputs.morphKnob);
@@ -39,7 +39,7 @@ auto Hades::process(StereoBlock<float> const& buffer, ControlInput const& inputs
     auto const attackCv       = _attackCv(inputs.attackCV);
     auto const releaseCv      = _releaseCv(inputs.releaseCV);
 
-    auto const channelParameter = Hades::Channel::Parameter{
+    auto const channelParameter = Poseidon::Channel::Parameter{
         .texture    = textureKnob,
         .morph      = etl::clamp(morphKnob + morphCv, 0.0F, 1.0F),
         .amp        = ampKnob,
@@ -74,7 +74,7 @@ auto Hades::process(StereoBlock<float> const& buffer, ControlInput const& inputs
     };
 }
 
-auto Hades::Amp::next() -> void
+auto Poseidon::Amp::next() -> void
 {
     _index = Index{int(_index) + 1};
     if (_index == MaxIndex) {
@@ -82,13 +82,13 @@ auto Hades::Amp::next() -> void
     }
 }
 
-auto Hades::Amp::setSampleRate(float sampleRate) -> void
+auto Poseidon::Amp::setSampleRate(float sampleRate) -> void
 {
     _fireAmp.setSampleRate(sampleRate);
     _grindAmp.setSampleRate(sampleRate);
 }
 
-auto Hades::Amp::operator()(float sample) -> float
+auto Poseidon::Amp::operator()(float sample) -> float
 {
     switch (_index) {
         case TanhIndex: return _tanh(sample);
@@ -103,7 +103,7 @@ auto Hades::Amp::operator()(float sample) -> float
     return sample;
 }
 
-auto Hades::Channel::setParameter(Parameter const& parameter) -> void
+auto Poseidon::Channel::setParameter(Parameter const& parameter) -> void
 {
     _parameter = parameter;
 
@@ -124,16 +124,16 @@ auto Hades::Channel::setParameter(Parameter const& parameter) -> void
     });
 }
 
-auto Hades::Channel::nextDistortionAlgorithm() -> void { _distortion.next(); }
+auto Poseidon::Channel::nextDistortionAlgorithm() -> void { _distortion.next(); }
 
-auto Hades::Channel::setSampleRate(float sampleRate) -> void
+auto Poseidon::Channel::setSampleRate(float sampleRate) -> void
 {
     _envelope.setSampleRate(sampleRate);
     _compressor.setSampleRate(sampleRate);
     _distortion.setSampleRate(sampleRate);
 }
 
-auto Hades::Channel::operator()(float sample) -> etl::pair<float, float>
+auto Poseidon::Channel::operator()(float sample) -> etl::pair<float, float>
 {
     auto const env     = _envelope(sample);
     auto const texture = etl::clamp(env + _parameter.texture, 0.0F, 1.0F);

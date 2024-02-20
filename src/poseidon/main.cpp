@@ -1,13 +1,13 @@
-#include <grit/eurorack/hades.hpp>
+#include <grit/eurorack/poseidon.hpp>
 
 #include <daisy_patch_sm.h>
 
-namespace hades {
+namespace poseidon {
 
 static constexpr auto blockSize  = 32U;
 static constexpr auto sampleRate = 96'000.0F;
 
-auto processor = grit::Hades{};
+auto processor = grit::Poseidon{};
 auto patch     = daisy::patch_sm::DaisyPatchSM{};
 auto button    = daisy::Switch{};
 auto toggle    = daisy::Switch{};
@@ -35,7 +35,7 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
         io(1, i) = in[1][i];
     }
 
-    auto const controls = grit::Hades::ControlInput{
+    auto const controls = grit::Poseidon::ControlInput{
         .textureKnob    = patch.GetAdcValue(daisy::patch_sm::CV_1),
         .morphKnob      = patch.GetAdcValue(daisy::patch_sm::CV_2),
         .ampKnob        = patch.GetAdcValue(daisy::patch_sm::CV_3),
@@ -61,19 +61,19 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
     dsy_gpio_write(&patch.gate_out_2, static_cast<uint8_t>(outputs.gate2));
 }
 
-}  // namespace hades
+}  // namespace poseidon
 
 auto main() -> int
 {
-    hades::patch.Init();
-    hades::button.Init(daisy::patch_sm::DaisyPatchSM::B7);
-    hades::toggle.Init(daisy::patch_sm::DaisyPatchSM::B8);
+    poseidon::patch.Init();
+    poseidon::button.Init(daisy::patch_sm::DaisyPatchSM::B7);
+    poseidon::toggle.Init(daisy::patch_sm::DaisyPatchSM::B8);
 
-    hades::processor.prepare(hades::sampleRate, hades::blockSize);
+    poseidon::processor.prepare(poseidon::sampleRate, poseidon::blockSize);
 
-    hades::patch.SetAudioSampleRate(hades::sampleRate);
-    hades::patch.SetAudioBlockSize(hades::blockSize);
-    hades::patch.StartAudio(hades::audioCallback);
+    poseidon::patch.SetAudioSampleRate(poseidon::sampleRate);
+    poseidon::patch.SetAudioBlockSize(poseidon::blockSize);
+    poseidon::patch.StartAudio(poseidon::audioCallback);
 
     while (true) {}
 }

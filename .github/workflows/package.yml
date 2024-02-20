@@ -43,9 +43,9 @@ jobs:
           mkdir firmware
           cp build/src/ares/Release/ares.bin firmware
           cp build/src/astra/Release/astra.bin firmware
-          cp build/src/hades/Release/hades.bin firmware
           cp build/src/hermas/Release/hermas.bin firmware
           cp build/src/kyma/Release/kyma.bin firmware
+          cp build/src/poseidon/Release/poseidon.bin firmware
 
       - name: Upload coverage artifacts
         uses: actions/upload-artifact@v4

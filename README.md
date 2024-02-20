@@ -8,13 +8,13 @@
 
 ## Firmware
 
-|         Name          |         Description         |                                  Hardware                                  |
-| :-------------------: | :-------------------------: | :------------------------------------------------------------------------: |
-|  [Ares](./src/ares)   |  Multi-Mono Amp Simulation  | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
-| [Astra](./src/astra)  | Multi-Effect Mono to Stereo | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
-| [Hades](./src/hades)  | Multi-Mono Noise/Distortion | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
-| [Hermas](./src/hades) | Multi-Mono Transient Shaper | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
-|  [Kyma](./src/kyma)   |    Wavetable Oscillator     | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
+|            Name            |         Description         |                                  Hardware                                  |
+| :------------------------: | :-------------------------: | :------------------------------------------------------------------------: |
+|     [Ares](./src/ares)     |  Multi-Mono Amp Simulation  | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
+|    [Astra](./src/astra)    | Multi-Effect Mono to Stereo | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
+|   [Hermas](./src/hermas)   | Multi-Mono Transient Shaper | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
+|     [Kyma](./src/kyma)     |    Wavetable Oscillator     | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
+| [Poseidon](./src/poseidon) | Multi-Mono Noise/Distortion | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
 
 ## Development
 

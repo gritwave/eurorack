@@ -1,6 +1,6 @@
 #pragma once
 
-#include <grit/eurorack/hades.hpp>
+#include <grit/eurorack/poseidon.hpp>
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_dsp/juce_dsp.h>
@@ -51,7 +51,7 @@ private:
     juce::AudioProcessorValueTreeState _valueTree;
 
     std::vector<float> _buffer{};
-    std::unique_ptr<grit::Hades> _hades{nullptr};
+    std::unique_ptr<grit::Poseidon> _poseidon{nullptr};
     std::atomic<bool> _next{false};
 
     juce::AudioParameterFloat& _cv1;

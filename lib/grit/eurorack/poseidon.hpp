@@ -27,7 +27,7 @@
 namespace grit {
 
 /// \ingroup grit-eurorack
-struct Hades
+struct Poseidon
 {
     struct ControlInput
     {
@@ -51,7 +51,7 @@ struct Hades
         bool gate2{false};
     };
 
-    Hades() = default;
+    Poseidon() = default;
 
     auto nextTextureAlgorithm() -> void;
     auto nextDistortionAlgorithm() -> void;

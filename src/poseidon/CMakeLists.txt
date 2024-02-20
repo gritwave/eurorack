@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.23...3.27)
-project(hades)
+project(poseidon)
 
 add_baremetal_executable(${PROJECT_NAME} ${LINKER_SCRIPT})
 target_sources(${PROJECT_NAME} PRIVATE main.cpp)
