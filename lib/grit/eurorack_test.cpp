@@ -63,6 +63,38 @@ TEST_CASE("eurorack: Ares")
     }
 }
 
+TEST_CASE("eurorack: Kyma")
+{
+    static constexpr auto blockSize = 32;
+
+    auto const sampleRate = GENERATE(44100.0F, 48000.0F, 88200.0F, 96000.0F);
+
+    auto rng  = etl::xoshiro128plusplus{Catch::getSeed()};
+    auto dist = etl::uniform_real_distribution<float>{-1.0F, 1.0F};
+
+    auto ares = grit::Kyma{};
+    ares.prepare(sampleRate, blockSize);
+
+    SECTION("fire")
+    {
+        for (auto i{0}; i < 100; ++i) {
+            auto buffer = [&] {
+                auto buf = etl::array<float, static_cast<size_t>(2 * blockSize)>{};
+                etl::generate(buf.begin(), buf.end(), [&] { return dist(rng); });
+                return buf;
+            }();
+            auto block = grit::StereoBlock<float>{buffer.data(), blockSize};
+
+            ares.process(block, {});
+
+            for (auto i{0}; i < blockSize; ++i) {
+                REQUIRE(etl::isfinite(block(0, i)));
+                REQUIRE(etl::isfinite(block(1, i)));
+            }
+        }
+    }
+}
+
 TEST_CASE("eurorack: Poseidon")
 {
     static constexpr auto blockSize = 32;
