@@ -6,7 +6,7 @@
 #include <catch2/generators/catch_generators.hpp>
 
 template<typename Processor>
-auto test(auto sampleRate) -> void
+auto test(auto sampleRate, typename Processor::value_type offset = 0) -> void
 {
     using Float = typename Processor::value_type;
 
@@ -27,12 +27,13 @@ auto test(auto sampleRate) -> void
             proc.reset();
 
             if constexpr (requires { proc.setParameter({param(rng), param(rng), param(rng), param(rng)}); }) {
-                proc.setParameter({param(rng), param(rng), param(rng), param(rng)});
+                auto const a = etl::clamp(param(rng) - offset, Float(0), Float(1));
+                proc.setParameter({a, param(rng), param(rng), param(rng)});
             } else if constexpr (requires { proc.setDeRez(param(rng)); }) {
                 proc.setDeRez(param(rng));
             }
 
-            for (auto i{0}; i < static_cast<int>(sampleRate); ++i) {
+            for (auto i{0}; i < static_cast<int>(sampleRate * 2); ++i) {
                 auto out = proc(signal(rng));
                 REQUIRE(etl::isfinite(out));
             }
@@ -44,8 +45,19 @@ TEMPLATE_TEST_CASE("audio/airwindows: AirWindowsFireAmp", "", float, double)
 {
     using Float = TestType;
 
-    auto const sampleRate = GENERATE(Float(22050), Float(24000), Float(44100), Float(48000));
-    test<grit::AirWindowsFireAmp<TestType>>(sampleRate);
+    auto const sampleRate = GENERATE(
+        Float(22050),
+        Float(24000),
+        Float(44100),
+        Float(48000),
+        Float(88200),
+        Float(96000),
+        Float(132300),
+        Float(144000),
+        Float(176400),
+        Float(192000)
+    );
+    test<grit::AirWindowsFireAmp<TestType>>(sampleRate, Float(0.15));
 }
 
 TEMPLATE_TEST_CASE("audio/airwindows: AirWindowsGrindAmp", "", float, double)
