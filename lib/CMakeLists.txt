@@ -94,6 +94,8 @@ target_sources(gritwave-eurorack
 
         "grit/eurorack/ares.cpp"
         "grit/eurorack/ares.hpp"
+        "grit/eurorack/kyma.cpp"
+        "grit/eurorack/kyma.hpp"
         "grit/eurorack/poseidon.cpp"
         "grit/eurorack/poseidon.hpp"
 )
