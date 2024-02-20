@@ -16,6 +16,22 @@
 |     [Kyma](./src/kyma)     |    Wavetable Oscillator     | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
 | [Poseidon](./src/poseidon) | Multi-Mono Noise/Distortion | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
 
+## Library
+
+- C++20 minimum
+
+```cmake
+# Add library via CMake
+add_subdirectory(path/to/eurorack/3rd_party/tetl/include)
+add_subdirectory(path/to/eurorack/lib)
+target_link_libaries(YourTarget PRIVATE gritwave::eurorack)
+```
+
+```sh
+# Generate documentation
+doxygen Doxyfile
+```
+
 ## Development
 
 ### Create Release
