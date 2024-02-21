@@ -6,7 +6,7 @@
 [![GitHub Release](https://img.shields.io/github/release/gritwave/eurorack.svg?style=flat)](https://github.com/gritwave/eurorack/releases/latest)
 [![Github All Releases](https://img.shields.io/github/downloads/gritwave/eurorack/total.svg)](https://github.com/gritwave/eurorack/releases/latest)
 
-This repository contains both the library and firmware code for all gritwave eurorack modules. Based on the [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) is supported.
+This repository contains both the library and firmware code for all gritwave eurorack modules. Based on the [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) hardware.
 
 ## Firmware
 
