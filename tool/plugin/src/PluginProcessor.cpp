@@ -51,7 +51,7 @@ auto PluginProcessor::changeProgramName(int index, juce::String const& newName) 
 auto PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) -> void
 {
     _poseidon = std::make_unique<grit::Poseidon>();
-    _poseidon->prepare(sampleRate, static_cast<std::size_t>(samplesPerBlock));
+    _poseidon->prepare(static_cast<float>(sampleRate), static_cast<std::size_t>(samplesPerBlock));
 
     _buffer.resize(2U * static_cast<std::size_t>(samplesPerBlock));
 }
@@ -82,8 +82,8 @@ void PluginProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiB
 
     auto io = grit::StereoBlock<float>{_buffer.data(), static_cast<etl::size_t>(buffer.getNumSamples())};
     for (auto i = 0; i < buffer.getNumSamples(); ++i) {
-        io(0, i) = buffer.getSample(0, i);
-        io(1, i) = buffer.getSample(1, i);
+        io(etl::size_t(0), static_cast<etl::size_t>(i)) = buffer.getSample(0, i);
+        io(etl::size_t(1), static_cast<etl::size_t>(i)) = buffer.getSample(1, i);
     }
 
     auto const controls = grit::Poseidon::ControlInput{

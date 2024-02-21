@@ -18,10 +18,10 @@ struct AirWindowsGrindAmp
 
     struct Parameter
     {
-        Float gain{0.5};
-        Float tone{0.5};
-        Float output{0.8};
-        Float mix{1};
+        Float gain   = Float(0.5);
+        Float tone   = Float(0.5);
+        Float output = Float(0.8);
+        Float mix    = Float(1);
     };
 
     AirWindowsGrindAmp();
