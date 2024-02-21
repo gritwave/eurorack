@@ -1,6 +1,5 @@
 #pragma once
 
-#include <grit/core/mdspan.hpp>
 #include <grit/fft/bitrevorder.hpp>
 #include <grit/fft/direction.hpp>
 #include <grit/math/ilog2.hpp>

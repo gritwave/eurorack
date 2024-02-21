@@ -74,7 +74,6 @@ target_sources(gritwave-grit INTERFACE
         "grit/core/arm.hpp"
         "grit/core/benchmark.hpp"
         "grit/core/config.hpp"
-        "grit/core/mdspan.hpp"
 
         "grit/fft.hpp"
         "grit/fft/bitrevorder.hpp"

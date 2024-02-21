@@ -1,8 +1,10 @@
 #pragma once
 
-#include <grit/core/mdspan.hpp>
 #include <grit/math/hermite_interpolation.hpp>
 #include <grit/math/linear_interpolation.hpp>
+
+#include <etl/linalg.hpp>
+#include <etl/mdspan.hpp>
 
 namespace grit {
 

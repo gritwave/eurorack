@@ -1,12 +1,12 @@
 #pragma once
 
-#include <grit/core/mdspan.hpp>
 #include <grit/math/ilog2.hpp>
 
 #include <etl/array.hpp>
 #include <etl/bit.hpp>
 #include <etl/concepts.hpp>
 #include <etl/cstddef.hpp>
+#include <etl/linalg.hpp>
 #include <etl/type_traits.hpp>
 #include <etl/utility.hpp>
 
