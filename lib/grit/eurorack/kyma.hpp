@@ -47,7 +47,7 @@ private:
     DynamicSmoothing<float> _subGainCV{};
     DynamicSmoothing<float> _subMorphCV{};
 
-    EnvelopeADSR adsr{};
+    EnvelopeADSR<float> adsr{};
     WavetableOscillator<float, sine.size()> oscillator{wavetable};
     WavetableOscillator<float, sine.size()> subOscillator{wavetable};
 };

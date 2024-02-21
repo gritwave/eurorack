@@ -1,29 +1,36 @@
 #pragma once
 
+#include <etl/algorithm.hpp>
 #include <etl/cmath.hpp>
+#include <etl/concepts.hpp>
 
 namespace grit {
 
 /// ADSR Envelope Generator
 ///
-/// https://github.com/fdeste/ADSR
-/// http://www.earlevel.com/main/2013/06/03/envelope-generators-adsr-code
+/// - https://github.com/fdeste/ADSR
+/// - http://www.earlevel.com/main/2013/06/03/envelope-generators-adsr-code
+///
 /// \ingroup grit-audio-envelope
+template<etl::floating_point Float>
 struct EnvelopeADSR
 {
-    EnvelopeADSR();
+    using value_type = Float;
 
-    auto setAttack(float rate) -> void;
-    auto setDecay(float rate) -> void;
-    auto setSustain(float level) -> void;
-    auto setRelease(float rate) -> void;
+    constexpr EnvelopeADSR();
 
-    auto setTargetRatioA(float ratio) -> void;
-    auto setTargetRatioDr(float ratio) -> void;
+    constexpr auto setAttack(Float rate) -> void;
+    constexpr auto setDecay(Float rate) -> void;
+    constexpr auto setSustain(Float level) -> void;
+    constexpr auto setRelease(Float rate) -> void;
 
-    auto reset() -> void;
-    auto gate(bool isOn) -> void;
-    [[nodiscard]] auto operator()() -> float;
+    constexpr auto setTargetRatioA(Float ratio) -> void;
+    constexpr auto setTargetRatioDr(Float ratio) -> void;
+
+    constexpr auto gate(bool isOn) -> void;
+    constexpr auto reset() -> void;
+
+    [[nodiscard]] constexpr auto operator()() -> Float;
 
 private:
     enum State
@@ -35,91 +42,93 @@ private:
         Release
     };
 
-    static auto calcCoef(float rate, float targetRatio) -> float
+    static constexpr auto calcCoef(Float rate, Float targetRatio) -> Float
     {
-        return etl::exp(-etl::log((1.0F + targetRatio) / targetRatio) / rate);
+        return etl::exp(-etl::log((Float(1) + targetRatio) / targetRatio) / rate);
     }
 
     State _state{State::Idle};
-    float _output{};
+    Float _output{};
 
-    float _attackRate{};
-    float _attackCoef{};
-    float _attackBase{};
+    Float _attackRate{};
+    Float _attackCoef{};
+    Float _attackBase{};
 
-    float _decayRate{};
-    float _decayCoef{};
-    float _decayBase{};
+    Float _decayRate{};
+    Float _decayCoef{};
+    Float _decayBase{};
 
-    float _sustainLevel{};
+    Float _sustainLevel{};
 
-    float _releaseRate{};
-    float _releaseCoef{};
-    float _releaseBase{};
+    Float _releaseRate{};
+    Float _releaseCoef{};
+    Float _releaseBase{};
 
-    float _targetRatioA{};
-    float _targetRatioDr{};
+    Float _targetRatioA{};
+    Float _targetRatioDr{};
 };
 
-inline EnvelopeADSR::EnvelopeADSR()
+template<etl::floating_point Float>
+constexpr EnvelopeADSR<Float>::EnvelopeADSR()
 {
     reset();
 
-    setAttack(0.0F);
-    setDecay(0.0F);
-    setRelease(0.0F);
-    setSustain(1.0F);
-    setTargetRatioA(0.3F);
-    setTargetRatioDr(0.0001F);
+    setAttack(Float(0));
+    setDecay(Float(0));
+    setRelease(Float(0));
+    setSustain(Float(1));
+    setTargetRatioA(Float(0.3));
+    setTargetRatioDr(Float(0.0001));
 }
 
-inline auto EnvelopeADSR::setAttack(float rate) -> void
+template<etl::floating_point Float>
+constexpr auto EnvelopeADSR<Float>::setAttack(Float rate) -> void
 {
     _attackRate = rate;
     _attackCoef = calcCoef(rate, _targetRatioA);
-    _attackBase = (1.0F + _targetRatioA) * (1.0F - _attackCoef);
+    _attackBase = (Float(1) + _targetRatioA) * (Float(1) - _attackCoef);
 }
 
-inline auto EnvelopeADSR::setDecay(float rate) -> void
+template<etl::floating_point Float>
+constexpr auto EnvelopeADSR<Float>::setDecay(Float rate) -> void
 {
     _decayRate = rate;
     _decayCoef = calcCoef(rate, _targetRatioDr);
-    _decayBase = (_sustainLevel - _targetRatioDr) * (1.0F - _decayCoef);
+    _decayBase = (_sustainLevel - _targetRatioDr) * (Float(1) - _decayCoef);
 }
 
-inline auto EnvelopeADSR::setSustain(float level) -> void
+template<etl::floating_point Float>
+constexpr auto EnvelopeADSR<Float>::setSustain(Float level) -> void
 {
     _sustainLevel = level;
-    _decayBase    = (_sustainLevel - _targetRatioDr) * (1.0F - _decayCoef);
+    _decayBase    = (_sustainLevel - _targetRatioDr) * (Float(1) - _decayCoef);
 }
 
-inline auto EnvelopeADSR::setRelease(float rate) -> void
+template<etl::floating_point Float>
+constexpr auto EnvelopeADSR<Float>::setRelease(Float rate) -> void
 {
     _releaseRate = rate;
     _releaseCoef = calcCoef(rate, _targetRatioDr);
-    _releaseBase = -_targetRatioDr * (1.0F - _releaseCoef);
+    _releaseBase = -_targetRatioDr * (Float(1) - _releaseCoef);
 }
 
-inline auto EnvelopeADSR::setTargetRatioA(float ratio) -> void
+template<etl::floating_point Float>
+constexpr auto EnvelopeADSR<Float>::setTargetRatioA(Float ratio) -> void
 {
-    if (ratio < float(0.000000001)) {
-        ratio = float(0.000000001);  // -180 dB
-    }
-    _targetRatioA = ratio;
-    _attackBase   = (float(1) + _targetRatioA) * (float(1) - _attackCoef);
+    _targetRatioA = etl::clamp(ratio, Float(0.000000001), Float(1));
+    _attackBase   = (Float(1) + _targetRatioA) * (Float(1) - _attackCoef);
 }
 
-inline auto EnvelopeADSR::setTargetRatioDr(float ratio) -> void
+template<etl::floating_point Float>
+constexpr auto EnvelopeADSR<Float>::setTargetRatioDr(Float ratio) -> void
 {
-    if (ratio < float(0.000000001)) {
-        ratio = float(0.000000001);  // -180 dB
-    }
-    _targetRatioDr = ratio;
-    _decayBase     = (_sustainLevel - _targetRatioDr) * (float(1) - _decayCoef);
-    _releaseBase   = -_targetRatioDr * (float(1) - _releaseCoef);
+    _targetRatioDr = etl::clamp(ratio, Float(0.000000001), Float(1));
+    _decayBase     = (_sustainLevel - _targetRatioDr) * (Float(1) - _decayCoef);
+    _releaseBase   = -_targetRatioDr * (Float(1) - _releaseCoef);
 }
 
-inline auto EnvelopeADSR::gate(bool isOn) -> void
+template<etl::floating_point Float>
+constexpr auto EnvelopeADSR<Float>::gate(bool isOn) -> void
 {
     if (isOn) {
         _state = State::Attack;
@@ -128,13 +137,15 @@ inline auto EnvelopeADSR::gate(bool isOn) -> void
     }
 }
 
-inline auto EnvelopeADSR::reset() -> void
+template<etl::floating_point Float>
+constexpr auto EnvelopeADSR<Float>::reset() -> void
 {
     _state  = State::Idle;
-    _output = float(0);
+    _output = Float(0);
 }
 
-inline auto EnvelopeADSR::operator()() -> float
+template<etl::floating_point Float>
+constexpr auto EnvelopeADSR<Float>::operator()() -> Float
 {
     switch (_state) {
         case State::Idle: {
@@ -142,8 +153,8 @@ inline auto EnvelopeADSR::operator()() -> float
         }
         case State::Attack: {
             _output = _attackBase + _output * _attackCoef;
-            if (_output >= 1.0) {
-                _output = 1.0;
+            if (_output >= Float(1)) {
+                _output = Float(1);
                 _state  = State::Decay;
             }
             break;
@@ -161,8 +172,8 @@ inline auto EnvelopeADSR::operator()() -> float
         }
         case State::Release: {
             _output = _releaseBase + _output * _releaseCoef;
-            if (_output <= 0.0) {
-                _output = 0.0;
+            if (_output <= Float(0)) {
+                _output = Float(0);
                 _state  = State::Idle;
             }
             break;
