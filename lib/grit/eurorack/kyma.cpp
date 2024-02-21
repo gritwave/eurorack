@@ -9,8 +9,8 @@ namespace grit {
 auto Kyma::prepare(float sampleRate, etl::size_t blockSize) -> void
 {
     _sampleRate = sampleRate;
-    oscillator.setSampleRate(sampleRate);
-    subOscillator.setSampleRate(sampleRate);
+    _oscillator.setSampleRate(sampleRate);
+    _subOscillator.setSampleRate(sampleRate);
 
     auto const blockRate = sampleRate / static_cast<float>(blockSize);
     _pitchKnob.setSampleRate(blockRate);
@@ -54,23 +54,23 @@ auto Kyma::process(StereoBlock<float> const& buffer, ControlInput const& inputs)
     // subOscillator.setShapeMorph(subMorph);
     etl::ignore_unused(subMorph, morph);
 
-    oscillator.setFrequency(grit::noteToHertz(note));
-    subOscillator.setFrequency(grit::noteToHertz(subNoteNumber));
+    _oscillator.setFrequency(grit::noteToHertz(note));
+    _subOscillator.setFrequency(grit::noteToHertz(subNoteNumber));
 
-    adsr.setAttack(attack * _sampleRate);
-    adsr.setRelease(release * _sampleRate);
-    adsr.gate(inputs.gate);
+    _adsr.setAttack(attack * _sampleRate);
+    _adsr.setRelease(release * _sampleRate);
+    _adsr.gate(inputs.gate);
 
     auto env = 0.0F;
 
     for (size_t i = 0; i < buffer.extent(1); ++i) {
         auto const fmModulator = buffer(0, i);
         auto const fmAmount    = buffer(1, i);
-        oscillator.addPhaseOffset(fmModulator * fmAmount);
-        env = adsr();
+        _oscillator.addPhaseOffset(fmModulator * fmAmount);
+        env = _adsr();
 
-        auto const osc = oscillator() * env;
-        auto const sub = subOscillator() * env * subGain;
+        auto const osc = _oscillator() * env;
+        auto const sub = _subOscillator() * env * subGain;
 
         buffer(0, i) = sub * 0.75F;
         buffer(1, i) = osc * 0.75F;

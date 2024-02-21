@@ -47,9 +47,9 @@ private:
     DynamicSmoothing<float> _subGainCV{};
     DynamicSmoothing<float> _subMorphCV{};
 
-    EnvelopeADSR<float> adsr{};
-    WavetableOscillator<float, sine.size()> oscillator{wavetable};
-    WavetableOscillator<float, sine.size()> subOscillator{wavetable};
+    EnvelopeADSR<float> _adsr{};
+    WavetableOscillator<float, sine.size()> _oscillator{wavetable};
+    WavetableOscillator<float, sine.size()> _subOscillator{wavetable};
 };
 
 }  // namespace grit
