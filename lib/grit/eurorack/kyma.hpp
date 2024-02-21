@@ -8,6 +8,7 @@
 
 namespace grit {
 
+/// \ingroup grit-eurorack
 struct Kyma
 {
     struct ControlInput
