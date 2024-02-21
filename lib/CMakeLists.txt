@@ -6,6 +6,10 @@ add_library(gritwave::grit ALIAS gritwave-grit)
 target_compile_features(gritwave-grit INTERFACE cxx_std_20)
 target_link_libraries(gritwave-grit INTERFACE tetl::etl)
 
+if(MSVC)
+  target_compile_options(gritwave-grit INTERFACE "/permissive-" "/Zc:__cplusplus")
+endif(MSVC)
+
 target_sources(gritwave-grit INTERFACE
     FILE_SET
         HEADERS
