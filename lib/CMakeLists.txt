@@ -18,6 +18,9 @@ target_sources(gritwave-grit INTERFACE
     FILES
         "grit/audio.hpp"
 
+        "grit/audio/airwindows.hpp"
+        "grit/audio/airwindows/airwindows_fire_amp.hpp"
+        "grit/audio/airwindows/airwindows_grind_amp.hpp"
         "grit/audio/airwindows/airwindows_vinyl_dither.hpp"
 
         "grit/audio/delay.hpp"
@@ -26,6 +29,9 @@ target_sources(gritwave-grit INTERFACE
 
         "grit/audio/dynamic.hpp"
         "grit/audio/dynamic/compressor.hpp"
+        "grit/audio/dynamic/dynamic.hpp"
+        "grit/audio/dynamic/gain_computer.hpp"
+        "grit/audio/dynamic/level_detector.hpp"
         "grit/audio/dynamic/transient_shaper.hpp"
 
         "grit/audio/envelope.hpp"
@@ -51,12 +57,17 @@ target_sources(gritwave-grit INTERFACE
         "grit/audio/oscillator/wavetable_oscillator.hpp"
 
         "grit/audio/stereo.hpp"
+        "grit/audio/stereo/mid_side_frame.hpp"
         "grit/audio/stereo/stereo_block.hpp"
+        "grit/audio/stereo/stereo_frame.hpp"
+        "grit/audio/stereo/stereo_width.hpp"
 
         "grit/audio/waveshape.hpp"
+        "grit/audio/waveshape/diode_rectifier.hpp"
         "grit/audio/waveshape/full_wave_rectifier.hpp"
         "grit/audio/waveshape/half_wave_rectifier.hpp"
         "grit/audio/waveshape/hard_clipper.hpp"
+        "grit/audio/waveshape/tanh_clipper.hpp"
         "grit/audio/waveshape/wave_shaper.hpp"
         "grit/audio/waveshape/wave_shaper_adaa1.hpp"
 
@@ -77,8 +88,8 @@ target_sources(gritwave-grit INTERFACE
         "grit/math/ipow.hpp"
         "grit/math/linear_interpolation.hpp"
         "grit/math/normalizable_range.hpp"
-        "grit/math/remap.hpp"
         "grit/math/power.hpp"
+        "grit/math/remap.hpp"
         "grit/math/sign.hpp"
         "grit/math/static_lookup_table.hpp"
         "grit/math/static_lookup_table_transform.hpp"
