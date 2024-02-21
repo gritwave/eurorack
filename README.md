@@ -6,29 +6,37 @@
 [![GitHub Release](https://img.shields.io/github/release/gritwave/eurorack.svg?style=flat)](https://github.com/gritwave/eurorack/releases/latest)
 [![Github All Releases](https://img.shields.io/github/downloads/gritwave/eurorack/total.svg)](https://github.com/gritwave/eurorack/releases/latest)
 
+This repository contains both the library and firmware code for all gritwave eurorack modules. Based on the [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) is supported.
+
 ## Firmware
+
+Latest versions can be downloaded [here](https://github.com/gritwave/eurorack/releases/latest)
 
 |            Name            |         Description         |                                  Hardware                                  |
 | :------------------------: | :-------------------------: | :------------------------------------------------------------------------: |
 |     [Ares](./src/ares)     |  Multi-Mono Amp Simulation  | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
 |    [Astra](./src/astra)    | Multi-Effect Mono to Stereo | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
-|   [Hermas](./src/hermas)   | Multi-Mono Transient Shaper | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
+|   [Hermas](./src/hermas)   |     Multi-Mono Dynamics     | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
 |     [Kyma](./src/kyma)     |    Wavetable Oscillator     | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
 | [Poseidon](./src/poseidon) | Multi-Mono Noise/Distortion | [Electrosmith Patch.init()](https://www.electro-smith.com/daisy/patchinit) |
 
 ## Library
 
-- C++20 minimum
-
 ```cmake
-# Add library via CMake
+# C++20 minimum
 add_subdirectory(path/to/eurorack/3rd_party/tetl/include)
 add_subdirectory(path/to/eurorack/lib)
-target_link_libaries(YourTarget PRIVATE gritwave::eurorack)
+
+# Header only dsp library
+target_link_libraries(YourTarget PRIVATE gritwave::grit)
+
+# Static library containing firmware dsp modules (includes gritwave::grit)
+target_link_libraries(YourTarget PRIVATE gritwave::eurorack)
 ```
 
+### Documentation
+
 ```sh
-# Generate documentation
 doxygen Doxyfile
 ```
 
@@ -37,7 +45,8 @@ doxygen Doxyfile
 ### Create Release
 
 ```sh
-git commit -m "Release v0.1.0"
+# Bump VERSION & Doxygen PROJECT_NUMBER
+git commit -am "Release v0.1.0"
 git tag v0.1.0
 git push
 git push --tags
