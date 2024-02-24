@@ -26,7 +26,7 @@ private:
     etl::size_t _delay{0};
     etl::size_t _writePos{0};
     etl::mdspan<Float, Extent> _buffer;
-    [[no_unique_address]] Interpolation _interpolator{};
+    TETL_NO_UNIQUE_ADDRESS Interpolation _interpolator{};
 };
 
 template<etl::floating_point Float, typename Extent, typename Interpolation>

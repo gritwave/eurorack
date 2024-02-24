@@ -24,7 +24,7 @@ struct WaveShaper
     [[nodiscard]] auto operator()(Float input) const -> Float { return _function(input); }
 
 private:
-    [[no_unique_address]] Function _function;
+    TETL_NO_UNIQUE_ADDRESS Function _function;
 };
 
 }  // namespace grit

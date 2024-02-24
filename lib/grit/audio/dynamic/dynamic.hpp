@@ -43,9 +43,9 @@ struct Dynamic
     }
 
 private:
-    [[no_unique_address]] LevelDetector _levelDetector;
-    [[no_unique_address]] GainComputer _gainComputer;
-    [[no_unique_address]] Ballistics _ballistics;
+    TETL_NO_UNIQUE_ADDRESS LevelDetector _levelDetector;
+    TETL_NO_UNIQUE_ADDRESS GainComputer _gainComputer;
+    TETL_NO_UNIQUE_ADDRESS Ballistics _ballistics;
 };
 
 }  // namespace grit

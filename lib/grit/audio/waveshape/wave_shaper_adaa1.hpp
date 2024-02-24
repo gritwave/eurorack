@@ -36,7 +36,7 @@ private:
 
     Float _xm1{0};
     Float _ad1m1{0};
-    [[no_unique_address]] Nonlinearity _nl;
+    TETL_NO_UNIQUE_ADDRESS Nonlinearity _nl;
 };
 
 }  // namespace grit
