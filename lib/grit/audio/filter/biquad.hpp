@@ -18,6 +18,17 @@ struct BiquadCoefficients
     using value_type = Float;
     using SampleType = Float;
 
+    enum Index
+    {
+        B0,
+        B1,
+        B2,
+        A0,
+        A1,
+        A2,
+        NumCoefficients,
+    };
+
     [[nodiscard]] static constexpr auto makeBypass() -> etl::array<Float, 6>;
     [[nodiscard]] static constexpr auto makeLowPass(Float cutoff, Float Q, Float sampleRate) -> etl::array<Float, 6>;
 };
@@ -39,18 +50,8 @@ struct Biquad
     [[nodiscard]] constexpr auto operator()(Float x) -> Float;
 
 private:
-    enum Index
-    {
-        B0,
-        B1,
-        B2,
-        A0,
-        A1,
-        A2,
-        NumCoefficients,
-    };
-
-    etl::array<Float, NumCoefficients> _coefficients{Coefficients::makeBypass()};
+    using Index = Coefficients::Index;
+    etl::array<Float, Index::NumCoefficients> _coefficients{Coefficients::makeBypass()};
     etl::array<Float, 2> _z{};
 };
 
