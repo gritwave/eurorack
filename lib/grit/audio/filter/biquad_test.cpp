@@ -40,10 +40,10 @@ TEMPLATE_TEST_CASE("audio/filter: BiquadCoefficients::makeLowPass", "", float, d
     REQUIRE_THAT(lp[5], Catch::Matchers::WithinAbs(0.9149758348014339, 1e-6));
 }
 
-TEMPLATE_TEST_CASE("audio/filter: BiquadTDF2", "", float, double)
+TEMPLATE_TEST_CASE("audio/filter: Biquad", "", float, double)
 {
     using Float  = TestType;
-    using Filter = grit::BiquadTDF2<Float>;
+    using Filter = grit::Biquad<Float>;
 
     static constexpr auto iterations = 1'000;
 

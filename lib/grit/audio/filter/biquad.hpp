@@ -10,7 +10,7 @@
 namespace grit {
 
 /// Calculates coefficents for 2nd order biquad filters
-/// \see BiquadTDF2
+/// \see Biquad
 /// \ingroup grit-audio-filter
 template<etl::floating_point Float>
 struct BiquadCoefficients
@@ -47,13 +47,13 @@ struct BiquadCoefficients
 /// \brief 2nd order IIR filter using the transpose direct form 2 structure.
 /// \ingroup grit-audio-filter
 template<etl::floating_point Float>
-struct BiquadTDF2
+struct Biquad
 {
     using value_type   = Float;
     using SampleType   = Float;
     using Coefficients = BiquadCoefficients<Float>;
 
-    constexpr BiquadTDF2() = default;
+    constexpr Biquad() = default;
 
     constexpr auto setCoefficients(etl::span<Float const, 6> coefficients) -> void
     {
