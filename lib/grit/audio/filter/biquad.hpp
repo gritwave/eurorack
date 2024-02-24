@@ -23,10 +23,10 @@ struct BiquadCoefficients
         return {Float(1), Float(0), Float(0), Float(1), Float(0), Float(0)};
     }
 
-    [[nodiscard]] static constexpr auto makeLowPass(Float f0, Float q, Float fs) -> etl::array<Float, 6>
+    [[nodiscard]] static constexpr auto makeLowPass(Float cutoff, Float Q, Float sampleRate) -> etl::array<Float, 6>
     {
-        auto const omega0 = Float(2) * static_cast<Float>(etl::numbers::pi) * f0 / fs;
-        auto const d      = Float(1) / q;
+        auto const omega0 = Float(2) * static_cast<Float>(etl::numbers::pi) * cutoff / sampleRate;
+        auto const d      = Float(1) / Q;
         auto const cos0   = etl::cos(omega0);
         auto const sin0   = etl::sin(omega0);
         auto const beta   = Float(0.5) * ((Float(1) - (d * Float(0.5)) * sin0) / (Float(1) + (d * Float(0.5)) * sin0));

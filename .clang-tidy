@@ -66,8 +66,6 @@ CheckOptions:
     value: 1
   - key: readability-identifier-naming.NamespaceCase
     value: lower_case
-  - key: readability-identifier-naming.ParameterCase
-    value: camelBack
   - key: readability-identifier-naming.PrivateMemberCase
     value: camelBack
   - key: readability-identifier-naming.PrivateMemberPrefix
