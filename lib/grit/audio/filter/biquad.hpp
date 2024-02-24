@@ -2,7 +2,9 @@
 
 #include <etl/algorithm.hpp>
 #include <etl/array.hpp>
+#include <etl/cmath.hpp>
 #include <etl/concepts.hpp>
+#include <etl/numbers.hpp>
 #include <etl/span.hpp>
 
 namespace grit {
@@ -19,6 +21,26 @@ struct BiquadCoefficients
     [[nodiscard]] static constexpr auto makeBypass() -> etl::array<Float, 6>
     {
         return {Float(1), Float(0), Float(0), Float(1), Float(0), Float(0)};
+    }
+
+    [[nodiscard]] static constexpr auto makeLowPass(Float f0, Float q, Float fs) -> etl::array<Float, 6>
+    {
+        auto const omega0 = Float(2) * static_cast<Float>(etl::numbers::pi) * f0 / fs;
+        auto const d      = Float(1) / q;
+        auto const cos0   = etl::cos(omega0);
+        auto const sin0   = etl::sin(omega0);
+        auto const beta   = Float(0.5) * ((Float(1) - (d * Float(0.5)) * sin0) / (Float(1) + (d * Float(0.5)) * sin0));
+        auto const gamma  = (Float(0.5) + beta) * cos0;
+
+        auto const b0 = (Float(0.5) + beta - gamma) * Float(0.5);
+        auto const b1 = Float(0.5) + beta - gamma;
+        auto const b2 = b0;
+
+        auto const a0 = Float(1);
+        auto const a1 = Float(-2) * gamma;
+        auto const a2 = Float(2) * beta;
+
+        return {b0, b1, b2, a0, a1, a2};
     }
 };
 
