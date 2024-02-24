@@ -39,6 +39,7 @@ target_sources(gritwave-grit INTERFACE
         "grit/audio/envelope/envelope_follower.hpp"
 
         "grit/audio/filter.hpp"
+        "grit/audio/filter/biquad.hpp"
         "grit/audio/filter/dynamic_smoothing.hpp"
 
         "grit/audio/mix.hpp"
