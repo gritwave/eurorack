@@ -13,7 +13,7 @@ template<etl::floating_point Float, etl::size_t Size>
 struct StaticLookupTable
 {
     using ValueType = Float;
-    using size_type = etl::size_t;
+    using SizeType  = etl::size_t;
 
     constexpr StaticLookupTable() = default;
 
