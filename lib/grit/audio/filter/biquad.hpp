@@ -15,7 +15,6 @@ namespace grit {
 template<etl::floating_point Float>
 struct BiquadCoefficients
 {
-    using value_type = Float;
     using SampleType = Float;
 
     enum Index
@@ -45,7 +44,6 @@ struct BiquadCoefficients
 template<etl::floating_point Float>
 struct Biquad
 {
-    using value_type   = Float;
     using SampleType   = Float;
     using Coefficients = BiquadCoefficients<Float>;
 
