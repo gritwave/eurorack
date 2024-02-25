@@ -9,6 +9,7 @@ namespace grit {
 auto Kyma::prepare(float sampleRate, etl::size_t blockSize) -> void
 {
     _sampleRate = sampleRate;
+    _adsr.setSampleRate(sampleRate);
     _oscillator.setSampleRate(sampleRate);
     _subOscillator.setSampleRate(sampleRate);
 
@@ -48,6 +49,14 @@ auto Kyma::process(StereoBlock<float> const& buffer, ControlInput const& inputs)
     auto const attack  = grit::remap(attackKnob, 0.0F, 0.750F);
     auto const release = grit::remap(releaseKnob, 0.0F, 2.5F);
 
+    _adsr.gate(inputs.gate);
+    _adsr.setParameter({
+        .attack  = grit::Seconds<float>{attack},
+        .decay   = grit::Seconds<float>{0.0F},
+        .sustain = 1.0F,
+        .release = grit::Seconds<float>{release},
+    });
+
     // oscillator.setWavetable(SineWavetable);
     // subOscillator.setWavetable(SineWavetable);
     // oscillator.setShapeMorph(morph);
@@ -56,10 +65,6 @@ auto Kyma::process(StereoBlock<float> const& buffer, ControlInput const& inputs)
 
     _oscillator.setFrequency(grit::noteToHertz(note));
     _subOscillator.setFrequency(grit::noteToHertz(subNoteNumber));
-
-    _adsr.setAttack(attack * _sampleRate);
-    _adsr.setRelease(release * _sampleRate);
-    _adsr.gate(inputs.gate);
 
     auto env = 0.0F;
 

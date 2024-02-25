@@ -1,5 +1,7 @@
 #pragma once
 
+#include <grit/unit/time.hpp>
+
 #include <etl/algorithm.hpp>
 #include <etl/cmath.hpp>
 #include <etl/concepts.hpp>
@@ -17,15 +19,18 @@ struct EnvelopeADSR
 {
     using SampleType = Float;
 
+    struct Parameter
+    {
+        Milliseconds<Float> attack{0};
+        Milliseconds<Float> decay{0};
+        Float sustain{1};
+        Milliseconds<Float> release{0};
+    };
+
     constexpr EnvelopeADSR();
 
-    constexpr auto setAttack(Float rate) -> void;
-    constexpr auto setDecay(Float rate) -> void;
-    constexpr auto setSustain(Float level) -> void;
-    constexpr auto setRelease(Float rate) -> void;
-
-    constexpr auto setTargetRatioA(Float ratio) -> void;
-    constexpr auto setTargetRatioDr(Float ratio) -> void;
+    constexpr auto setParameter(Parameter const& parameter) -> void;
+    constexpr auto setSampleRate(Float sampleRate) -> void;
 
     constexpr auto gate(bool isOn) -> void;
     constexpr auto reset() -> void;
@@ -41,6 +46,14 @@ private:
         Sustain,
         Release
     };
+
+    constexpr auto setAttack(Float rate) -> void;
+    constexpr auto setDecay(Float rate) -> void;
+    constexpr auto setSustain(Float level) -> void;
+    constexpr auto setRelease(Float rate) -> void;
+
+    constexpr auto setTargetRatioA(Float ratio) -> void;
+    constexpr auto setTargetRatioDr(Float ratio) -> void;
 
     static constexpr auto calcCoef(Float rate, Float targetRatio) -> Float
     {
@@ -66,6 +79,9 @@ private:
 
     Float _targetRatioA{};
     Float _targetRatioDr{};
+
+    Parameter _parameter{};
+    Float _sampleRate{};
 };
 
 template<etl::floating_point Float>
@@ -79,6 +95,26 @@ constexpr EnvelopeADSR<Float>::EnvelopeADSR()
     setSustain(Float(1));
     setTargetRatioA(Float(0.3));
     setTargetRatioDr(Float(0.0001));
+}
+
+template<etl::floating_point Float>
+constexpr auto EnvelopeADSR<Float>::setParameter(Parameter const& parameter) -> void
+{
+    _parameter = parameter;
+    setAttack(Seconds<Float>{parameter.attack}.count() * _sampleRate);
+    setDecay(Seconds<Float>{parameter.decay}.count() * _sampleRate);
+    setSustain(parameter.sustain);
+    setRelease(Seconds<Float>{parameter.release}.count() * _sampleRate);
+    setTargetRatioA(Float(0.3));
+    setTargetRatioDr(Float(0.0001));
+}
+
+template<etl::floating_point Float>
+constexpr auto EnvelopeADSR<Float>::setSampleRate(Float sampleRate) -> void
+{
+    _sampleRate = sampleRate;
+    setParameter(_parameter);
+    reset();
 }
 
 template<etl::floating_point Float>
