@@ -17,16 +17,16 @@ struct StaticLookupTable
 
     constexpr StaticLookupTable() = default;
 
-    template<etl::regular_invocable<etl::size_t> FunctionToApproximate>
-        requires(etl::same_as<etl::invoke_result_t<FunctionToApproximate, etl::size_t>, Float>)
-    explicit constexpr StaticLookupTable(FunctionToApproximate func)
+    template<etl::regular_invocable<etl::size_t> Function>
+        requires(etl::same_as<etl::invoke_result_t<Function, etl::size_t>, Float>)
+    explicit constexpr StaticLookupTable(Function func)
     {
         initialize(func);
     }
 
-    template<etl::regular_invocable<etl::size_t> FunctionToApproximate>
-        requires(etl::same_as<etl::invoke_result_t<FunctionToApproximate, etl::size_t>, Float>)
-    constexpr auto initialize(FunctionToApproximate func) -> void
+    template<etl::regular_invocable<etl::size_t> Function>
+        requires(etl::same_as<etl::invoke_result_t<Function, etl::size_t>, Float>)
+    constexpr auto initialize(Function func) -> void
     {
         for (auto i = etl::size_t{0}; i < Size; ++i) {
             auto value = func(i);

@@ -17,16 +17,16 @@ struct StaticLookupTableTransform
 
     constexpr StaticLookupTableTransform() = default;
 
-    template<etl::regular_invocable<Float> Func>
-        requires(etl::same_as<etl::invoke_result_t<Func, Float>, Float>)
-    explicit constexpr StaticLookupTableTransform(Func func, Float min, Float max)
+    template<etl::regular_invocable<Float> Function>
+        requires(etl::same_as<etl::invoke_result_t<Function, Float>, Float>)
+    explicit constexpr StaticLookupTableTransform(Function func, Float min, Float max)
     {
         initialize(func, min, max);
     }
 
-    template<etl::regular_invocable<Float> Func>
-        requires(etl::same_as<etl::invoke_result_t<Func, Float>, Float>)
-    constexpr auto initialize(Func func, Float min, Float max) -> void
+    template<etl::regular_invocable<Float> Function>
+        requires(etl::same_as<etl::invoke_result_t<Function, Float>, Float>)
+    constexpr auto initialize(Function func, Float min, Float max) -> void
     {
         _min    = min;
         _max    = max;
