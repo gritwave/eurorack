@@ -61,6 +61,7 @@ if(NOT CMAKE_CROSSCOMPILING)
             "lib/grit/audio/dynamic/gain_computer_test.cpp"
             "lib/grit/audio/dynamic/transient_shaper_test.cpp"
 
+            "lib/grit/audio/envelope/envelope_adsr_test.cpp"
             "lib/grit/audio/envelope/envelope_follower_test.cpp"
 
             "lib/grit/audio/filter/biquad_test.cpp"
