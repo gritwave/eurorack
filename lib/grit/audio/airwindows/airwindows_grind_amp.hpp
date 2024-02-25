@@ -14,7 +14,7 @@ template<etl::floating_point Float, typename URNG = etl::xoshiro128plusplus>
 struct AirWindowsGrindAmp
 {
     using SampleType = Float;
-    using seed_type  = typename URNG::result_type;
+    using SeedType   = typename URNG::result_type;
 
     struct Parameter
     {
@@ -25,7 +25,7 @@ struct AirWindowsGrindAmp
     };
 
     AirWindowsGrindAmp();
-    explicit AirWindowsGrindAmp(seed_type seed);
+    explicit AirWindowsGrindAmp(SeedType seed);
 
     auto setParameter(Parameter parameter) -> void;
     auto setSampleRate(Float sampleRate) -> void;
@@ -141,7 +141,7 @@ AirWindowsGrindAmp<Float, URNG>::AirWindowsGrindAmp()
 }
 
 template<etl::floating_point Float, typename URNG>
-AirWindowsGrindAmp<Float, URNG>::AirWindowsGrindAmp(seed_type seed) : _rng{seed}
+AirWindowsGrindAmp<Float, URNG>::AirWindowsGrindAmp(SeedType seed) : _rng{seed}
 {
     reset();
 }

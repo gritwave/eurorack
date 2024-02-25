@@ -13,10 +13,10 @@ template<etl::floating_point Float, typename URNG = etl::xoshiro128plusplus>
 struct AirWindowsVinylDither
 {
     using SampleType = Float;
-    using seed_type  = typename URNG::result_type;
+    using SeedType   = typename URNG::result_type;
 
     AirWindowsVinylDither() = default;
-    explicit AirWindowsVinylDither(seed_type seed);
+    explicit AirWindowsVinylDither(SeedType seed);
 
     auto setDeRez(Float deRez) -> void;
     [[nodiscard]] auto getDeRez() const -> Float;
@@ -40,7 +40,7 @@ private:
 };
 
 template<etl::floating_point Float, typename URNG>
-AirWindowsVinylDither<Float, URNG>::AirWindowsVinylDither(seed_type seed) : _rng{seed}
+AirWindowsVinylDither<Float, URNG>::AirWindowsVinylDither(SeedType seed) : _rng{seed}
 {}
 
 template<etl::floating_point Float, typename URNG>

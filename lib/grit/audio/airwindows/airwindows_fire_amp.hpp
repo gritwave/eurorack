@@ -14,7 +14,7 @@ template<etl::floating_point Float, typename URNG = etl::xoshiro128plusplus>
 struct AirWindowsFireAmp
 {
     using SampleType = Float;
-    using seed_type  = typename URNG::result_type;
+    using SeedType   = typename URNG::result_type;
 
     struct Parameter
     {
@@ -25,7 +25,7 @@ struct AirWindowsFireAmp
     };
 
     AirWindowsFireAmp() = default;
-    explicit AirWindowsFireAmp(seed_type seed);
+    explicit AirWindowsFireAmp(SeedType seed);
 
     auto setParameter(Parameter parameter) -> void;
     auto setSampleRate(Float sampleRate) -> void;
@@ -127,7 +127,7 @@ private:
 };
 
 template<etl::floating_point Float, typename URNG>
-AirWindowsFireAmp<Float, URNG>::AirWindowsFireAmp(seed_type seed) : _rng{seed}
+AirWindowsFireAmp<Float, URNG>::AirWindowsFireAmp(SeedType seed) : _rng{seed}
 {
     reset();
 }
