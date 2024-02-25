@@ -1,5 +1,7 @@
 #include <grit/eurorack/ares.hpp>
 
+#include <etl/linalg.hpp>
+
 #include <daisy_patch_sm.h>
 
 namespace ares {
@@ -11,21 +13,17 @@ auto processor = grit::Ares{};
 auto patch     = daisy::patch_sm::DaisyPatchSM{};
 auto button    = daisy::Switch{};
 auto toggle    = daisy::Switch{};
-auto buffer    = etl::array<float, blockSize * 2U>{};
 
-auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::OutputBuffer out, size_t size) -> void
+auto audioCallback(
+    daisy::AudioHandle::InterleavingInputBuffer in,
+    daisy::AudioHandle::InterleavingOutputBuffer out,
+    size_t size
+) -> void
 {
     patch.ProcessAllControls();
     button.Debounce();
     toggle.Debounce();
     patch.SetLed(button.Pressed());
-
-    // Copy to interleaved
-    auto block = grit::StereoBlock<float>{buffer.data(), size};
-    for (auto i{0U}; i < size; ++i) {
-        block(0, i) = in[0][i];
-        block(1, i) = in[1][i];
-    }
 
     auto const controls = grit::Ares::ControlInput{
         .mode       = toggle.Pressed() ? grit::Ares::Mode::Fire : grit::Ares::Mode::Grind,
@@ -39,13 +37,11 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
         .mixCV      = patch.GetAdcValue(daisy::patch_sm::CV_8),
     };
 
-    processor.process(block, controls);
+    auto const input  = grit::StereoBlock<float const>{in, size};
+    auto const output = grit::StereoBlock<float>{out, size};
+    etl::linalg::copy(input, output);
 
-    // Copy from interleaved
-    for (auto i{0U}; i < size; ++i) {
-        out[0][i] = block(0, i);
-        out[1][i] = block(1, i);
-    }
+    processor.process(output, controls);
 }
 
 }  // namespace ares

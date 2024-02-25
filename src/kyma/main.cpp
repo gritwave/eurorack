@@ -1,5 +1,7 @@
 #include <grit/eurorack/kyma.hpp>
 
+#include <etl/linalg.hpp>
+
 #include <daisy_patch_sm.h>
 
 namespace kyma {
@@ -36,8 +38,11 @@ auto audioCallback(
         .subShift    = toggle.Pressed(),
     };
 
-    auto const block = grit::StereoBlock<float>{out, size};
-    auto const env   = processor.process(block, controls);
+    auto const input  = grit::StereoBlock<float const>{in, size};
+    auto const output = grit::StereoBlock<float>{out, size};
+    etl::linalg::copy(input, output);
+
+    auto const env = processor.process(output, controls);
     patch.WriteCvOut(daisy::patch_sm::CV_OUT_2, env * 5.0F);
 }
 

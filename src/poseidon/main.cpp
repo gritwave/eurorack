@@ -1,5 +1,7 @@
 #include <grit/eurorack/poseidon.hpp>
 
+#include <etl/linalg.hpp>
+
 #include <daisy_patch_sm.h>
 
 namespace poseidon {
@@ -11,9 +13,12 @@ auto processor = grit::Poseidon{};
 auto patch     = daisy::patch_sm::DaisyPatchSM{};
 auto button    = daisy::Switch{};
 auto toggle    = daisy::Switch{};
-auto buffer    = etl::array<float, blockSize * 2U>{};
 
-auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::OutputBuffer out, size_t size) -> void
+auto audioCallback(
+    daisy::AudioHandle::InterleavingInputBuffer in,
+    daisy::AudioHandle::InterleavingOutputBuffer out,
+    size_t size
+) -> void
 {
     patch.ProcessAllControls();
     button.Debounce();
@@ -26,13 +31,6 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
         } else {
             processor.nextTextureAlgorithm();
         }
-    }
-
-    // Copy to interleaved
-    auto io = grit::StereoBlock<float>{buffer.data(), size};
-    for (auto i{0U}; i < size; ++i) {
-        io(0, i) = in[0][i];
-        io(1, i) = in[1][i];
     }
 
     auto const controls = grit::Poseidon::ControlInput{
@@ -48,17 +46,15 @@ auto audioCallback(daisy::AudioHandle::InputBuffer in, daisy::AudioHandle::Outpu
         .gate2          = patch.gate_in_2.State(),
     };
 
-    auto const outputs = processor.process(io, controls);
+    auto const input  = grit::StereoBlock<float const>{in, size};
+    auto const output = grit::StereoBlock<float>{out, size};
+    etl::linalg::copy(input, output);
 
-    // Copy from interleaved
-    for (auto i{0U}; i < size; ++i) {
-        out[0][i] = io(0, i);
-        out[1][i] = io(1, i);
-    }
+    auto const cvOut = processor.process(output, controls);
 
-    patch.WriteCvOut(daisy::patch_sm::CV_OUT_BOTH, outputs.envelope * 5.0F);
-    dsy_gpio_write(&patch.gate_out_1, static_cast<uint8_t>(outputs.gate1));
-    dsy_gpio_write(&patch.gate_out_2, static_cast<uint8_t>(outputs.gate2));
+    patch.WriteCvOut(daisy::patch_sm::CV_OUT_BOTH, cvOut.envelope * 5.0F);
+    dsy_gpio_write(&patch.gate_out_1, static_cast<uint8_t>(cvOut.gate1));
+    dsy_gpio_write(&patch.gate_out_2, static_cast<uint8_t>(cvOut.gate2));
 }
 
 }  // namespace poseidon
