@@ -12,7 +12,7 @@ namespace grit {
 template<etl::floating_point Float, etl::size_t Size>
 struct StaticLookupTableTransform
 {
-    using value_type = Float;
+    using ValueType = Float;
     using size_type  = etl::size_t;
 
     constexpr StaticLookupTableTransform() = default;

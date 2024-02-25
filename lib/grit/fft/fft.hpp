@@ -132,8 +132,8 @@ template<int Stage, etl::linalg::inout_vector InOutVec, etl::linalg::in_vector I
 template<typename Complex, etl::size_t Size>
 struct ComplexPlan
 {
-    using value_type = Complex;
-    using size_type  = etl::size_t;
+    using ValueType = Complex;
+    using size_type = etl::size_t;
 
     explicit ComplexPlan(Direction defaultDirection = Direction::Forward)
         : _defaultDirection{defaultDirection}
@@ -169,8 +169,8 @@ private:
 template<typename Complex, etl::size_t Size>
 struct ComplexPlanV2
 {
-    using value_type = Complex;
-    using size_type  = etl::size_t;
+    using ValueType = Complex;
+    using size_type = etl::size_t;
 
     explicit ComplexPlanV2(Direction defaultDirection = Direction::Forward)
         : _defaultDirection{defaultDirection}

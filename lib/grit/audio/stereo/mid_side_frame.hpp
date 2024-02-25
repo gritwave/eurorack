@@ -3,13 +3,13 @@
 namespace grit {
 
 /// \ingroup grit-audio-stereo
-template<typename SampleType>
+template<typename Float>
 struct MidSideFrame
 {
-    using value_type = SampleType;
+    using SampleType = Float;
 
-    SampleType mid{};
-    SampleType side{};
+    Float mid{};
+    Float side{};
 };
 
 }  // namespace grit

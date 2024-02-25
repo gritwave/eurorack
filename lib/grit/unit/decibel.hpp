@@ -29,7 +29,7 @@ auto toDecibels(Float gain, Float minusInfinityDb = defaultMinusInfinityDb<Float
 template<etl::floating_point Float>
 struct Decibels
 {
-    using value_type = Float;
+    using ValueType = Float;
 
     constexpr Decibels() = default;
 

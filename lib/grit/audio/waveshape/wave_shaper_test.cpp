@@ -13,7 +13,7 @@ TEMPLATE_PRODUCT_TEST_CASE(
 )
 {
     using WaveShaper = TestType;
-    using Float      = typename WaveShaper::value_type;
+    using Float      = typename WaveShaper::SampleType;
 
     auto shaper = WaveShaper{};
     STATIC_REQUIRE(etl::is_empty_v<WaveShaper>);

@@ -9,7 +9,7 @@ namespace grit {
 template<etl::floating_point Float, typename Nonlinearity>
 struct WaveShaperADAA1
 {
-    using value_type = Float;
+    using SampleType = Float;
 
     constexpr WaveShaperADAA1() = default;
 

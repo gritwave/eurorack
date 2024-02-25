@@ -6,9 +6,9 @@
 #include <catch2/generators/catch_generators.hpp>
 
 template<typename Processor>
-auto test(auto sampleRate, typename Processor::value_type offset = 0) -> void
+auto test(auto sampleRate, typename Processor::SampleType offset = 0) -> void
 {
-    using Float = typename Processor::value_type;
+    using Float = typename Processor::SampleType;
 
     CAPTURE(sampleRate);
 

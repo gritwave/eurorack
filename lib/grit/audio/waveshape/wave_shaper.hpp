@@ -9,7 +9,7 @@ namespace grit {
 template<etl::floating_point Float, typename Function = Float (*)(Float)>
 struct WaveShaper
 {
-    using value_type = Float;
+    using SampleType = Float;
 
     WaveShaper()
         requires(etl::is_empty_v<Function>)

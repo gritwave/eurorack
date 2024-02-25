@@ -8,7 +8,7 @@ TEMPLATE_TEST_CASE("math: NormalizableRange", "", float, double)
     using Float = TestType;
     using Range = grit::NormalizableRange<Float>;
 
-    STATIC_REQUIRE(etl::same_as<typename Range::value_type, Float>);
+    STATIC_REQUIRE(etl::same_as<typename Range::ValueType, Float>);
 
     SECTION("empty")
     {

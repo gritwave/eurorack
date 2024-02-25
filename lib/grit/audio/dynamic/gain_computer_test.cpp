@@ -11,7 +11,7 @@ TEMPLATE_PRODUCT_TEST_CASE(
 )
 {
     using Computer = TestType;
-    using Float    = typename Computer::value_type;
+    using Float    = typename Computer::SampleType;
 
     SECTION("default")
     {

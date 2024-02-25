@@ -13,7 +13,7 @@ namespace grit {
 template<etl::floating_point Float>
 struct NormalizableRange
 {
-    using value_type = Float;
+    using ValueType = Float;
 
     constexpr NormalizableRange() = default;
 

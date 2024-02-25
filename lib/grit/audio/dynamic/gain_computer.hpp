@@ -17,7 +17,7 @@ struct GainComputerParameter
 template<etl::floating_point Float>
 struct HardKneeGainComputer
 {
-    using value_type = Float;
+    using SampleType = Float;
     using Parameter  = GainComputerParameter<Float>;
 
     HardKneeGainComputer() = default;
@@ -44,7 +44,7 @@ private:
 template<etl::floating_point Float>
 struct SoftKneeGainComputer
 {
-    using value_type = Float;
+    using SampleType = Float;
     using Parameter  = GainComputerParameter<Float>;
 
     SoftKneeGainComputer() = default;

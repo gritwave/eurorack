@@ -8,7 +8,7 @@ namespace grit {
 template<typename T>
 struct StereoWidth
 {
-    using value_type = T;
+    using SampleType = T;
 
     constexpr StereoWidth() = default;
 

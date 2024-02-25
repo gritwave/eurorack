@@ -15,7 +15,7 @@ namespace grit {
 template<etl::floating_point Float>
 struct EnvelopeADSR
 {
-    using value_type = Float;
+    using SampleType = Float;
 
     constexpr EnvelopeADSR();
 

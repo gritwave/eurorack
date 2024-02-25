@@ -3,12 +3,12 @@
 namespace grit {
 
 /// \ingroup grit-audio-stereo
-template<typename SampleType>
+template<typename Float>
 struct StereoFrame
 {
-    using value_type = SampleType;
+    using SampleType = Float;
 
-    friend constexpr auto operator+(StereoFrame lhs, SampleType rhs) -> StereoFrame
+    friend constexpr auto operator+(StereoFrame lhs, Float rhs) -> StereoFrame
     {
         return {
             lhs.left + rhs,
@@ -16,7 +16,7 @@ struct StereoFrame
         };
     }
 
-    friend constexpr auto operator-(StereoFrame lhs, SampleType rhs) -> StereoFrame
+    friend constexpr auto operator-(StereoFrame lhs, Float rhs) -> StereoFrame
     {
         return {
             lhs.left - rhs,
@@ -24,7 +24,7 @@ struct StereoFrame
         };
     }
 
-    friend constexpr auto operator*(StereoFrame lhs, SampleType rhs) -> StereoFrame
+    friend constexpr auto operator*(StereoFrame lhs, Float rhs) -> StereoFrame
     {
         return {
             lhs.left * rhs,
@@ -32,7 +32,7 @@ struct StereoFrame
         };
     }
 
-    friend constexpr auto operator/(StereoFrame lhs, SampleType rhs) -> StereoFrame
+    friend constexpr auto operator/(StereoFrame lhs, Float rhs) -> StereoFrame
     {
         return {
             lhs.left / rhs,
@@ -96,32 +96,32 @@ struct StereoFrame
         return lhs;
     }
 
-    friend constexpr auto operator+=(StereoFrame& lhs, SampleType rhs) -> StereoFrame&
+    friend constexpr auto operator+=(StereoFrame& lhs, Float rhs) -> StereoFrame&
     {
         lhs = lhs + rhs;
         return lhs;
     }
 
-    friend constexpr auto operator-=(StereoFrame& lhs, SampleType rhs) -> StereoFrame&
+    friend constexpr auto operator-=(StereoFrame& lhs, Float rhs) -> StereoFrame&
     {
         lhs = lhs - rhs;
         return lhs;
     }
 
-    friend constexpr auto operator*=(StereoFrame& lhs, SampleType rhs) -> StereoFrame&
+    friend constexpr auto operator*=(StereoFrame& lhs, Float rhs) -> StereoFrame&
     {
         lhs = lhs * rhs;
         return lhs;
     }
 
-    friend constexpr auto operator/=(StereoFrame& lhs, SampleType rhs) -> StereoFrame&
+    friend constexpr auto operator/=(StereoFrame& lhs, Float rhs) -> StereoFrame&
     {
         lhs = lhs / rhs;
         return lhs;
     }
 
-    SampleType left{};
-    SampleType right{};
+    Float left{};
+    Float right{};
 };
 
 }  // namespace grit

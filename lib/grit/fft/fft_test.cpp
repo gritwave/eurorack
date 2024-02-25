@@ -6,7 +6,7 @@
 template<typename Plan>
 auto testComplexPlan() -> void
 {
-    using Complex = typename Plan::value_type;
+    using Complex = typename Plan::ValueType;
     using Float   = typename Complex::value_type;
 
     auto plan = Plan{};

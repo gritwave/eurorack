@@ -12,7 +12,7 @@ namespace grit {
 template<etl::floating_point Float, typename URNG = etl::xoshiro128plusplus>
 struct AirWindowsVinylDither
 {
-    using value_type = Float;
+    using SampleType = Float;
     using seed_type  = typename URNG::result_type;
 
     AirWindowsVinylDither() = default;

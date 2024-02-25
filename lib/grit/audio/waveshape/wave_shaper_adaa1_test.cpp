@@ -13,7 +13,7 @@ TEMPLATE_PRODUCT_TEST_CASE(
 )
 {
     using Waveshaper = TestType;
-    using Float      = typename Waveshaper::value_type;
+    using Float      = typename Waveshaper::SampleType;
 
     auto shaper = Waveshaper{};
     STATIC_REQUIRE(sizeof(shaper) == sizeof(Float) * 2);

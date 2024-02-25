@@ -10,7 +10,7 @@ using namespace grit;
 TEMPLATE_TEST_CASE("audio/stereo: StereoFrame", "[stereo]", float, double)
 {
     using T = TestType;
-    STATIC_REQUIRE(etl::same_as<typename StereoFrame<T>::value_type, T>);
+    STATIC_REQUIRE(etl::same_as<typename StereoFrame<T>::SampleType, T>);
 }
 
 TEMPLATE_TEST_CASE("audio/stereo: operator+(StereoFrame)", "[stereo]", float, double)
