@@ -30,6 +30,9 @@ struct BiquadCoefficients
     };
 
     [[nodiscard]] static constexpr auto makeBypass() -> etl::array<Float, 6>;
+
+    /// Creates coefficients for a second order low-pass filter
+    /// \cite Pirkle2012
     [[nodiscard]] static constexpr auto makeLowPass(Float cutoff, Float Q, Float sampleRate) -> etl::array<Float, 6>;
 };
 
