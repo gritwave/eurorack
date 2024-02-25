@@ -31,9 +31,13 @@ struct BiquadCoefficients
 
     [[nodiscard]] static constexpr auto makeBypass() -> etl::array<Float, 6>;
 
-    /// Creates coefficients for a second order low-pass filter
-    /// \cite Pirkle2012
+    /// Creates coefficients for a second order low-pass filter.
+    /// Formulas are given in chapter 6.6.2 of \cite Pirkle2012
     [[nodiscard]] static constexpr auto makeLowPass(Float cutoff, Float Q, Float sampleRate) -> etl::array<Float, 6>;
+
+    /// Creates coefficients for a second order high-pass filter.
+    /// Formulas are given in chapter 6.6.2 of \cite Pirkle2012
+    [[nodiscard]] static constexpr auto makeHighPass(Float cutoff, Float Q, Float sampleRate) -> etl::array<Float, 6>;
 };
 
 /// \brief 2nd order IIR filter using the transpose direct form 2 structure.
@@ -76,6 +80,27 @@ constexpr auto BiquadCoefficients<Float>::makeLowPass(Float cutoff, Float Q, Flo
 
     auto const b0 = (Float(0.5) + beta - gamma) * Float(0.5);
     auto const b1 = Float(0.5) + beta - gamma;
+    auto const b2 = b0;
+
+    auto const a0 = Float(1);
+    auto const a1 = Float(-2) * gamma;
+    auto const a2 = Float(2) * beta;
+
+    return {b0, b1, b2, a0, a1, a2};
+}
+
+template<etl::floating_point Float>
+constexpr auto BiquadCoefficients<Float>::makeHighPass(Float cutoff, Float Q, Float sampleRate) -> etl::array<Float, 6>
+{
+    auto const omega0 = Float(2) * static_cast<Float>(etl::numbers::pi) * cutoff / sampleRate;
+    auto const d      = Float(1) / Q;
+    auto const cos0   = etl::cos(omega0);
+    auto const sin0   = etl::sin(omega0);
+    auto const beta   = Float(0.5) * ((Float(1) - (d * Float(0.5)) * sin0) / (Float(1) + (d * Float(0.5)) * sin0));
+    auto const gamma  = (Float(0.5) + beta) * cos0;
+
+    auto const b0 = (Float(0.5) + beta + gamma) * Float(0.5);
+    auto const b1 = -(Float(0.5) + beta + gamma);
     auto const b2 = b0;
 
     auto const a0 = Float(1);

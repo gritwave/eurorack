@@ -40,6 +40,23 @@ TEMPLATE_TEST_CASE("audio/filter: BiquadCoefficients::makeLowPass", "", float, d
     REQUIRE_THAT(lp[5], Catch::Matchers::WithinAbs(0.9149758348014339, 1e-6));
 }
 
+TEMPLATE_TEST_CASE("audio/filter: BiquadCoefficients::makeHighPass", "", float, double)
+{
+    using Float        = TestType;
+    using Coefficients = grit::BiquadCoefficients<Float>;
+
+    auto fs = GENERATE(Float(1.0), Float(22050), Float(44100), Float(192000));
+
+    auto const q  = Float(1) / etl::sqrt(Float(2));
+    auto const lp = Coefficients::makeHighPass(Float(0.01 * fs), q, Float(1 * fs));
+    REQUIRE_THAT(lp[0], Catch::Matchers::WithinAbs(0.9565432255568768, 1e-6));
+    REQUIRE_THAT(lp[1], Catch::Matchers::WithinAbs(-1.9130864511137535, 1e-6));
+    REQUIRE_THAT(lp[2], Catch::Matchers::WithinAbs(0.9565432255568768, 1e-6));
+    REQUIRE_THAT(lp[3], Catch::Matchers::WithinAbs(1.0, 1e-6));
+    REQUIRE_THAT(lp[4], Catch::Matchers::WithinAbs(-1.9111970674260732, 1e-6));
+    REQUIRE_THAT(lp[5], Catch::Matchers::WithinAbs(0.914975834801434, 1e-6));
+}
+
 TEMPLATE_TEST_CASE("audio/filter: Biquad", "", float, double)
 {
     using Float  = TestType;
