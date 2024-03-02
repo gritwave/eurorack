@@ -41,6 +41,7 @@ target_sources(gritwave-grit INTERFACE
         "grit/audio/filter.hpp"
         "grit/audio/filter/biquad.hpp"
         "grit/audio/filter/dynamic_smoothing.hpp"
+        "grit/audio/filter/state_variable_filter.hpp"
 
         "grit/audio/mix.hpp"
         "grit/audio/mix/cross_fade.hpp"

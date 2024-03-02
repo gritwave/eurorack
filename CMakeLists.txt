@@ -65,6 +65,7 @@ if(NOT CMAKE_CROSSCOMPILING)
             "lib/grit/audio/envelope/envelope_follower_test.cpp"
 
             "lib/grit/audio/filter/biquad_test.cpp"
+            "lib/grit/audio/filter/state_variable_filter_test.cpp"
 
             "lib/grit/audio/music/note_test.cpp"
 
