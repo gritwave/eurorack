@@ -7,7 +7,7 @@ target_compile_features(gritwave-grit INTERFACE cxx_std_20)
 target_link_libraries(gritwave-grit INTERFACE tetl::etl)
 
 if(MSVC)
-  target_compile_options(gritwave-grit INTERFACE "/permissive-" "/Zc:__cplusplus")
+  target_compile_options(gritwave-grit INTERFACE "/permissive-")
 endif(MSVC)
 
 target_sources(gritwave-grit INTERFACE
