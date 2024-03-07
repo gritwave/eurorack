@@ -4,7 +4,7 @@
 #include <catch2/catch_template_test_macros.hpp>
 
 template<typename Plan>
-auto testComplexPlan() -> void
+auto testStaticComplexPlan() -> void
 {
     using Complex = typename Plan::ValueType;
     using Float   = typename Complex::value_type;
@@ -30,20 +30,20 @@ auto testComplexPlan() -> void
     }
 }
 
-TEMPLATE_TEST_CASE("fft: ComplexPlan", "", etl::complex<float>, etl::complex<double>)
+TEMPLATE_TEST_CASE("fft: StaticComplexPlan", "", etl::complex<float>, etl::complex<double>)
 {
-    testComplexPlan<grit::fft::ComplexPlan<TestType, 64>>();
-    testComplexPlan<grit::fft::ComplexPlan<TestType, 128>>();
-    testComplexPlan<grit::fft::ComplexPlan<TestType, 256>>();
-    testComplexPlan<grit::fft::ComplexPlan<TestType, 512>>();
-    testComplexPlan<grit::fft::ComplexPlan<TestType, 1024>>();
+    testStaticComplexPlan<grit::fft::StaticComplexPlan<TestType, 64>>();
+    testStaticComplexPlan<grit::fft::StaticComplexPlan<TestType, 128>>();
+    testStaticComplexPlan<grit::fft::StaticComplexPlan<TestType, 256>>();
+    testStaticComplexPlan<grit::fft::StaticComplexPlan<TestType, 512>>();
+    testStaticComplexPlan<grit::fft::StaticComplexPlan<TestType, 1024>>();
 }
 
-TEMPLATE_TEST_CASE("fft: ComplexPlanV2", "", etl::complex<float>, etl::complex<double>)
+TEMPLATE_TEST_CASE("fft: StaticComplexPlanV2", "", etl::complex<float>, etl::complex<double>)
 {
-    testComplexPlan<grit::fft::ComplexPlanV2<TestType, 64>>();
-    testComplexPlan<grit::fft::ComplexPlanV2<TestType, 128>>();
-    testComplexPlan<grit::fft::ComplexPlanV2<TestType, 256>>();
-    testComplexPlan<grit::fft::ComplexPlanV2<TestType, 512>>();
-    testComplexPlan<grit::fft::ComplexPlanV2<TestType, 1024>>();
+    testStaticComplexPlan<grit::fft::StaticComplexPlanV2<TestType, 64>>();
+    testStaticComplexPlan<grit::fft::StaticComplexPlanV2<TestType, 128>>();
+    testStaticComplexPlan<grit::fft::StaticComplexPlanV2<TestType, 256>>();
+    testStaticComplexPlan<grit::fft::StaticComplexPlanV2<TestType, 512>>();
+    testStaticComplexPlan<grit::fft::StaticComplexPlanV2<TestType, 1024>>();
 }

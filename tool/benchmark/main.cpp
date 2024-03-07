@@ -211,7 +211,7 @@ struct StaticComplexRoundtrip
     }
 
 private:
-    grit::fft::ComplexPlanV2<etl::complex<Float>, N> _plan{};
+    grit::fft::StaticComplexPlanV2<etl::complex<Float>, N> _plan{};
     etl::array<etl::complex<Float>, N> _buf{[] {
         auto rng = etl::xoshiro128plusplus{42};
         return makeNoise<etl::complex<Float>, N>(rng);
