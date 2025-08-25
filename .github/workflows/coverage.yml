@@ -12,7 +12,7 @@ concurrency:
 jobs:
   linux-gcc:
     name: Linux GCC
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -21,15 +21,13 @@ jobs:
           lfs: true
 
       - name: Install dependencies
-        run: >
-          sudo apt update &&
-          sudo apt install
-          ninja-build
-          gcovr
+        run: |
+          sudo apt update -y
+          sudo apt install -y gcovr
 
       - name: CMake configure
         shell: bash
-        run: cmake -S . -B build -G Ninja -D CMAKE_BUILD_TYPE=Debug -D CMAKE_CXX_FLAGS="--coverage"
+        run: cmake -S . -B build -G Ninja -D CMAKE_BUILD_TYPE=Debug -D CMAKE_CXX_FLAGS="--coverage" -D CMAKE_EXE_LINKER_FLAGS="--coverage"
 
       - name: CMake build
         shell: bash
