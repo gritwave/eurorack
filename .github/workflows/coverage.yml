@@ -12,10 +12,10 @@ concurrency:
 jobs:
   linux-gcc:
     name: Linux GCC
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
           lfs: true
@@ -37,7 +37,7 @@ jobs:
 
       - name: CTest
         shell: bash
-        run: ctest --test-dir build -C Debug --output-on-failure -j 3
+        run: ctest --test-dir build -C Debug --output-on-failure -j $(nproc)
 
       - name: Coverage report
         shell: bash
@@ -52,7 +52,7 @@ jobs:
           -o build/coverage.xml
 
       - name: Upload coverage report
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./build/coverage.xml

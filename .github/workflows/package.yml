@@ -11,10 +11,10 @@ permissions:
 jobs:
   package:
     name: Package
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
           lfs: true
@@ -57,15 +57,15 @@ jobs:
   release:
     name: Release
     needs: package
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           lfs: true
 
       - name: Get Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
 
       - name: Show artifacts
         run: ls -la
