@@ -17,6 +17,9 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v5
+        with:
+          submodules: recursive
+          lfs: true
 
       - name: Update
         run: sudo apt update -y
