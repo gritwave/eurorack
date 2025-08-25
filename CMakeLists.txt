@@ -31,6 +31,7 @@ add_subdirectory(lib)
 
 if(CMAKE_CROSSCOMPILING)
     add_subdirectory(${LIBDAISY_DIR})
+    target_compile_options(daisy PRIVATE "-Wno-ignored-qualifiers" "-Wno-type-limits")
     add_subdirectory(tool/benchmark)
 
     add_subdirectory(src/ares)

@@ -53,8 +53,8 @@ auto audioCallback(
     auto const cvOut = processor.process(output, controls);
 
     patch.WriteCvOut(daisy::patch_sm::CV_OUT_BOTH, cvOut.envelope * 5.0F);
-    dsy_gpio_write(&patch.gate_out_1, static_cast<uint8_t>(cvOut.gate1));
-    dsy_gpio_write(&patch.gate_out_2, static_cast<uint8_t>(cvOut.gate2));
+    patch.gate_out_1.Write(cvOut.gate1);
+    patch.gate_out_2.Write(cvOut.gate2);
 }
 
 }  // namespace poseidon
