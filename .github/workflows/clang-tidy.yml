@@ -1,0 +1,51 @@
+name: Clang-Tidy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v5
+
+      - name: Update
+        run: sudo apt update -y
+
+      - name: Install LLVM
+        run: |
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 20 all
+
+      - name: CMake configure
+        run: >
+          cmake -S .
+          -G Ninja
+          -B build
+          -D CMAKE_BUILD_TYPE=Debug
+          -D CMAKE_C_COMPILER="clang-20"
+          -D CMAKE_CXX_COMPILER="clang++-20"
+          -D CMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Clang-Tidy check
+        run: >
+          run-clang-tidy-20
+          -clang-tidy-binary clang-tidy-20
+          -clang-apply-replacements-binary clang-apply-replacements-20
+          -header-filter=$(realpath lib)
+          -quiet
+          -j $(nproc)
+          -p ./build
+          $(realpath lib)
+          $(realpath src)
+          $(realpath tool)
