@@ -2,8 +2,9 @@ name: Pre Commit Hooks
 
 on:
   push:
-    branches-ignore:
-      - main
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   check:
