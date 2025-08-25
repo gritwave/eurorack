@@ -19,22 +19,14 @@ jobs:
           submodules: recursive
           lfs: true
 
-      - name: Install dependencies
-        run: |
-          sudo apt install ninja-build wget
-
       - name: Install GCC
         run: |
-          wget https://developer.arm.com/-/media/Files/downloads/gnu/13.2.rel1/binrel/arm-gnu-toolchain-13.2.rel1-x86_64-arm-none-eabi.tar.xz
-          tar -xf arm-gnu-toolchain-13.2.rel1-x86_64-arm-none-eabi.tar.xz
-          ls -la .
-          ls -la arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi
-          export PATH="$PATH:$GITHUB_WORKSPACE/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin"
-          arm-none-eabi-g++ --version
+          wget https://developer.arm.com/-/media/Files/downloads/gnu/14.2.rel1/binrel/arm-gnu-toolchain-14.2.rel1-x86_64-arm-none-eabi.tar.xz
+          tar -xf arm-gnu-toolchain-14.2.rel1-x86_64-arm-none-eabi.tar.xz
 
       - name: Build firmware
         run: |
-          export PATH="$PATH:$GITHUB_WORKSPACE/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin"
+          export PATH="$PATH:$GITHUB_WORKSPACE/arm-gnu-toolchain-14.2.rel1-x86_64-arm-none-eabi/bin"
           cmake --workflow --preset arm-gcc
 
       - name: Make firmware archive
