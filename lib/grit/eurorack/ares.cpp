@@ -62,9 +62,13 @@ auto Ares::Channel::setParameter(Parameter const& parameter) -> void
     _mode = parameter.mode;
 
     if (parameter.mode == Mode::Fire) {
-        _fire.setParameter({parameter.gain, parameter.tone, parameter.output, parameter.mix});
+        _fire.setParameter(
+            {.gain = parameter.gain, .tone = parameter.tone, .output = parameter.output, .mix = parameter.mix}
+        );
     } else {
-        _grind.setParameter({parameter.gain, parameter.tone, parameter.output, parameter.mix});
+        _grind.setParameter(
+            {.gain = parameter.gain, .tone = parameter.tone, .output = parameter.output, .mix = parameter.mix}
+        );
     }
 }
 

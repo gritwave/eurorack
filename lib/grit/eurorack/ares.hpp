@@ -60,18 +60,18 @@ private:
     private:
         Mode _mode{Mode::Fire};
 
-        AirWindowsFireAmp<float> _fire{};
-        AirWindowsGrindAmp<float> _grind{};
+        AirWindowsFireAmp<float> _fire;
+        AirWindowsGrindAmp<float> _grind;
     };
 
-    DynamicSmoothing<float> _gainKnob{};
-    DynamicSmoothing<float> _toneKnob{};
-    DynamicSmoothing<float> _outputKnob{};
-    DynamicSmoothing<float> _mixKnob{};
-    DynamicSmoothing<float> _gainCV{};
-    DynamicSmoothing<float> _toneCV{};
-    DynamicSmoothing<float> _outputCV{};
-    DynamicSmoothing<float> _mixCV{};
+    DynamicSmoothing<float> _gainKnob;
+    DynamicSmoothing<float> _toneKnob;
+    DynamicSmoothing<float> _outputKnob;
+    DynamicSmoothing<float> _mixKnob;
+    DynamicSmoothing<float> _gainCV;
+    DynamicSmoothing<float> _toneCV;
+    DynamicSmoothing<float> _outputCV;
+    DynamicSmoothing<float> _mixCV;
 
     etl::array<Channel, 2> _channels{};
 };

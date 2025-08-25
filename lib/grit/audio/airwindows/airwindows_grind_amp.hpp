@@ -161,16 +161,10 @@ auto AirWindowsGrindAmp<Float, URNG>::setParameter(Parameter parameter) -> void
     Float overallscale = Float(1) / Float(44100.0);
     overallscale *= _sampleRate;
     _cycleEnd = etl::floor(overallscale);
-    if (_cycleEnd < 1) {
-        _cycleEnd = 1;
-    }
-    if (_cycleEnd > 4) {
-        _cycleEnd = 4;
-    }
+    _cycleEnd = etl::max(_cycleEnd, 1);
+    _cycleEnd = etl::min(_cycleEnd, 4);
     // this is going to be 2 for 88.1 or 96k, 3 for silly people, 4 for 176 or 192k
-    if (_cycle > _cycleEnd - 1) {
-        _cycle = _cycleEnd - 1;  // sanity check
-    }
+    _cycle = etl::min(_cycle, _cycleEnd - 1);
 
     _inputlevel      = etl::pow(a, Float(2));
     Float samplerate = _sampleRate;

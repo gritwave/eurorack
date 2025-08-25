@@ -38,16 +38,16 @@ private:
 
     float _sampleRate{};
 
-    DynamicSmoothing<float> _pitchKnob{};
-    DynamicSmoothing<float> _morphKnob{};
-    DynamicSmoothing<float> _attackKnob{};
-    DynamicSmoothing<float> _releaseKnob{};
-    DynamicSmoothing<float> _vOctCV{};
-    DynamicSmoothing<float> _morphCV{};
-    DynamicSmoothing<float> _subGainCV{};
-    DynamicSmoothing<float> _subMorphCV{};
+    DynamicSmoothing<float> _pitchKnob;
+    DynamicSmoothing<float> _morphKnob;
+    DynamicSmoothing<float> _attackKnob;
+    DynamicSmoothing<float> _releaseKnob;
+    DynamicSmoothing<float> _vOctCV;
+    DynamicSmoothing<float> _morphCV;
+    DynamicSmoothing<float> _subGainCV;
+    DynamicSmoothing<float> _subMorphCV;
 
-    EnvelopeADSR<float> _adsr{};
+    EnvelopeADSR<float> _adsr;
     WavetableOscillator<float, sine.size()> _oscillator{wavetable};
     WavetableOscillator<float, sine.size()> _subOscillator{wavetable};
 };

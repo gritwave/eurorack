@@ -36,7 +36,7 @@ struct StateVariableFilter
 
     auto setParameter(Parameter const& parameter) -> void;
     auto setSampleRate(Float sampleRate) -> void;
-    auto operator()(Float input) -> Float;
+    auto operator()(Float x) -> Float;
     auto reset() -> void;
 
 private:

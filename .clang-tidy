@@ -1,48 +1,52 @@
-Checks: >
-  *-,
-  boost-*,
+Checks:
+  - -*
 
-  bugprone-*,
-  -bugprone-exception-escape,
+  - bugprone-*
+  - -bugprone-chained-comparison # Catch2
+  - -bugprone-exception-escape
 
-  cert-*,
-  -cert-err58-cpp,
-  -cert-str34-c,
+  - cert-*
+  - -cert-err58-cpp
+  - -cert-str34-c
 
-  clang-analyzer-*,
-  clang-diagnostics-*,
+  - clang-analyzer-*
+  - clang-diagnostics-*
+  - concurrency-*
 
-  concurrency-*,
+  - cppcoreguidelines-*
+  - -cppcoreguidelines-avoid-non-const-global-variables
+  - -cppcoreguidelines-pro-bounds-constant-array-index
+  - -cppcoreguidelines-pro-bounds-pointer-arithmetic
+  - -cppcoreguidelines-pro-type-reinterpret-cast
 
-  cppcoreguidelines-*,
-  -cppcoreguidelines-avoid-non-const-global-variables,
-  -cppcoreguidelines-pro-bounds-constant-array-index,
-  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
-  -cppcoreguidelines-pro-type-reinterpret-cast,
+  - hicpp-*
+  - -hicpp-explicit-conversions
+  - -hicpp-no-assembler
+  - -hicpp-signed-bitwise
 
-  hicpp-*,
-  -hicpp-explicit-conversions,
-  -hicpp-no-assembler,
-  -hicpp-signed-bitwise,
+  - misc-*
+  - -misc-include-cleaner
+  - -misc-use-anonymous-namespace
 
-  misc-*,
-  -misc-include-cleaner,
-  -misc-use-anonymous-namespace,
+  - modernize-*
+  - -modernize-use-std-numbers
 
-  modernize-*,
+  - performance-*
 
-  performance-*,
+  - readability-*
+  - -readability-identifier-naming
+  - -readability-function-cognitive-complexity
+  - -readability-identifier-length
+  - -readability-math-missing-parentheses
 
-  readability-*,
-  readability-identifier-naming,
-  -readability-function-cognitive-complexity,
-  -readability-identifier-length,
-
-  -*-avoid-c-arrays,
-  -*-magic-numbers,
+  - -*-avoid-c-arrays
+  - -*-magic-numbers
 
 WarningsAsErrors: "*"
-FormatStyle: none
+FormatStyle: file
+HeaderFileExtensions: ["hpp"]
+ImplementationFileExtensions: ["cpp"]
+ExcludeHeaderFilterRegex: "(.*/3rd_party/*)"
 CheckOptions:
   - key: bugprone-easily-swappable-parameters.MinimumLength
     value: 4

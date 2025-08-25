@@ -82,7 +82,7 @@ private:
         };
 
         Index _index{TanhIndex};
-        TanhClipperADAA1<float> _tanh{};
+        TanhClipperADAA1<float> _tanh;
         HardClipper<float> _hard{};
         FullWaveRectifier<float> _fullWave{};
         HalfWaveRectifier<float> _halfWave{};
@@ -118,21 +118,21 @@ private:
 
         Parameter _parameter{};
 
-        EnvelopeFollower<float> _envelope{};
-        WhiteNoise<float> _whiteNoise{};
-        AirWindowsVinylDither<float> _vinyl{};
-        Amp _distortion{};
-        SoftKneeCompressor<float> _compressor{};
+        EnvelopeFollower<float> _envelope;
+        WhiteNoise<float> _whiteNoise;
+        AirWindowsVinylDither<float> _vinyl;
+        Amp _distortion;
+        SoftKneeCompressor<float> _compressor;
     };
 
-    DynamicSmoothing<float> _textureKnob{};
-    DynamicSmoothing<float> _morphKnob{};
-    DynamicSmoothing<float> _ampKnob{};
-    DynamicSmoothing<float> _compressorKnob{};
-    DynamicSmoothing<float> _morphCv{};
-    DynamicSmoothing<float> _sideChainCv{};
-    DynamicSmoothing<float> _attackCv{};
-    DynamicSmoothing<float> _releaseCv{};
+    DynamicSmoothing<float> _textureKnob;
+    DynamicSmoothing<float> _morphKnob;
+    DynamicSmoothing<float> _ampKnob;
+    DynamicSmoothing<float> _compressorKnob;
+    DynamicSmoothing<float> _morphCv;
+    DynamicSmoothing<float> _sideChainCv;
+    DynamicSmoothing<float> _attackCv;
+    DynamicSmoothing<float> _releaseCv;
 
     etl::array<Channel, 2> _channels{};
 };

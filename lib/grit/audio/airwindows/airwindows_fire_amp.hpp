@@ -154,9 +154,7 @@ auto AirWindowsFireAmp<Float, URNG>::setParameter(Parameter parameter) -> void
 
     _cycleEnd = etl::clamp(static_cast<int>(etl::floor(overallscale)), 1, 4);
     // this is going to be 2 for 88.1 or 96k, 3 for silly people, 4 for 176 or 192k
-    if (_cycle > _cycleEnd - 1) {
-        _cycle = _cycleEnd - 1;  // sanity check
-    }
+    _cycle = etl::min(_cycle, _cycleEnd - 1);
 
     _startlevel      = _bassfill;
     Float samplerate = _sampleRate;
