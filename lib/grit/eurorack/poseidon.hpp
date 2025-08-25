@@ -20,6 +20,7 @@
 
 #include <etl/algorithm.hpp>
 #include <etl/array.hpp>
+#include <etl/cstdint.hpp>
 #include <etl/functional.hpp>
 #include <etl/utility.hpp>
 #include <etl/variant.hpp>
@@ -69,7 +70,7 @@ private:
         [[nodiscard]] auto operator()(float sample) -> float;
 
     private:
-        enum Index : int
+        enum Index : etl::int8_t
         {
             TanhIndex = 0,
             HardIndex,

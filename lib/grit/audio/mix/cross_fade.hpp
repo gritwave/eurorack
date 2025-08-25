@@ -2,12 +2,13 @@
 
 #include <etl/cmath.hpp>
 #include <etl/concepts.hpp>
+#include <etl/cstdint.hpp>
 #include <etl/numbers.hpp>
 
 namespace grit {
 
 /// \ingroup grit-audio-mix
-enum struct CrossFadeCurve
+enum struct CrossFadeCurve : etl::uint8_t
 {
     Linear,
     ConstantPower,

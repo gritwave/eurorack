@@ -4,6 +4,7 @@
 #include <etl/array.hpp>
 #include <etl/cmath.hpp>
 #include <etl/concepts.hpp>
+#include <etl/cstdint.hpp>
 #include <etl/numbers.hpp>
 #include <etl/span.hpp>
 
@@ -17,7 +18,7 @@ struct BiquadCoefficients
 {
     using SampleType = Float;
 
-    enum Index
+    enum Index : etl::uint8_t
     {
         B0,
         B1,

@@ -5,6 +5,7 @@
 #include <etl/algorithm.hpp>
 #include <etl/cmath.hpp>
 #include <etl/concepts.hpp>
+#include <etl/cstdint.hpp>
 
 namespace grit {
 
@@ -38,7 +39,7 @@ struct EnvelopeADSR
     [[nodiscard]] constexpr auto operator()() -> Float;
 
 private:
-    enum State
+    enum State : etl::uint8_t
     {
         Idle,
         Attack,

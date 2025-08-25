@@ -5,6 +5,7 @@
 #include <etl/algorithm.hpp>
 #include <etl/cmath.hpp>
 #include <etl/concepts.hpp>
+#include <etl/cstdint.hpp>
 #include <etl/random.hpp>
 
 namespace grit {
@@ -101,7 +102,7 @@ private:
     int _cycle{};  // undersampling
 
     // fixed frequency biquad filter for ultrasonics, stereo
-    enum
+    enum : etl::uint8_t
     {
         FixFreq,
         FixReso,

@@ -76,7 +76,7 @@ auto Poseidon::process(StereoBlock<float> const& buffer, ControlInput const& inp
 
 auto Poseidon::Amp::next() -> void
 {
-    _index = Index{int(_index) + 1};
+    _index = static_cast<Index>(static_cast<int>(_index) + 1);
     if (_index == MaxIndex) {
         _index = Index{0};
     }

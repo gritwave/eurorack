@@ -2,13 +2,14 @@
 
 #include <etl/cmath.hpp>
 #include <etl/concepts.hpp>
+#include <etl/cstdint.hpp>
 #include <etl/numbers.hpp>
 #include <etl/type_traits.hpp>
 
 namespace grit {
 
 /// \ingroup grit-audio-filter
-enum struct StateVariableFilterType
+enum struct StateVariableFilterType : etl::uint8_t
 {
     Highpass,
     Bandpass,

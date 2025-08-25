@@ -2,7 +2,6 @@ Checks:
   - -*
 
   - bugprone-*
-  - -bugprone-chained-comparison # Catch2
   - -bugprone-exception-escape
 
   - cert-*

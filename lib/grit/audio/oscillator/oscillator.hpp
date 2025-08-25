@@ -4,12 +4,13 @@
 
 #include <etl/algorithm.hpp>
 #include <etl/concepts.hpp>
+#include <etl/cstdint.hpp>
 #include <etl/numbers.hpp>
 
 namespace grit {
 
 /// \ingroup grit-audio-oscillator
-enum struct OscillatorShape
+enum struct OscillatorShape : etl::uint8_t
 {
     Sine,
     Triangle,

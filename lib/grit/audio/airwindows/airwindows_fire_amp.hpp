@@ -5,6 +5,7 @@
 #include <etl/algorithm.hpp>
 #include <etl/cmath.hpp>
 #include <etl/concepts.hpp>
+#include <etl/cstdint.hpp>
 #include <etl/random.hpp>
 
 namespace grit {
@@ -90,7 +91,7 @@ private:
     Float _lastRefL[10]{0};
     int _cycle{0};  // undersampling
 
-    enum
+    enum : etl::uint8_t
     {
         FixFreq,
         FixReso,

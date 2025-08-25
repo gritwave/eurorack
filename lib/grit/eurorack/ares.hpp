@@ -6,13 +6,14 @@
 #include <grit/audio/stereo/stereo_block.hpp>
 
 #include <etl/array.hpp>
+#include <etl/cstdint.hpp>
 
 namespace grit {
 
 /// \ingroup grit-eurorack
 struct Ares
 {
-    enum struct Mode
+    enum struct Mode : etl::uint8_t
     {
         Fire,
         Grind,
