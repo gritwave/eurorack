@@ -48,8 +48,7 @@ doxygen Doxyfile
 # Bump VERSION & Doxygen PROJECT_NUMBER
 git commit -am "Release v0.1.0"
 git tag v0.1.0
-git push
-git push --tags
+git push --atomic origin HEAD --tags
 ```
 
 ### Compiler Explorer
