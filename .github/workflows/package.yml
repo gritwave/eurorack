@@ -35,8 +35,7 @@ jobs:
       - name: Build firmware
         run: |
           export PATH="$PATH:$GITHUB_WORKSPACE/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin"
-          cmake --preset arm-gnu
-          cmake --build --preset firmware-release
+          cmake --workflow --preset arm-gcc
 
       - name: Make firmware archive
         run: |
