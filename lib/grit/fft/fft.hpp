@@ -130,12 +130,12 @@ template<int Stage, etl::linalg::inout_vector InOutVec, etl::linalg::in_vector I
 
 /// \ingroup grit-fft
 template<typename Complex, etl::size_t Size>
-struct StaticComplexPlan
+struct ComplexPlan
 {
     using ValueType = Complex;
     using SizeType  = etl::size_t;
 
-    explicit StaticComplexPlan(Direction defaultDirection = Direction::Forward)
+    explicit ComplexPlan(Direction defaultDirection = Direction::Forward)
         : _defaultDirection{defaultDirection}
         , _w{detail::makeTwiddles<typename Complex::value_type, size()>(defaultDirection)}
     {}
@@ -161,18 +161,18 @@ struct StaticComplexPlan
 
 private:
     Direction _defaultDirection;
-    StaticBitrevorderPlan<size()> _reorder{};
+    BitrevorderPlan<size()> _reorder{};
     etl::array<Complex, size() / 2> _w;
 };
 
 /// \ingroup grit-fft
 template<typename Complex, etl::size_t Size>
-struct StaticComplexPlanV2
+struct ComplexPlanV2
 {
     using ValueType = Complex;
     using SizeType  = etl::size_t;
 
-    explicit StaticComplexPlanV2(Direction defaultDirection = Direction::Forward)
+    explicit ComplexPlanV2(Direction defaultDirection = Direction::Forward)
         : _defaultDirection{defaultDirection}
         , _w{detail::makeTwiddles<typename Complex::value_type, size()>(defaultDirection)}
     {}
@@ -202,7 +202,7 @@ struct StaticComplexPlanV2
 
 private:
     Direction _defaultDirection;
-    StaticBitrevorderPlan<size()> _reorder{};
+    BitrevorderPlan<size()> _reorder{};
     etl::array<Complex, size() / 2> _w;
 };
 

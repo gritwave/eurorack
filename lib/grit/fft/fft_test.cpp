@@ -3,8 +3,10 @@
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_template_test_macros.hpp>
 
+namespace {
+
 template<typename Plan>
-auto testStaticComplexPlan() -> void
+auto test() -> void
 {
     using Complex = typename Plan::ValueType;
     using Float   = typename Complex::value_type;
@@ -30,20 +32,22 @@ auto testStaticComplexPlan() -> void
     }
 }
 
-TEMPLATE_TEST_CASE("fft: StaticComplexPlan", "", etl::complex<float>, etl::complex<double>)
+}  // namespace
+
+TEMPLATE_TEST_CASE("fft: ComplexPlan", "", etl::complex<float>, etl::complex<double>)
 {
-    testStaticComplexPlan<grit::fft::StaticComplexPlan<TestType, 64>>();
-    testStaticComplexPlan<grit::fft::StaticComplexPlan<TestType, 128>>();
-    testStaticComplexPlan<grit::fft::StaticComplexPlan<TestType, 256>>();
-    testStaticComplexPlan<grit::fft::StaticComplexPlan<TestType, 512>>();
-    testStaticComplexPlan<grit::fft::StaticComplexPlan<TestType, 1024>>();
+    test<grit::fft::ComplexPlan<TestType, 64>>();
+    test<grit::fft::ComplexPlan<TestType, 128>>();
+    test<grit::fft::ComplexPlan<TestType, 256>>();
+    test<grit::fft::ComplexPlan<TestType, 512>>();
+    test<grit::fft::ComplexPlan<TestType, 1024>>();
 }
 
-TEMPLATE_TEST_CASE("fft: StaticComplexPlanV2", "", etl::complex<float>, etl::complex<double>)
+TEMPLATE_TEST_CASE("fft: ComplexPlanV2", "", etl::complex<float>, etl::complex<double>)
 {
-    testStaticComplexPlan<grit::fft::StaticComplexPlanV2<TestType, 64>>();
-    testStaticComplexPlan<grit::fft::StaticComplexPlanV2<TestType, 128>>();
-    testStaticComplexPlan<grit::fft::StaticComplexPlanV2<TestType, 256>>();
-    testStaticComplexPlan<grit::fft::StaticComplexPlanV2<TestType, 512>>();
-    testStaticComplexPlan<grit::fft::StaticComplexPlanV2<TestType, 1024>>();
+    test<grit::fft::ComplexPlanV2<TestType, 64>>();
+    test<grit::fft::ComplexPlanV2<TestType, 128>>();
+    test<grit::fft::ComplexPlanV2<TestType, 256>>();
+    test<grit::fft::ComplexPlanV2<TestType, 512>>();
+    test<grit::fft::ComplexPlanV2<TestType, 1024>>();
 }
