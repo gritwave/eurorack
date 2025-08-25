@@ -5,9 +5,11 @@
 #include "PluginParameter.hpp"
 
 PluginProcessor::PluginProcessor()
-    : AudioProcessor(BusesProperties()
-                         .withInput("Input", juce::AudioChannelSet::stereo(), true)
-                         .withOutput("Output", juce::AudioChannelSet::stereo(), true))
+    : AudioProcessor(
+          BusesProperties()
+              .withInput("Input", juce::AudioChannelSet::stereo(), true)
+              .withOutput("Output", juce::AudioChannelSet::stereo(), true)
+      )
     , _valueTree{*this, nullptr, juce::Identifier("Gritwave"), gritrack::createParameters()}
     , _cv1{*dynamic_cast<juce::AudioParameterFloat*>(_valueTree.getParameter(gritrack::ParamID::cv1))}
     , _cv2{*dynamic_cast<juce::AudioParameterFloat*>(_valueTree.getParameter(gritrack::ParamID::cv2))}

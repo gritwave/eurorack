@@ -2,6 +2,8 @@
 .vscode
 .vs
 
+.venv
+
 *.obj
 *.exe
 *.dll
