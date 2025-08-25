@@ -1,43 +1,126 @@
 {
-  "version": 3,
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 28,
+    "patch": 0
+  },
   "configurePresets": [
     {
-      "name": "arm-gnu",
+      "name": "_root-config",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/cmake-build-${presetName}",
       "generator": "Ninja Multi-Config",
-      "binaryDir": "${sourceDir}/build",
-      "toolchainFile": "${sourceDir}/cmake/toolchain/stm32h750xx.cmake"
+      "cacheVariables": {
+        "CMAKE_CXX_SCAN_FOR_MODULES": false,
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true
+      }
     },
     {
       "name": "desktop",
-      "generator": "Ninja Multi-Config",
-      "binaryDir": "${sourceDir}/cmake-build-desktop"
+      "description": "Configure with hosted system toolchain",
+      "inherits": ["_root-config"]
+    },
+    {
+      "name": "arm-gcc",
+      "description": "Configure with arm-gcc toolchain",
+      "inherits": ["_root-config"],
+      "toolchainFile": "${sourceDir}/cmake/toolchain/stm32h750xx.cmake"
     }
   ],
   "buildPresets": [
     {
-      "name": "firmware-debug",
-      "configurePreset": "arm-gnu",
-      "configuration": "Debug"
-    },
-    {
-      "name": "firmware-release",
-      "configurePreset": "arm-gnu",
-      "configuration": "Release"
-    },
-    {
-      "name": "firmware-release-with-debug-info",
-      "configurePreset": "arm-gnu",
-      "configuration": "RelWithDebInfo"
-    },
-    {
       "name": "desktop-debug",
+      "displayName": "Desktop Debug",
       "configurePreset": "desktop",
       "configuration": "Debug"
     },
     {
       "name": "desktop-release",
+      "displayName": "Desktop Release",
       "configurePreset": "desktop",
       "configuration": "Release"
+    },
+    {
+      "name": "arm-gcc",
+      "description": "Build using ninja and arm-gcc toolchain",
+      "configurePreset": "arm-gcc",
+      "configuration": "Release"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "desktop-debug",
+      "description": "Test using ninja and system toolchain",
+      "configurePreset": "desktop",
+      "configuration": "Debug",
+      "output": { "outputOnFailure": true },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true,
+        "jobs": 8
+      }
+    },
+    {
+      "name": "desktop-release",
+      "description": "Test using ninja and system toolchain",
+      "configurePreset": "desktop",
+      "configuration": "Release",
+      "output": { "outputOnFailure": true },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true,
+        "jobs": 8
+      }
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "desktop-debug",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "desktop"
+        },
+        {
+          "type": "build",
+          "name": "desktop-debug"
+        },
+        {
+          "type": "test",
+          "name": "desktop-debug"
+        }
+      ]
+    },
+    {
+      "name": "desktop-release",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "desktop"
+        },
+        {
+          "type": "build",
+          "name": "desktop-release"
+        },
+        {
+          "type": "test",
+          "name": "desktop-release"
+        }
+      ]
+    },
+    {
+      "name": "arm-gcc",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "arm-gcc"
+        },
+        {
+          "type": "build",
+          "name": "arm-gcc"
+        }
+      ]
     }
   ]
 }
